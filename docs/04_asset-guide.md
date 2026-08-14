@@ -11,7 +11,8 @@
 | 形式 | **PNG（背景透過）** |
 | 推奨サイズ | **1024 × 1536 px**（縦長のバストアップ〜膝上） |
 | 構図 | **膝上〜バストアップ。頭のてっぺんに少し余白**。下端は切れていてよい |
-| 置き場所 | `public/assets/chara/<キャラID>/<表情>.png` |
+| 置き場所（採用） | `public/assets/chara/<キャラID>/<表情>.png` |
+| 置き場所（試作・候補） | `work-assets/chara/<キャラID>/`（**Git管理外**。何枚溜めてもよい） |
 | キャラID | `akane` `aoi` `sui` `touka` `shion` `momoka` |
 | 表情ファイル名 | `normal` `smile` `laugh` `bored` `smug` `fluster` `away` の7種 |
 
@@ -150,59 +151,81 @@ ZLUDA を手で組むより格段に楽なので、まずこれを試す。
 - ※「肩にかかるショートヘア・顔が小さい」は**葵**の設定。茜と混同しないこと
 - 性格はツンデレ。口が悪く素直に褒めない → **normal は「やや不機嫌そう」くらいがちょうどいい**
 
-### ポジティブプロンプト（Forge の上の欄にそのまま貼る）
+### v2（2026-08-15 改訂）— 初回生成の結果を受けて修正
 
-**下から2行目の `annoyed, frown, closed mouth,` が表情の行。** ここだけを差し替えて差分を作る。
+**初回の失敗から分かったこと。** 同じ轍を踏まないよう記録しておく。
+
+| 症状 | 原因 | 対策 |
+|---|---|---|
+| **ポニーテールにならず髪を下ろした姿になる** | `messy hair, wavy hair tips` が `low ponytail` を打ち消していた。さらに Clip skip 4 でプロンプト追従が落ちていた | 競合タグを削り `(low ponytail:1.4)` に強調をかける。**Clip skip は 2** |
+| **表情が険しすぎる（睨んでいる）** | `annoyed, frown` が強すぎた | `neutral expression` ＋ 軽い `pout` に変更。ネガティブに `angry, glaring, scowl` |
+| **スカートが透けて卑猥に見える** | 透け防止の指定が無かった | ポジティブに `opaque`、ネガティブに `see-through, sheer` 等。`black pantyhose` で脚も覆う |
+| **胸が過度に強調される** | Illustrious/NoobAI系の既定の癖 | `small breasts` を明示し、ネガティブで `large breasts` 系を潰す |
+| 全身のバランスが崩れる | **512×512 で生成していた** | **832×1216 で生成する**（SDXLは1024²前後が前提。512では破綻する） |
+| 仕上がりがぼやける | Hires upscaler が `Latent` | **`R-ESRGAN 4x+ Anime6B`** に変更、Denoising 0.35 |
+
+### ポジティブプロンプト（上の欄にそのまま貼る）
+
+**下から3行目の `(neutral expression:1.2), slight pout, closed mouth, calm,` が表情の行。**
+ここだけを差し替えて差分を作る。
 
 ```text
-masterpiece, best quality, amazing quality, very aesthetic, absurdres,
+masterpiece, best quality, amazing quality, very aesthetic, absurdres, newest,
 1girl, solo, cowboy shot, standing, facing viewer, looking at viewer, arms at sides,
-mature female, 24 years old, office lady,
-crimson hair, dark red hair, low ponytail, medium hair, messy hair, wavy hair tips, hair between eyes, sidelocks,
-dark red eyes, slender,
-white collared shirt, dark grey cardigan, black pencil skirt,
-annoyed, frown, closed mouth,
-simple background, white background, anime style, clean lineart, cel shading, soft lighting
+mature female, 24 years old, office lady, slender, small breasts,
+crimson hair, dark red hair, (low ponytail:1.4), hair tied at nape, medium hair, swept bangs, sidelocks,
+dark red eyes,
+white collared shirt, buttoned up, grey cardigan, (opaque black pencil skirt:1.3), knee length skirt, black pantyhose,
+(neutral expression:1.2), slight pout, closed mouth, calm,
+simple background, white background, even lighting, anime style, clean lineart, cel shading
 ```
 
-### ネガティブプロンプト（Forge の下の欄にそのまま貼る）
+### ネガティブプロンプト（下の欄にそのまま貼る）
 
 ```text
 lowres, worst quality, low quality, bad anatomy, bad hands, missing fingers, extra digits, fewer digits, extra arms,
 jpeg artifacts, signature, watermark, username, artist name, text, logo,
 blurry, depth of field, multiple views, multiple girls, 2girls,
-nsfw, nude, cleavage,
+nsfw, nude, cleavage, see-through, transparent clothes, sheer, wet clothes, panties, underwear, thighs visible through skirt,
+large breasts, huge breasts, gigantic breasts, breast focus, oppai,
+angry, glaring, scowl, furrowed brow, sharp eyes, gloomy, shadow over face,
 pink hair, orange hair, blonde hair, brown hair, black hair, blue hair, purple hair, green hair,
-twintails, high ponytail, very long hair, short hair, ahoge, hair bun,
-school uniform, hat, glasses,
+hair down, loose hair, twintails, high ponytail, very long hair, short hair, ahoge, hair bun,
+school uniform, hat, glasses, miniskirt,
 cropped, head out of frame, from behind
 ```
 
 **髪色の指定が最重要。** ピンク・オレンジ・金髪に転びやすいので、ネガティブで他の髪色を全部潰してある。
 **他ヒロインの色（青・翠・橙・紫・桃）も入っている**ので、この5人を作るときは該当色をネガティブから外すこと。
 
-### 推奨パラメータ（Forge の設定欄）
+### 推奨パラメータ
 
-| 項目 | 値 |
-|---|---|
-| Sampling method | **DPM++ 2M SDE Karras**（無ければ Euler a） |
-| Sampling steps | **28** |
-| CFG Scale | **5**（アニメ系SDXLは低めが安定） |
-| Width × Height | **832 × 1216** |
-| Hires. fix | 有効 / Upscale **1.25倍** / Denoising **0.4**（VRAM 8GBなので1.5倍以上は重い） |
-| Seed | 最初は **-1**（ランダム）。気に入った1枚が出たら**その seed を固定** |
+| 項目 | 値 | 備考 |
+|---|---|---|
+| Sampling method | **Euler a**（または DPM++ 2M SDE Karras） | どちらでも可 |
+| Sampling steps | **28** | |
+| CFG Scale | **5** | アニメ系SDXLは低めが安定 |
+| Width × Height | **832 × 1216** | **512×512では破綻する。必ず変更すること** |
+| **Clip skip** | **2** | **最重要。4だとプロンプトを聞かなくなる** |
+| Hires. fix | 有効 / Upscale **1.25倍** | VRAM 8GBなので1.5倍以上は重い |
+| Hires upscaler | **R-ESRGAN 4x+ Anime6B** | `Latent` はぼやけるので使わない |
+| Hires denoising | **0.35** | |
+| Seed | 最初は **-1**（ランダム） | 気に入った1枚が出たら**その seed を固定** |
 
 ### 表情差分の差し替え行（7種）
 
-ポジティブの `annoyed, frown, closed mouth,` の行を、下の1行に置き換える。**他は一字も変えない。**
+ポジティブの表情の行を、下の1行に置き換える。**他は一字も変えない。**
+
+**ツンデレだからといって `angry` 系のタグは使わないこと。** 睨んだ顔になり、立ち絵として使えなくなる。
+不機嫌さは `pout`（ふくれっ面）や `jitome`（ジト目）で表現する。こちらのほうが可愛げが残る。
 
 | ファイル名 | 差し替える1行 |
 |---|---|
-| `normal` | `annoyed, frown, closed mouth,` |
-| `smile` | `smile, closed mouth, gentle expression, half-closed eyes,` |
-| `laugh` | `laughing, open mouth, closed eyes, happy, teeth,` |
-| `bored` | `bored, half-closed eyes, expressionless, flat mouth, jitome,` |
-| `smug` | `smug, smirk, one eye closed, raised eyebrow, grin,` |
+| `normal` | `(neutral expression:1.2), slight pout, closed mouth, calm,` |
+| `smile` | `soft smile, closed mouth, gentle expression, half-closed eyes,` |
+| `laugh` | `laughing, open mouth, closed eyes, happy,` |
+| `bored` | `jitome, half-closed eyes, expressionless, flat mouth, unamused,` |
+| `smug` | `smug, smirk, one eye closed, grin, closed mouth,` |
 | `fluster` | `blush, embarrassed, surprised, wide eyes, small open mouth, flustered,` |
 | `away` | `looking to the side, averted eyes, pout, closed mouth,` |
 
