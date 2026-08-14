@@ -5,21 +5,47 @@
   cursor: pointer;
 }
 
-/* 背景。素材が入るまでは色面で代用する（AI生成素材はPhase3のアセット工程で差し替え）。 */
+/* 背景。素材が未取得のときは色面にフォールバックする。 */
 .bg {
   position: absolute;
   inset: 0;
   background: linear-gradient(170deg, #1a1a22 0%, #101015 60%, #0b0b0e 100%);
-  transition: opacity 0.5s;
+}
+
+.bgImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* 立ち絵とテキストを前に出すため、背景はわずかに落とす */
+  filter: brightness(0.62) saturate(0.92);
+  animation: bgFade 0.6s ease-out;
 }
 
 .bgLabel {
   position: absolute;
   left: 1rem;
   top: 0.9rem;
+  z-index: 6;
   font-size: 0.68rem;
   letter-spacing: 0.12em;
   color: rgba(168, 168, 176, 0.35);
+}
+
+@keyframes bgFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bgImage {
+    animation: none;
+  }
 }
 
 /* 主人公の五色。数値は出さず、5角形の形で示す（C3②） */

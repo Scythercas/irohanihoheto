@@ -189,6 +189,8 @@
 
     - text: "順路の終わりに、小さなカフェがあった。"
 
+    - bg: cafe_evening
+
     - who: momoka
       face: normal
       text: "「あ……どうします？」"

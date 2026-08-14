@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { backgroundOf, backgroundUrl } from '../game/backgrounds';
 import { CHARACTERS } from '../game/constants';
 import { AUTO_SLOT, save } from '../game/save';
 import { useGame } from '../game/store';
@@ -73,11 +74,27 @@ export default function AdvScreen() {
 
   const speaker = node?.kind === 'say' ? node.who : null;
   const speakerDef = speaker && speaker !== 'iroha' ? CHARACTERS[speaker] : null;
+  const bgDef = backgroundOf(bg);
 
   return (
     <div className={styles.screen} onClick={onClick}>
-      <div className={styles.bg} />
-      {bg && <span className={styles.bgLabel}>bg: {bg}</span>}
+      <div className={styles.bg}>
+        {bgDef && (
+          <img
+            key={bgDef.file}
+            className={styles.bgImage}
+            src={backgroundUrl(bgDef)}
+            alt=""
+            // 素材未取得でも遊べるよう、読み込めなければ色面のまま進める
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        )}
+      </div>
+      {import.meta.env.DEV && bg && (
+        <span className={styles.bgLabel}>bg: {bg}{bgDef ? '' : '（素材未登録）'}</span>
+      )}
 
       {onStage && (
         <StageLayer

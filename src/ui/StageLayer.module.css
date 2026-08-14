@@ -2,15 +2,20 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  /* メッセージウィンドウ(z-index:5)より必ず下。テキストの可読性を最優先する。 */
+  z-index: 1;
 }
 
 .slot {
   position: absolute;
   bottom: 0;
-  width: min(34vmin, 21rem);
-  height: 82%;
+  width: min(30vmin, 18rem);
+  height: 78%;
   transform-origin: bottom center;
   transition: transform 0.35s ease-out, filter 0.35s ease-out, opacity 0.35s ease-out;
+  /* 下端をなだらかに消す。メッセージウィンドウに重なる部分の主張を弱める。 */
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, rgba(0, 0, 0, 0.35) 84%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 62%, rgba(0, 0, 0, 0.35) 84%, transparent 100%);
 }
 
 /* 主人公は常に左、会話相手は常に右 */
@@ -26,22 +31,22 @@
 .speaking {
   transform: scale(1);
   filter: none;
-  opacity: 1;
+  opacity: 0.97;
   z-index: 2;
 }
 
 .listening {
   transform: scale(0.86) translateY(3%);
-  filter: brightness(0.5) saturate(0.7);
-  opacity: 0.9;
+  filter: brightness(0.45) saturate(0.65);
+  opacity: 0.72;
   z-index: 1;
 }
 
 /* 地の文のときはどちらも話していない */
 .neutral {
   transform: scale(0.93) translateY(1.5%);
-  filter: brightness(0.72) saturate(0.85);
-  opacity: 0.95;
+  filter: brightness(0.65) saturate(0.8);
+  opacity: 0.8;
   z-index: 1;
 }
 

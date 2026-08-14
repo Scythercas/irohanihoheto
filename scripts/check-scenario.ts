@@ -10,6 +10,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { buildScenes } from '../src/game/scenario/build';
+import { BACKGROUNDS } from '../src/game/backgrounds';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const SCENARIO_DIR = join(ROOT, 'src', 'scenario');
@@ -53,6 +54,17 @@ try {
     }
   }
 
+  // シナリオが使っている背景キーのうち、まだ素材を登録していないものを洗い出す。
+  // エラーにはしない（色面へフォールバックして遊べるため）が、見落とすと画面が寂しくなる。
+  const usedBg = new Set<string>();
+  for (const scene of scenes.values()) {
+    if (scene.bg) usedBg.add(scene.bg);
+    for (const node of scene.body) if (node.kind === 'bg') usedBg.add(node.bg);
+  }
+  const registered = new Set(BACKGROUNDS.map((b) => b.key));
+  const missingBg = [...usedBg].filter((key) => !registered.has(key));
+  const unusedBg = [...registered].filter((key) => !usedBg.has(key));
+
   console.log(`✓ シナリオ検証OK`);
   console.log(`  ファイル数     : ${paths.length}`);
   console.log(`  シーン数       : ${scenes.size}`);
@@ -60,6 +72,15 @@ try {
   console.log(`  チャット発言   : ${chatCount}`);
   console.log(`  選択肢／返信   : ${choiceCount}`);
   console.log(`  総文字数       : ${charCount.toLocaleString('ja-JP')}`);
+  console.log(`  背景キー       : ${usedBg.size}種（素材登録済み ${usedBg.size - missingBg.length}）`);
+
+  if (missingBg.length) {
+    console.log(`\n△ 素材が未登録の背景（色面で代用されます）: ${missingBg.join(', ')}`);
+    console.log('  src/game/backgrounds.ts に追記して npm run fetch:assets を実行してください。');
+  }
+  if (unusedBg.length) {
+    console.log(`\n・登録済みだがシナリオ未使用の背景: ${unusedBg.join(', ')}`);
+  }
 } catch (e) {
   console.error(e instanceof Error ? e.message : e);
   process.exit(1);
