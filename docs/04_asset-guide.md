@@ -293,16 +293,119 @@ cropped, head out of frame, from behind
 同じ seed ＋ 同じプロンプトなら、ほぼ同じ顔が出る。
 表情部分（`slightly annoyed expression`）を下表に置き換え、**他は一字も変えない**。
 
-**② inpaint で顔だけ描き直す（本命・精度が高い）**
+#### ② inpaint で顔だけ描き直す（本命・精度が高い）
 
-`normal` の完成画像を img2img → inpaint に読み込み、**目と口の周りだけをマスク**して、
-表情部分だけ差し替えたプロンプトで再生成する。
+`normal` の完成画像を読み込み、**顔だけをマスクして描き直す**。
+体・服・髪・背景は元画像のまま1ピクセルも動かないので、**同一性が原理的に保証される**。
 
-- Denoising strength **0.4〜0.6**（高すぎると別人になる）
-- **Only masked** を有効にすると、マスク部分を高解像度で描き直せる
-- **髪・輪郭・服はマスクしない**。ここを触ると同一性が崩れる
+##### 仕組み（理解しておくと調整が速い）
 
-この方式なら、**体と服と髪は1枚目のまま完全に固定**され、表情だけが変わる。
+`Inpaint area: Only masked` を選ぶと、内部では次の処理が走る。
+
+```text
+マスク領域＋padding を切り出す
+   ↓
+指定した Width × Height に拡大する
+   ↓
+その解像度で生成する
+   ↓
+元のサイズに縮小して、元画像へ貼り戻す
+```
+
+つまり **Width × Height は「顔をどれだけ細かく描くか」**を意味し、画像全体の解像度ではない。
+顔という狭い領域に解像度を集中投下できるので、全体を描き直すより顔が綺麗になる。
+
+##### 手順
+
+**1. 起点を確定させる**
+
+`normal` を完成させてから始める。**差分から差分を作らないこと**（劣化が累積して別人になる）。
+6種すべて、必ず `normal` を起点にする。
+
+**2. img2img タブ → Inpaint サブタブ を開き、`normal` の画像をドロップする**
+
+> `PNG Info` タブに画像を投げると、生成時のプロンプトと設定を読める。
+> 送信ボタンがあれば img2img へ送ると設定ごと引き継げるので楽。
+
+**3. マスクを塗る**
+
+キャンバス右上のブラシサイズを調整して、白く塗る。
+
+| 塗る | 塗らない |
+|---|---|
+| **眉**（最重要。表情の大半は眉で決まる） | 髪・後ろ髪 |
+| **目**（まつげ・目尻を含む） | 顔の輪郭・あご |
+| **口**（口角の外側まで少し広めに） | 首・肩・服 |
+| 頬（赤面を出す表情のみ） | 背景 |
+
+- **眉を塗り忘れると表情が変わらない。** ここが一番多い失敗
+- 前髪が目にかかっている部分は塗らざるを得ない。`Mask blur` で馴染むので気にしなくてよい
+- 輪郭を塗ると顔の形が変わる＝別人になる。**絶対に塗らない**
+
+**4. プロンプトを差し替える**
+
+表情の行を差し替えるのに加えて、**全身用のタグを削る**。
+`Only masked` ではモデルに顔しか見えていないため、服やポーズのタグが残っていると顔に混ざる。
+
+顔まわりの inpaint 用ポジティブ（例: `smile`）:
+
+```text
+masterpiece, best quality, amazing quality, very aesthetic,
+1girl, solo, face focus, mature female, dark red eyes, crimson hair, swept bangs,
+soft smile, closed mouth, gentle expression, half-closed eyes,
+anime style, clean lineart, cel shading
+```
+
+ネガティブ:
+
+```text
+lowres, worst quality, low quality, bad anatomy, jpeg artifacts, blurry,
+angry, glaring, scowl, furrowed brow, sharp eyes, gloomy, shadow over face,
+pink hair, orange hair, blonde hair, brown hair, black hair,
+realistic, 3d
+```
+
+**5. 設定する**
+
+| 項目 | 値 | 備考 |
+|---|---|---|
+| Resize mode | `Just resize` | |
+| **Mask blur** | **6** | 既定は4。境目を馴染ませる |
+| Mask mode | `Inpaint masked` | 既定のまま |
+| **Masked content** | **`original`** | 既定のまま。**元の絵を下敷きにする＝画風が保たれる** |
+| **Inpaint area** | **`Only masked`** | **既定は `Whole picture` なので必ず変更する** |
+| **Only masked padding** | **64** | 既定は32。顔の周辺を少し広く見せて破綻を防ぐ |
+| Sampling method | `Euler a` | txt2imgと同じでよい |
+| Sampling steps | **20** | |
+| Width × Height | **768 × 768** | 顔の描画解像度。PCが落ちるなら 512 × 512 |
+| CFG Scale | **5** | |
+| **Denoising strength** | **0.5** | **ここが調整の主役**。0.4〜0.6の範囲で動かす |
+| Seed | `-1` | 固定しなくてよい。気に入ったら控える |
+
+**6. Generate して、結果を見て Denoising を調整する**
+
+| 症状 | 対処 |
+|---|---|
+| 表情が変わらない | Denoising を上げる（0.6 → 0.7）。それでも駄目ならマスク範囲、特に**眉**を見直す |
+| 別人になった | Denoising を下げる（0.45 → 0.4）。マスク範囲を狭める |
+| マスクの継ぎ目が見える | `Mask blur` を上げる（8〜12）。`Soft inpainting` を有効にするのも効く |
+| 顔が潰れる・ぼやける | Width × Height を上げる（768 → 896） |
+| 目の左右が揃わない | Denoising を下げる。`Only masked padding` を広げる（64 → 96） |
+
+**7. 保存する**
+
+`work-assets/chara/akane/<表情>.png` に保存する。採用が決まったものだけ
+`public/assets/chara/akane/<表情>.png` へ移す。
+
+##### 背景の透過は「7枚そろえてから最後にまとめて」
+
+1枚ずつ透過すると、抜き具合がばらついて立ち絵が揃わなくなる。
+
+- **7種すべてを白背景のまま作り切る**
+- 最後に rembg 等で**一括処理**する
+- 体・髪・輪郭は7枚とも完全に同一なので、**抜き方も自動的に揃う**
+
+これが inpaint 方式のもう一つの利点。
 
 | 表情ファイル名 | プロンプトの差し替え箇所 |
 |---|---|
