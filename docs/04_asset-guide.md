@@ -87,9 +87,10 @@ ZLUDA を手で組むより格段に楽なので、まずこれを試す。
 1. **Stability Matrix を入れる**
    - 配布元: <https://lykos.ai/> ／ <https://github.com/LykosAI/StabilityMatrix>
    - Windows版は `StabilityMatrix-win-x64.zip` を展開して実行するだけ（インストール不要）
-   - 起動後、**Packages から「Stable Diffusion WebUI Forge」を追加**する
+   - 起動後、Packages から **「Stable Diffusion WebUI reForge」**（または Forge）を追加する
    - **AMD向けのバックエンド（ZLUDA / DirectML）を選ぶ画面が出たら、まず ZLUDA を試す**。
      動かなければ DirectML に切り替える
+   - **本プロジェクトの実環境は reForge**（`C:\StabilityMatrix\Data\Packages\Stable Diffusion WebUI reForge`）
 2. **モデルを入れる**
    - Stability Matrix の Model Browser から Civitai を検索できる
    - アニメ調の **Illustrious XL 系 / Animagine XL 系** で、サンプルの絵柄が好みのものを選ぶ
@@ -110,8 +111,13 @@ ZLUDA を手で組むより格段に楽なので、まずこれを試す。
 
 1. WebUI 左上の **Checkpoint ドロップダウン**からモデルを選ぶ
 2. リストが空なら、隣の **🔄（Refresh）** を押す
-3. 上部の **UI プリセットを `xl`** にする（SDXLモデルを使う場合）
-4. 選んだあと、コンソールに `Model loaded in ...` と出て、`Sys` の使用量が増えれば成功
+3. 選んだあと、コンソールに `Model loaded in ...` と出て、`Sys` の使用量が増えれば成功
+
+> **【注意】Forge と reForge は別物。**
+> 本家 Forge にある **UIプリセット切替（sd / xl / flux）は reForge には無い**
+> （`forge_preset` の実装自体が存在しないことを確認済み）。
+> reForge は A1111 と同じ見た目で、**SDXLかどうかはモデルから自動判定される**ので、
+> チェックポイントを選ぶだけでよい。
 
 > 設定は `Packages\<パッケージ名>\config.json` の `sd_model_checkpoint` に記録される。
 > ここが空なら未選択。**WebUI起動中に手で書き換えても終了時に上書きされる**ので、UI側で選ぶこと。
