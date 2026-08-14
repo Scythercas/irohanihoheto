@@ -17,22 +17,21 @@ import { createWriteStream, existsSync, mkdirSync, statSync } from 'node:fs';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { join, resolve } from 'node:path';
-import { BACKGROUNDS, type BackgroundDef } from '../src/game/backgrounds';
+import { BACKGROUNDS, sourceUrl, type BackgroundDef } from '../src/game/backgrounds';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const OUT_DIR = join(ROOT, 'public', 'assets', 'bg');
-const ORIGIN = 'https://min-chi.material.jp/mc/materials/background-c';
 
-/** みんちりえの実ファイルURL。`<slug>/<slug>_<variant>.jpg` の規則。 */
-function sourceUrl(def: BackgroundDef): string {
-  return `${ORIGIN}/${def.slug}/${def.slug}_${def.variant}.jpg`;
-}
+const SITE_LABEL = {
+  minchirie: 'みんちりえ',
+  'game-materials': 'ゲームまてりあるず',
+} as const;
 
 async function download(def: BackgroundDef): Promise<'downloaded' | 'skipped' | 'failed'> {
   const dest = join(OUT_DIR, def.file);
   if (existsSync(dest) && statSync(dest).size > 0) return 'skipped';
 
-  const url = sourceUrl(def);
+  const url = sourceUrl(def.source);
   const response = await fetch(url);
   if (!response.ok || !response.body) {
     console.error(`  ✗ ${def.file}  (HTTP ${response.status})  ${url}`);
@@ -41,13 +40,14 @@ async function download(def: BackgroundDef): Promise<'downloaded' | 'skipped' | 
 
   await pipeline(Readable.fromWeb(response.body as Parameters<typeof Readable.fromWeb>[0]), createWriteStream(dest));
   const kb = Math.round(statSync(dest).size / 1024);
-  console.log(`  ✓ ${def.file}  ${kb}KB  ← ${def.slug}_${def.variant}.jpg`);
+  console.log(`  ✓ ${def.file}  ${kb}KB  ← ${SITE_LABEL[def.source.site]}`);
   return 'downloaded';
 }
 
 mkdirSync(OUT_DIR, { recursive: true });
 
-console.log('背景素材を取得します（出典: みんちりえ https://min-chi.material.jp/ ）');
+console.log('背景素材を取得します');
+console.log('  出典: みんちりえ https://min-chi.material.jp/ ／ ゲームまてりあるず https://game-materials.com/');
 
 let downloaded = 0;
 let skipped = 0;

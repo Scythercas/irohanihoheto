@@ -161,11 +161,24 @@ export function matchesCase(cursor: Cursor, c: BranchCase): boolean {
   return true;
 }
 
+/**
+ * 背景を切り替える。
+ *
+ * **場所が変わったら、立っていた相手は退場させる。**
+ * これを忘れると「居酒屋で別れたはずの茜が、自室の背景の前に立ち続ける」
+ * といった事故になる。同じ背景を指定し直した場合は続きの場面なので退場させない。
+ */
+export function setBackground(cursor: Cursor, bg: string): void {
+  if (cursor.bg === bg) return;
+  cursor.bg = bg;
+  cursor.partner = null;
+}
+
 /** シーンに入る。先頭の bg / bgm を適用し、カーソルを本文の手前に置く。 */
 export function enterScene(cursor: Cursor, scene: Scene): void {
   cursor.sceneId = scene.id;
   cursor.index = -1;
-  if (scene.bg) cursor.bg = scene.bg;
+  if (scene.bg) setBackground(cursor, scene.bg);
   if (scene.bgm) cursor.bgm = scene.bgm;
 
   if (scene.screen === 'chat') {
@@ -226,7 +239,10 @@ export function step(cursor: Cursor, lookup: SceneLookup): DisplayNode | null {
 
     switch (node.kind) {
       case 'bg':
-        cursor.bg = node.bg;
+        setBackground(cursor, node.bg);
+        break;
+      case 'stage':
+        cursor.partner = node.partner;
         break;
       case 'bgm':
         cursor.bgm = node.bgm;

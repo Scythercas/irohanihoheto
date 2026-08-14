@@ -134,6 +134,18 @@ export interface ScheduleNode {
   kind: 'schedule';
 }
 
+/**
+ * 画面右に立たせる相手を明示的に指定する。null で退場。
+ *
+ * 通常はセリフから自動で決まり、背景が変われば自動で退場するので、
+ * これを書くのは「しゃべる前から立たせておきたい」「その場に残したい」
+ * といった例外的なときだけでよい。
+ */
+export interface StageNode {
+  kind: 'stage';
+  partner: CharacterId | null;
+}
+
 export type ScenarioNode =
   | SayNode
   | ChoiceNode
@@ -147,7 +159,8 @@ export type ScenarioNode =
   | ChatNode
   | ReplyNode
   | CaratNode
-  | ScheduleNode;
+  | ScheduleNode
+  | StageNode;
 
 /** 画面モード。シーン単位で切り替える。 */
 export type ScreenKind = 'adv' | 'chat';

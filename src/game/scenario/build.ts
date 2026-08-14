@@ -168,6 +168,20 @@ function parseNode(raw: unknown, file: string, sceneId: string, index: number): 
     return { kind: 'schedule' };
   }
 
+  // --- 立ち絵の明示指定 -----------------------------------------------------
+  if (raw.stage !== undefined) {
+    if (raw.stage === null || raw.stage === 'none') return { kind: 'stage', partner: null };
+    if (typeof raw.stage !== 'string' || !VALID_CHARACTER_IDS.has(raw.stage)) {
+      throw new ScenarioError(
+        file,
+        sceneId,
+        index,
+        `stage は none（退場）かキャラクターIDで書いてください（指定: ${String(raw.stage)}）`,
+      );
+    }
+    return { kind: 'stage', partner: raw.stage as CharacterId };
+  }
+
   // --- 演出 -----------------------------------------------------------------
   if (raw.bg !== undefined) {
     if (typeof raw.bg !== 'string') throw new ScenarioError(file, sceneId, index, 'bg は文字列で書いてください');

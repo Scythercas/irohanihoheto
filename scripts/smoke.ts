@@ -121,6 +121,47 @@ try {
     if (!visited.has(root)) playFrom(root, [`(条件分岐) ${root}`]);
   }
 
+  // --- 立ち絵の退場検証 -----------------------------------------------------
+  // 「居酒屋で別れたはずの茜が、自室の背景の前に立ち続ける」類の事故を検出する。
+  // 背景が変わった時点で、前の場所にいた相手は退場していなければならない。
+  const stageFailures: string[] = [];
+  {
+    const cursor = newCursor(OPENING_SCENE_ID);
+    enterScene(cursor, lookup(OPENING_SCENE_ID));
+    let bgAtEntry = cursor.bg;
+
+    for (let i = 0; i < 500; i++) {
+      const before = cursor.bg;
+      const node = step(cursor, lookup);
+      if (node === null || node.kind === 'schedule') break;
+
+      if (cursor.bg !== before) bgAtEntry = cursor.bg;
+
+      // 選択肢は最初の候補を選んで先へ進む
+      if (node.kind === 'choice' || node.kind === 'reply') {
+        const option = node.options[0];
+        if (!option) break;
+        if (option.params) applyDelta(cursor.params, option.params);
+        if (option.goto) enterScene(cursor, lookup(option.goto));
+        continue;
+      }
+
+      // チャット画面は立ち絵を出さないので対象外
+      const scene = lookup(cursor.sceneId);
+      if (node.kind === 'say' && cursor.partner && scene.screen !== 'chat') {
+        // その相手が、今の場所でまだ一度もしゃべっていないなら怪しい
+        const speaksHere = scene.body.some((n) => n.kind === 'say' && n.who === cursor.partner);
+        if (!speaksHere && cursor.bg === bgAtEntry) {
+          stageFailures.push(
+            `  ✗ ${cursor.sceneId}（bg: ${cursor.bg}）に ${cursor.partner} が立ったままです`,
+          );
+          break;
+        }
+      }
+    }
+  }
+  if (stageFailures.length === 0) console.log('  ✓ 立ち絵の退場: 場所替わりで相手が残っていない');
+
   // --- 茜のデレ段階のゲート検証 ---------------------------------------------
   // 「2人目と知り合い、かつ魅力レベルが一定に達するまで茜は揺れない」を実際に評価して確かめる。
   const gateChecks: { label: string; flags: Record<string, boolean>; total: number; expect: string }[] = [
@@ -156,6 +197,12 @@ try {
     const summary = PARAM_ORDER.map((k) => `${PARAM_LABEL[k]}:${ending.params[k]}`).join(' ');
     console.log(`  ${i + 1}. ${summary}  → ${ending.stop}`);
     if (ending.path.length) console.log(`     ${ending.path.join(' / ')}`);
+  }
+
+  if (stageFailures.length) {
+    console.error('\n✗ 立ち絵が退場していないシーンがあります');
+    for (const line of stageFailures) console.error(line);
+    process.exit(1);
   }
 
   if (gateFailures.length) {
