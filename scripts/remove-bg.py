@@ -10,9 +10,14 @@
 処理の流れ:
   1. 画像の外周から、白い領域だけを繋がりでたどって背景と判定する
      → 白いシャツは背景と繋がっていないので残る（ここが単純な色抜きとの違い）
-  2. 背景を透明にする
-  3. 輪郭の1〜2pxは半透明にして、ギザギザを防ぐ
-  4. 白が滲んだ縁の色を戻す（白フチの除去）
+  2. 「囲まれた白領域」（腕と体の隙間、髪と首の隙間など）を拾い直す
+     → ここは外周と繋がっていないので 1. では消えない
+     → **純白率**（ほぼ真っ白な画素の割合）で背景かどうかを判定する
+        背景の隙間は生成時の平坦な白なので純白率が非常に高い（90%以上）
+        Yシャツ・目のハイライトは陰影や線画があるため純白率が低い（数%〜数十%）
+  3. 背景を透明にする
+  4. 輪郭の1〜2pxは半透明にして、ギザギザを防ぐ
+  5. 白が滲んだ縁の色を戻す（白フチの除去）
 
 reForge の venv の Python で実行する（PIL / numpy が入っているため）:
   C:\\StabilityMatrix\\Data\\Packages\\Stable Diffusion WebUI reForge\\venv\\Scripts\\python.exe
@@ -33,6 +38,26 @@ SOLID_BG = 250
 EDGE_LOW = 225
 # 半透明にする縁の幅（px）
 FEATHER = 2
+
+# --- 囲まれた白領域（腕と体の隙間など）の判定 ---------------------------------
+#
+# 【重要】囲まれた領域を切り出すしきい値は SOLID_BG より**低く**すること。
+# 250 にすると Yシャツ内部の明るい部分だけが細かく分断され（実測で86個の断片）、
+# その断片が「ほぼ純白」と判定されてシャツに穴が空く。
+# 245 まで下げるとシャツが陰影ごと1つの塊になり、純白率が下がって正しく残る。
+HOLE_CANDIDATE = 245
+# この明るさ以上を「ほぼ真っ白」とみなす
+PURE_WHITE = 253
+# 領域内の「ほぼ真っ白」の割合がこれ以上なら背景の隙間と判定する。
+#
+# 実測（茜 / normal.png、HOLE_CANDIDATE=245 のとき）:
+#   背景の隙間        … 90.1% / 92.2% / 97.3% / 97.4%   ← 生成時の平坦な白
+#   Yシャツ・目の白   …  1.5% /  2.7% /  5.6% / 12.1%   ← 陰影と線画があるため低い
+# 間が大きく空いているので誤判定しにくい。迷ったら残す側に倒すこと
+# （小さな白い点が残るより、シャツや目に穴が空くほうが致命的なため）。
+HOLE_PURITY = 0.80
+# これより小さい領域は判定せず残す（線画のすき間などのノイズ対策）
+MIN_HOLE_AREA = 80
 
 
 def background_mask(rgb: np.ndarray) -> np.ndarray:
@@ -69,6 +94,50 @@ def background_mask(rgb: np.ndarray) -> np.ndarray:
     return visited
 
 
+def enclosed_background(rgb: np.ndarray, outer_bg: np.ndarray) -> tuple[np.ndarray, list[tuple[int, float]]]:
+    """外周と繋がっていない白領域のうち、背景の隙間だけを True にする。
+
+    腕と体の間、髪と首の間などは画像の縁と繋がっていないため、
+    外周からの塗りつぶしでは消えない。ここを純白率で拾い直す。
+    """
+    height, width = rgb.shape[:2]
+    candidate = (rgb.min(axis=2) >= HOLE_CANDIDATE) & ~outer_bg
+
+    pure = rgb.min(axis=2) >= PURE_WHITE
+    mask = np.zeros((height, width), dtype=bool)
+    seen = np.zeros((height, width), dtype=bool)
+    report: list[tuple[int, float]] = []
+
+    for y0 in range(height):
+        for x0 in range(width):
+            if not candidate[y0, x0] or seen[y0, x0]:
+                continue
+
+            queue = deque([(y0, x0)])
+            seen[y0, x0] = True
+            pixels: list[tuple[int, int]] = []
+            while queue:
+                y, x = queue.popleft()
+                pixels.append((y, x))
+                for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    ny, nx = y + dy, x + dx
+                    if 0 <= ny < height and 0 <= nx < width and candidate[ny, nx] and not seen[ny, nx]:
+                        seen[ny, nx] = True
+                        queue.append((ny, nx))
+
+            if len(pixels) < MIN_HOLE_AREA:
+                continue
+
+            ys = np.fromiter((p[0] for p in pixels), dtype=int, count=len(pixels))
+            xs = np.fromiter((p[1] for p in pixels), dtype=int, count=len(pixels))
+            purity = float(pure[ys, xs].mean())
+            if purity >= HOLE_PURITY:
+                mask[ys, xs] = True
+                report.append((len(pixels), purity))
+
+    return mask, sorted(report, reverse=True)
+
+
 def dilate(mask: np.ndarray, radius: int) -> np.ndarray:
     """マスクを radius ピクセルだけ膨らませる。"""
     out = mask.copy()
@@ -87,7 +156,9 @@ def process(path: Path) -> str:
     data = np.array(image).astype(np.float64)
     rgb = data[:, :, :3]
 
-    bg = background_mask(rgb.astype(np.uint8))
+    outer = background_mask(rgb.astype(np.uint8))
+    holes, hole_report = enclosed_background(rgb.astype(np.uint8), outer)
+    bg = outer | holes
 
     alpha = np.full(rgb.shape[:2], 255.0)
     alpha[bg] = 0.0
@@ -110,7 +181,9 @@ def process(path: Path) -> str:
 
     transparent = float((alpha == 0).mean() * 100)
     semi = int(((alpha > 0) & (alpha < 255)).sum())
-    return f"透明 {transparent:5.1f}%  半透明の縁 {semi:6d}px"
+    gap_px = int(holes.sum())
+    gaps = f"隙間 {len(hole_report)}箇所/{gap_px:5d}px" if hole_report else "隙間 なし"
+    return f"透明 {transparent:5.1f}%  縁 {semi:5d}px  {gaps}"
 
 
 def main() -> int:
