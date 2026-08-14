@@ -18,7 +18,12 @@
 | 選択肢 | ✅ | `src/ui/ChoiceList.tsx` |
 | **LINE風チャットUI**（吹き出し・時刻・返信選択） | ✅ | `src/ui/ChatScreen.tsx` |
 | **カラットのカード**（マッチング演出・プロフィール閲覧） | ✅ | `src/ui/CaratCard.tsx` |
-| **週スケジュール画面**（12週・行動枠・色の帯） | ✅ | `src/ui/ScheduleScreen.tsx` |
+| **週スケジュール画面**（12週・行動枠） | ✅ | `src/ui/ScheduleScreen.tsx` |
+| **5角形のパラメータ表示＋変動通知** | ✅ | `src/ui/ParamPentagon.tsx` |
+| **立ち絵の配置**（主人公=左固定／相手=右、話し手を大きく） | ✅ | `src/ui/StageLayer.tsx` |
+| **茜の立ち絵（SVG製・表情7種）** | ✅ 仮素材 | `src/ui/sprites/AkaneSprite.tsx` |
+| **条件分岐（branch）** | ✅ | `engine.ts` の `matchesCase` |
+| **茜のデレ段階のゲート**（2人目＋魅力60） | ✅ | `carat.yaml` の `akane_talk_01` |
 | 5色パラメータの管理・変動 | ✅ | `src/game/engine.ts` |
 | ヒロイン好感度 | ✅ | `src/game/engine.ts` |
 | フラグ管理 | ✅ | `src/game/engine.ts` |
@@ -92,6 +97,30 @@
 | `params: { confidence: 3 }` | 選択肢を経ずにパラメータを動かす |
 | `flag: met_aoi` ＋ `value: true` | フラグ操作 |
 | `goto: other_scene` | 別シーンへ飛ぶ |
+| `branch: [...]` | **条件分岐**（下記） |
+
+### branch（条件分岐）
+
+上から順に評価し、**最初に条件を満たしたものへ飛ぶ**。
+**最後の項目は必ず「条件なし＝それ以外」にすること**（どれも満たさないと走査が止まるため、検証で弾かれる）。
+
+```yaml
+- branch:
+    - goto: akane_dere_01
+      ifMetCount: 2        # 出会ったヒロインが2人以上（met_* フラグの数）
+      ifTotalParam: 60     # 総合魅力レベル（5色の合計）が60以上
+    - goto: akane_talk_plain   # それ以外
+```
+
+指定できる条件: `ifFlag` / `ifMetCount` / `ifTotalParam` / `ifParam: { confidence: 30 }`
+
+### 立ち絵と表情
+
+- **主人公は常に左、会話相手は常に右**。話し手が大きく手前に、聞き手は小さく暗くなる
+- 主人公はA5①により顔を描かない。**無彩色のシルエット**で置いている
+- `face:` を省略したセリフは**直前の表情を引き継ぐ**
+- 茜の表情キー: `normal` / `bored` / `smug` / `laugh` / `fluster` / `away` / `smile`
+- 立ち絵の差し替えは `src/ui/sprites/index.tsx` の `REGISTRY` に登録するだけでよい
 
 ### choice / reply の各項目
 

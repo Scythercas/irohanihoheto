@@ -11,7 +11,15 @@
 
 import yaml from 'js-yaml';
 import { CHARACTERS } from '../constants';
-import type { CharacterId, ChoiceOption, HeroineId, ParamDelta, Scene, ScenarioNode } from '../types';
+import type {
+  BranchCase,
+  CharacterId,
+  ChoiceOption,
+  HeroineId,
+  ParamDelta,
+  Scene,
+  ScenarioNode,
+} from '../types';
 import { AKANE_SCENES, DATE_SCENES, FILLER_SCENE, FINALE_SCENE } from '../schedule';
 
 class ScenarioError extends Error {
@@ -189,6 +197,52 @@ function parseNode(raw: unknown, file: string, sceneId: string, index: number): 
     return { kind: 'goto', goto: raw.goto };
   }
 
+  // --- 条件分岐 -------------------------------------------------------------
+  if (raw.branch !== undefined) {
+    if (!Array.isArray(raw.branch) || raw.branch.length === 0) {
+      throw new ScenarioError(file, sceneId, index, 'branch は1つ以上の項目を持つ配列で書いてください');
+    }
+    const cases: BranchCase[] = raw.branch.map((rawCase) => {
+      if (!isRecord(rawCase) || typeof rawCase.goto !== 'string') {
+        throw new ScenarioError(file, sceneId, index, 'branch の各項目には goto（文字列）が必要です');
+      }
+      const c: BranchCase = { goto: rawCase.goto };
+      if (rawCase.ifFlag !== undefined) {
+        if (typeof rawCase.ifFlag !== 'string') {
+          throw new ScenarioError(file, sceneId, index, 'ifFlag は文字列で書いてください');
+        }
+        c.ifFlag = rawCase.ifFlag;
+      }
+      if (rawCase.ifMetCount !== undefined) {
+        if (typeof rawCase.ifMetCount !== 'number') {
+          throw new ScenarioError(file, sceneId, index, 'ifMetCount は数値で書いてください');
+        }
+        c.ifMetCount = rawCase.ifMetCount;
+      }
+      if (rawCase.ifTotalParam !== undefined) {
+        if (typeof rawCase.ifTotalParam !== 'number') {
+          throw new ScenarioError(file, sceneId, index, 'ifTotalParam は数値で書いてください');
+        }
+        c.ifTotalParam = rawCase.ifTotalParam;
+      }
+      if (rawCase.ifParam !== undefined) {
+        c.ifParam = parseParamDelta(rawCase.ifParam, file, sceneId, index);
+      }
+      return c;
+    });
+
+    const last = cases[cases.length - 1];
+    if (last && (last.ifFlag || last.ifMetCount !== undefined || last.ifTotalParam !== undefined || last.ifParam)) {
+      throw new ScenarioError(
+        file,
+        sceneId,
+        index,
+        'branch の最後の項目は「条件なし（それ以外）」にしてください。どの条件も満たさないと走査が止まります',
+      );
+    }
+    return { kind: 'branch', cases };
+  }
+
   throw new ScenarioError(
     file,
     sceneId,
@@ -258,6 +312,9 @@ export function buildScenes(files: Record<string, string>): Map<string, Scene> {
     if (scene.next) targets.push(scene.next);
     for (const node of scene.body) {
       if (node.kind === 'goto') targets.push(node.goto);
+      if (node.kind === 'branch') {
+        for (const c of node.cases) targets.push(c.goto);
+      }
       if (node.kind === 'choice' || node.kind === 'reply') {
         for (const o of node.options) if (o.goto) targets.push(o.goto);
       }

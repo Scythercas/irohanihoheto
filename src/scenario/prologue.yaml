@@ -89,18 +89,18 @@
     - who: iroha
       text: "「他に言えるやつが、いないから」"
 
-    - text: "茜が、少しだけ目を見開いた。"
-
     - who: akane
-      face: fluster
-      text: "「……そういうの、さらっと言うのやめてくんない？」"
+      face: bored
+      text: "「……重いんだよ、二十四にもなって」"
+
+    - text: "茜は表情ひとつ変えずに、枝豆を口に放り込んだ。"
 
     - who: akane
       face: bored
-      text: "「重いんだよ、二十四にもなって」"
+      text: "「まあ、聞くだけ聞いてやる。奢りだし」"
 
-    - text: "（怒られた）"
-    - text: "（でも、耳が赤い）"
+    - text: "（……そういうやつだ、こいつは）"
+    - text: "（二十四年、一度も特別扱いされたことがない）"
 
 - id: prologue_02b_dodge
   next: prologue_03

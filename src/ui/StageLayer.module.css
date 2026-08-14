@@ -1,0 +1,52 @@
+.stage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.slot {
+  position: absolute;
+  bottom: 0;
+  width: min(34vmin, 21rem);
+  height: 82%;
+  transform-origin: bottom center;
+  transition: transform 0.35s ease-out, filter 0.35s ease-out, opacity 0.35s ease-out;
+}
+
+/* 主人公は常に左、会話相手は常に右 */
+.left {
+  left: 4%;
+}
+
+.right {
+  right: 4%;
+}
+
+/* 話し手は手前に大きく、聞き手は奥に小さく暗く */
+.speaking {
+  transform: scale(1);
+  filter: none;
+  opacity: 1;
+  z-index: 2;
+}
+
+.listening {
+  transform: scale(0.86) translateY(3%);
+  filter: brightness(0.5) saturate(0.7);
+  opacity: 0.9;
+  z-index: 1;
+}
+
+/* 地の文のときはどちらも話していない */
+.neutral {
+  transform: scale(0.93) translateY(1.5%);
+  filter: brightness(0.72) saturate(0.85);
+  opacity: 0.95;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot {
+    transition: none;
+  }
+}

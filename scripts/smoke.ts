@@ -110,6 +110,40 @@ try {
   ];
   for (const root of scheduleRoots) playFrom(root, [`(スケジュール経由) ${root}`]);
 
+  // branch の行き先は条件次第で通らないため、それぞれ単独でも再生して壊れを検出する
+  const branchRoots = new Set<string>();
+  for (const scene of scenes.values()) {
+    for (const node of scene.body) {
+      if (node.kind === 'branch') for (const c of node.cases) branchRoots.add(c.goto);
+    }
+  }
+  for (const root of branchRoots) {
+    if (!visited.has(root)) playFrom(root, [`(条件分岐) ${root}`]);
+  }
+
+  // --- 茜のデレ段階のゲート検証 ---------------------------------------------
+  // 「2人目と知り合い、かつ魅力レベルが一定に達するまで茜は揺れない」を実際に評価して確かめる。
+  const gateChecks: { label: string; flags: Record<string, boolean>; total: number; expect: string }[] = [
+    { label: '1人目のみ・魅力最大', flags: { met_momoka: true }, total: 999, expect: 'akane_talk_plain' },
+    { label: '2人目まで・魅力不足', flags: { met_momoka: true, met_aoi: true }, total: 20, expect: 'akane_talk_plain' },
+    { label: '2人目まで・魅力到達', flags: { met_momoka: true, met_aoi: true }, total: 60, expect: 'akane_dere_01' },
+  ];
+
+  const gateFailures: string[] = [];
+  for (const check of gateChecks) {
+    const cursor = newCursor('akane_talk_01');
+    cursor.flags = { ...check.flags };
+    // 総合値を1色に寄せて与える（条件は合計値で判定される）
+    cursor.params.sincerity = check.total;
+    enterScene(cursor, lookup('akane_talk_01'));
+    step(cursor, lookup);
+    if (cursor.sceneId !== check.expect) {
+      gateFailures.push(`  ✗ ${check.label} → ${cursor.sceneId}（期待: ${check.expect}）`);
+    } else {
+      console.log(`  ✓ 茜ゲート: ${check.label} → ${cursor.sceneId}`);
+    }
+  }
+
   const unreachable = [...scenes.keys()].filter((id) => !visited.has(id));
 
   console.log('✓ 全分岐の走破OK');
@@ -122,6 +156,12 @@ try {
     const summary = PARAM_ORDER.map((k) => `${PARAM_LABEL[k]}:${ending.params[k]}`).join(' ');
     console.log(`  ${i + 1}. ${summary}  → ${ending.stop}`);
     if (ending.path.length) console.log(`     ${ending.path.join(' / ')}`);
+  }
+
+  if (gateFailures.length) {
+    console.error('\n✗ 茜のデレ段階のゲートが想定どおりに働いていません');
+    for (const line of gateFailures) console.error(line);
+    process.exit(1);
   }
 
   if (unreachable.length) {

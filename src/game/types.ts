@@ -77,6 +77,29 @@ export interface GotoNode {
   goto: string;
 }
 
+/**
+ * 条件分岐。上から順に評価し、最初に条件を満たしたものへ飛ぶ。
+ * 条件を書かない case は「それ以外」を意味するので、最後に置くこと。
+ *
+ * 茜のデレ段階（H5）や、終幕のエンディング判定に使う。
+ */
+export interface BranchCase {
+  goto: string;
+  /** このフラグが立っていること */
+  ifFlag?: string;
+  /** 出会ったヒロインが何人以上か（met_* フラグの数で数える） */
+  ifMetCount?: number;
+  /** 総合魅力レベル（5色の合計）の下限 */
+  ifTotalParam?: number;
+  /** 個別パラメータの下限 */
+  ifParam?: Partial<Record<ParamKey, number>>;
+}
+
+export interface BranchNode {
+  kind: 'branch';
+  cases: BranchCase[];
+}
+
 // --- チャット（LINE風メッセージ画面。C6①: ゲームの中心） --------------------
 
 /** チャットの1メッセージ。from が 'iroha' なら自分の吹き出し（右側）。 */
@@ -120,6 +143,7 @@ export type ScenarioNode =
   | ParamNode
   | FlagNode
   | GotoNode
+  | BranchNode
   | ChatNode
   | ReplyNode
   | CaratNode
@@ -159,7 +183,7 @@ export interface ChatEntry {
  * 構造を変えたら必ずインクリメントし、save.ts のマイグレーションを足すこと。
  * （03_tech-stack.md §8.4 のリスク対策）
  */
-export const SAVE_SCHEMA_VERSION = 2;
+export const SAVE_SCHEMA_VERSION = 3;
 
 export interface GameSnapshot {
   schemaVersion: number;
@@ -179,6 +203,8 @@ export interface GameSnapshot {
   bgm: string | null;
   chatWith: CharacterId | null;
   chatLog: ChatEntry[];
+  partner: CharacterId | null;
+  faces: Record<string, string>;
   /** 保存時刻（ISO文字列） */
   savedAt: string;
   /** セーブ一覧に出す短い説明 */

@@ -1,6 +1,7 @@
-import { CHARACTERS, PARAM_LABEL, PARAM_MAX, PARAM_ORDER, PARAM_TO_HEROINE } from '../game/constants';
+import { CHARACTERS } from '../game/constants';
 import { FINAL_WEEK, SCHEDULE_ACTIONS, SLOTS_PER_WEEK, isHeroineId } from '../game/schedule';
 import { useGame } from '../game/store';
+import ParamPentagon from './ParamPentagon';
 import styles from './ScheduleScreen.module.css';
 
 /**
@@ -35,21 +36,7 @@ export default function ScheduleScreen() {
       </div>
 
       <div className={styles.palette}>
-        {PARAM_ORDER.map((key) => {
-          const color = CHARACTERS[PARAM_TO_HEROINE[key]].color;
-          const ratio = Math.min(1, params[key] / PARAM_MAX);
-          return (
-            <div key={key} className={styles.paletteRow}>
-              <span className={styles.paletteName}>{PARAM_LABEL[key]}</span>
-              <span className={styles.paletteTrack}>
-                <span
-                  className={styles.paletteFill}
-                  style={{ width: `${ratio * 100}%`, background: color }}
-                />
-              </span>
-            </div>
-          );
-        })}
+        <ParamPentagon params={params} showNumbers={import.meta.env.DEV} />
       </div>
 
       <div className={styles.actions}>

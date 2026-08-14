@@ -9,6 +9,7 @@
 import { PARAM_ORDER } from './constants';
 import { SLOTS_PER_WEEK } from './schedule';
 import type {
+  BranchCase,
   CaratNode,
   ChatEntry,
   ChatNode,
@@ -60,6 +61,10 @@ export interface Cursor {
   /** チャット相手。変わると履歴をリセットする（＝別スレッドを開いた扱い） */
   chatWith: CharacterId | null;
   chatLog: ChatEntry[];
+  /** 画面右に立たせている会話相手。主人公は常に左なので、右の1枠だけ管理すればよい。 */
+  partner: CharacterId | null;
+  /** キャラごとの現在の表情。face を省略したセリフは直前の表情を引き継ぐ。 */
+  faces: Record<string, string>;
   /** 直近に通過した効果音。UI側が拾って鳴らす。 */
   pendingSe: string | null;
 }
@@ -78,6 +83,8 @@ export function newCursor(sceneId: string): Cursor {
     bgm: null,
     chatWith: null,
     chatLog: [],
+    partner: null,
+    faces: {},
     pendingSe: null,
   };
 }
@@ -90,6 +97,7 @@ export function cloneCursor(c: Cursor): Cursor {
     progress: { ...c.progress },
     flags: { ...c.flags },
     chatLog: [...c.chatLog],
+    faces: { ...c.faces },
   };
 }
 
@@ -130,6 +138,29 @@ export function pushChat(cursor: Cursor, from: CharacterId, text: string, at?: s
   cursor.chatLog = [...cursor.chatLog, { from, text, at: stampFor(cursor, at) }];
 }
 
+/** 総合魅力レベル（5色の合計） */
+export function totalParam(params: Record<ParamKey, number>): number {
+  return PARAM_ORDER.reduce((sum, key) => sum + params[key], 0);
+}
+
+/** 出会ったヒロインの人数。met_* フラグの数で数える。 */
+export function metCount(flags: Record<string, boolean>): number {
+  return Object.entries(flags).filter(([key, on]) => on && key.startsWith('met_')).length;
+}
+
+/** branch の1ケースが成立するか */
+export function matchesCase(cursor: Cursor, c: BranchCase): boolean {
+  if (c.ifFlag && !cursor.flags[c.ifFlag]) return false;
+  if (c.ifMetCount !== undefined && metCount(cursor.flags) < c.ifMetCount) return false;
+  if (c.ifTotalParam !== undefined && totalParam(cursor.params) < c.ifTotalParam) return false;
+  if (c.ifParam) {
+    for (const [key, min] of Object.entries(c.ifParam)) {
+      if (typeof min === 'number' && cursor.params[key as ParamKey] < min) return false;
+    }
+  }
+  return true;
+}
+
 /** シーンに入る。先頭の bg / bgm を適用し、カーソルを本文の手前に置く。 */
 export function enterScene(cursor: Cursor, scene: Scene): void {
   cursor.sceneId = scene.id;
@@ -145,6 +176,9 @@ export function enterScene(cursor: Cursor, scene: Scene): void {
       cursor.chatLog = [];
     }
   }
+
+  // with を書いたシーンでは、立ち絵の相手も明示的に指定されたものとして扱う
+  if (scene.with && scene.with !== 'iroha') cursor.partner = scene.with;
 }
 
 /** 行動枠を1つ消費する。使い切ったら翌週へ。 */
@@ -181,6 +215,12 @@ export function step(cursor: Cursor, lookup: SceneLookup): DisplayNode | null {
     if (isDisplayNode(node)) {
       // チャットは「送信された」時点で履歴に積む
       if (node.kind === 'chat') pushChat(cursor, node.from, node.text, node.at);
+
+      // 立ち絵の状態はセリフから拾う。主人公は左固定なので右枠だけ更新する。
+      if (node.kind === 'say' && node.who && node.who !== 'iroha') {
+        cursor.partner = node.who;
+        if (node.face) cursor.faces = { ...cursor.faces, [node.who]: node.face };
+      }
       return node;
     }
 
@@ -203,6 +243,17 @@ export function step(cursor: Cursor, lookup: SceneLookup): DisplayNode | null {
       case 'goto':
         enterScene(cursor, lookup(node.goto));
         break;
+      case 'branch': {
+        const chosen = node.cases.find((c) => matchesCase(cursor, c));
+        if (!chosen) {
+          throw new Error(
+            `シーン "${cursor.sceneId}" の branch で、条件を満たす行き先がありませんでした。` +
+              '条件なしの case を最後に置いてください。',
+          );
+        }
+        enterScene(cursor, lookup(chosen.goto));
+        break;
+      }
     }
   }
   throw new Error('シナリオの走査が終了しませんでした。goto が循環している可能性があります。');

@@ -1,0 +1,96 @@
+.wrap {
+  position: relative;
+  width: 100%;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.axisLabel {
+  font-size: 7.2px;
+  letter-spacing: 0.08em;
+  fill: rgba(200, 200, 210, 0.72);
+}
+
+/* 変動したパラメータの軸を光らせる */
+.axisChanged {
+  fill: #fff;
+  animation: flash 1.6s ease-out;
+}
+
+.blob {
+  transition: d 0.55s ease-out;
+}
+
+/* --- 変動の通知 --- */
+.toasts {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 0.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(10, 10, 14, 0.92);
+  border: 1px solid;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  animation: riseFade 2.4s ease-out forwards;
+}
+
+.toastDot {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+}
+
+@keyframes riseFade {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  14% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  76% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes flash {
+  0%,
+  100% {
+    fill: rgba(200, 200, 210, 0.72);
+  }
+  20% {
+    fill: #fff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+  .axisChanged {
+    animation: none;
+  }
+}

@@ -47,39 +47,10 @@
   color: var(--ink-dim);
 }
 
-/* 主人公が得た色。数値は見せず、帯の伸びだけで示す（C3②） */
+/* 主人公が得た色。数値は見せず、5角形の形だけで示す（C3②） */
 .palette {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  width: min(24rem, 84%);
-}
-
-.paletteRow {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.paletteName {
-  width: 4.4rem;
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  color: var(--ink-dim);
-}
-
-.paletteTrack {
-  flex: 1;
-  height: 0.32rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-}
-
-.paletteFill {
-  height: 100%;
-  border-radius: 999px;
-  transition: width 0.5s ease-out;
+  width: min(15rem, 56vmin);
+  margin-bottom: 0.6rem;
 }
 
 .actions {

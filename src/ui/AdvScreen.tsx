@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { CHARACTERS, PARAM_LABEL, PARAM_ORDER, PARAM_TO_HEROINE } from '../game/constants';
+import { CHARACTERS } from '../game/constants';
 import { AUTO_SLOT, save } from '../game/save';
 import { useGame } from '../game/store';
 import CaratCard from './CaratCard';
 import ChoiceList from './ChoiceList';
 import MessageWindow from './MessageWindow';
+import ParamPentagon from './ParamPentagon';
 import ScheduleScreen from './ScheduleScreen';
+import StageLayer from './StageLayer';
 import styles from './AdvScreen.module.css';
 
 /** 1文字あたりの表示間隔(ms)。あとでコンフィグ画面から変えられるようにする。 */
@@ -15,6 +17,8 @@ export default function AdvScreen() {
   const node = useGame((s) => s.node);
   const bg = useGame((s) => s.bg);
   const params = useGame((s) => s.params);
+  const partner = useGame((s) => s.partner);
+  const faces = useGame((s) => s.faces);
   const week = useGame((s) => s.week);
   const advance = useGame((s) => s.advance);
   const choose = useGame((s) => s.choose);
@@ -23,12 +27,13 @@ export default function AdvScreen() {
   const mode = useGame((s) => s.mode);
 
   const [revealed, setRevealed] = useState(0);
-  const [showDebug, setShowDebug] = useState(import.meta.env.DEV);
+  const [showNumbers, setShowNumbers] = useState(import.meta.env.DEV);
 
   const text = node?.kind === 'say' ? node.text : '';
   const done = revealed >= text.length;
   /** クリック送りを受け付けない状態（プレイヤーの入力待ち） */
   const blocked = node?.kind === 'choice' || node?.kind === 'carat' || node?.kind === 'schedule';
+  const onStage = node?.kind === 'say' || node?.kind === 'choice';
 
   // ノードが変わるたびに文字送りを頭から
   useEffect(() => {
@@ -57,47 +62,38 @@ export default function AdvScreen() {
     advance();
   }, [advance, blocked, done, text.length]);
 
-  // 開発用: D キーでパラメータ表示を切り替え
+  // 開発用: D キーで数値の併記を切り替え
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'd' || e.key === 'D') setShowDebug((v) => !v);
+      if (e.key === 'd' || e.key === 'D') setShowNumbers((v) => !v);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  const speaker = node?.kind === 'say' && node.who ? CHARACTERS[node.who] : null;
+  const speaker = node?.kind === 'say' ? node.who : null;
+  const speakerDef = speaker && speaker !== 'iroha' ? CHARACTERS[speaker] : null;
 
   return (
     <div className={styles.screen} onClick={onClick}>
       <div className={styles.bg} />
       {bg && <span className={styles.bgLabel}>bg: {bg}</span>}
 
-      {speaker && (
-        <div
-          className={styles.sprite}
-          style={{ background: `linear-gradient(180deg, ${speaker.color} 0%, ${speaker.colorDeep} 100%)` }}
+      {onStage && (
+        <StageLayer
+          partner={partner}
+          partnerExpression={partner ? faces[partner] : undefined}
+          speaker={speaker}
         />
       )}
 
-      {showDebug && (
-        <div className={styles.debug} onClick={(e) => e.stopPropagation()}>
-          {PARAM_ORDER.map((key) => (
-            <div key={key} className={styles.debugRow}>
-              <span
-                className={styles.debugSwatch}
-                style={{ background: CHARACTERS[PARAM_TO_HEROINE[key]].color }}
-              />
-              <span className={styles.debugName}>{PARAM_LABEL[key]}</span>
-              <span className={styles.debugValue}>{params[key]}</span>
-            </div>
-          ))}
-          <span className={styles.debugHint}>D キーで開閉 / 開発用表示</span>
-        </div>
-      )}
+      <div className={styles.pentagon} onClick={(e) => e.stopPropagation()}>
+        <ParamPentagon params={params} showNumbers={showNumbers} />
+      </div>
+      {import.meta.env.DEV && <span className={styles.debugHint}>D キーで数値表示</span>}
 
       {node?.kind === 'say' && (
-        <MessageWindow speaker={speaker} text={text} revealed={revealed} showPrompt={done} />
+        <MessageWindow speaker={speakerDef} text={text} revealed={revealed} showPrompt={done} />
       )}
 
       {node?.kind === 'choice' && <ChoiceList options={node.options} onChoose={choose} />}

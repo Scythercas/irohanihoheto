@@ -244,7 +244,20 @@
 
 # --- 茜への相談（C3: ヒント役） -----------------------------------------------
 
+# 茜に相談したときの入口。デレ段階（H5）に達しているかで行き先を分ける。
+#
+# 【重要】茜が主人公に揺れる描写は、
+#   ①ヒロインと2人以上出会っている ②総合魅力レベルが AKANE_DERE_STEPS[0] に到達している
+# の両方を満たすまで出さない。序盤の茜はあくまで口の悪い幼馴染。
 - id: akane_talk_01
+  body:
+    - branch:
+        - goto: akane_dere_01
+          ifMetCount: 2
+          ifTotalParam: 60
+        - goto: akane_talk_plain
+
+- id: akane_talk_plain
   bg: family_restaurant
   bgm: bgm_daily
   next: schedule_hub
@@ -282,14 +295,48 @@
     - text: "（……なるほど）"
 
     - who: akane
-      face: away
-      text: "「……別に、あんたのために言ってるわけじゃないから」"
+      face: bored
+      text: "「わかったらさっさと実践しなよ。私は帰る」"
+
+    - text: "伝票を置いて、茜は先に立ち上がった。"
+    - text: "（相変わらず、容赦がない）"
+
+# --- ここから先はデレ段階に到達してから解放される（H5） -----------------------
+
+- id: akane_dere_01
+  bg: family_restaurant
+  bgm: bgm_daily
+  next: schedule_hub
+  body:
+    - text: "深夜のファミレス。いつもの席。"
 
     - who: akane
-      face: away
-      text: "「相談されたら答えるでしょ、普通」"
+      face: bored
+      text: "「で？　また相談？」"
 
-    - text: "（そういうところだよな、と思ったが、言わなかった）"
+    - who: iroha
+      text: "「悪いかよ」"
+
+    - who: akane
+      face: normal
+      text: "「……別に」"
+
+    - text: "茜がこちらを見た。少しだけ、間があった。"
+
+    - who: akane
+      face: normal
+      text: "「あんた、変わったね」"
+
+    - who: iroha
+      text: "「そうか？」"
+
+    - who: akane
+      face: fluster
+      text: "「……なんでもない。忘れて」"
+
+    - text: "茜はストローを咥えて、窓の外を見た。"
+    - text: "（……耳が赤い）"
+    - text: "（気のせいだと思うことにした）"
 
 - id: date_filler
   bg: street_evening

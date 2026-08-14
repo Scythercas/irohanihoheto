@@ -52,6 +52,10 @@ interface GameStore {
   bgm: string | null;
   chatWith: CharacterId | null;
   chatLog: ChatEntry[];
+  /** 画面右に立たせている会話相手 */
+  partner: CharacterId | null;
+  /** キャラごとの現在の表情 */
+  faces: Record<string, string>;
   pendingSe: string | null;
   /** 現在表示中のノード。null なら終端。 */
   node: DisplayNode | null;
@@ -84,6 +88,8 @@ const cursorOf = (s: GameStore): Cursor =>
     bgm: s.bgm,
     chatWith: s.chatWith,
     chatLog: s.chatLog,
+    partner: s.partner,
+    faces: s.faces,
     pendingSe: null,
   });
 
@@ -100,6 +106,8 @@ const commit = (cursor: Cursor, node: DisplayNode | null) => ({
   bgm: cursor.bgm,
   chatWith: cursor.chatWith,
   chatLog: cursor.chatLog,
+  partner: cursor.partner,
+  faces: cursor.faces,
   pendingSe: cursor.pendingSe,
   node,
   mode: (node === null ? 'ended' : 'adv') as Mode,
@@ -119,6 +127,8 @@ export const useGame = create<GameStore>((set, get) => ({
   bgm: null,
   chatWith: null,
   chatLog: [],
+  partner: null,
+  faces: {},
   pendingSe: null,
   node: null,
 
@@ -198,6 +208,8 @@ export const useGame = create<GameStore>((set, get) => ({
       bgm: s.bgm,
       chatWith: s.chatWith,
       chatLog: [...s.chatLog],
+      partner: s.partner,
+      faces: { ...s.faces },
       savedAt: new Date().toISOString(),
       caption,
     };
@@ -221,6 +233,8 @@ export const useGame = create<GameStore>((set, get) => ({
       bgm: snap.bgm,
       chatWith: snap.chatWith,
       chatLog: [...snap.chatLog],
+      partner: snap.partner ?? null,
+      faces: { ...(snap.faces ?? {}) },
       pendingSe: null,
       node: node && isDisplayNode(node) ? node : null,
     });
