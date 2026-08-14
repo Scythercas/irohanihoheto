@@ -1,0 +1,181 @@
+# =============================================================================
+# プロローグ ― 色葉が茜に相談し、マッチングアプリ「カラット」を始めるまで
+#
+# 【書き方】
+#   text:  … セリフ・地の文。who を書かなければ主人公の心の声になる
+#   who:   … iroha / akane / aoi / sui / touka / shion / momoka
+#   face:  … 表情差分キー（立ち絵が入ったら効く）
+#   voice: … ボイスファイル名（拡張子なし）
+#   bg / bgm / se … 演出の切り替え
+#   choice … 選択肢。params で5色パラメータが動く
+#   params … 選択肢を経ずにパラメータを動かす
+#   flag   … フラグを立てる
+#   goto   … 別シーンへ飛ぶ
+#
+# 【トーン】リアル寄りのほろ苦さ。コメディは低頻度（設計書 §1.3）
+# 【茜】   ツンデレ。口が悪く、素直に褒めない（設計書 §2.2）
+# =============================================================================
+
+- id: prologue_01
+  bg: izakaya_night
+  bgm: bgm_daily
+  next: prologue_02
+  body:
+    - text: "金曜の夜の居酒屋は、他人の笑い声でできている。"
+    - text: "その真ん中で、俺は三杯目のハイボールを持て余していた。"
+
+    - who: akane
+      face: normal
+      text: "「で？　結局なんの話だったわけ」"
+
+    - text: "向かいの席で、茜が枝豆をつまんでいる。"
+    - text: "幼馴染。腐れ縁。二十四年、ずっと同じ距離にいる女。"
+
+    - who: akane
+      face: bored
+      text: "「言いたいことあるなら言いなよ。あんたが奢るって言い出す時点で、もう変だから」"
+
+    - text: "（……鋭いんだよな、こういうとこだけ）"
+
+- id: prologue_02
+  next: prologue_03
+  body:
+    - text: "言うつもりはなかった。"
+    - text: "でも、言わないままだと、たぶんこの先もずっと言わない気がした。"
+
+    - who: iroha
+      text: "「……最近、彼女欲しいんだよね」"
+
+    - text: "茜の箸が止まった。"
+    - text: "三秒。"
+    - text: "そして、盛大に噴き出した。"
+
+    - who: akane
+      face: laugh
+      text: "「ぶっ……あはははは！　なにそれ、真顔で言うことじゃないでしょ」"
+
+    - who: iroha
+      text: "「笑うなよ」"
+
+    - who: akane
+      face: laugh
+      text: "「いや笑うって。あんた大学のときからずーっと『別に今はいいや』って言ってたじゃん」"
+
+    - text: "（言ってた。確かに言ってた）"
+    - text: "（でも、同期の結婚式に呼ばれるのが今年で三回目になって）"
+    - text: "（式場の椅子に座って拍手しながら、急に、自分の膝が寒くなった）"
+
+    - who: akane
+      face: normal
+      text: "「……ふうん」"
+
+    - text: "笑いを引っ込めて、茜がジョッキを置く。"
+
+    - who: akane
+      face: normal
+      text: "「で、なんで私に言うの。私、あんたの世話係じゃないんだけど」"
+
+    - choice:
+        - text: "他に言えるやつがいないから"
+          params: { sincerity: 3 }
+          goto: prologue_02b_honest
+        - text: "なんとなく。深い意味はない"
+          params: { confidence: 1 }
+          goto: prologue_02b_dodge
+
+- id: prologue_02b_honest
+  next: prologue_03
+  body:
+    - who: iroha
+      text: "「他に言えるやつが、いないから」"
+
+    - text: "茜が、少しだけ目を見開いた。"
+
+    - who: akane
+      face: fluster
+      text: "「……そういうの、さらっと言うのやめてくんない？」"
+
+    - who: akane
+      face: bored
+      text: "「重いんだよ、二十四にもなって」"
+
+    - text: "（怒られた）"
+    - text: "（でも、耳が赤い）"
+
+- id: prologue_02b_dodge
+  next: prologue_03
+  body:
+    - who: iroha
+      text: "「なんとなく。深い意味はないよ」"
+
+    - who: akane
+      face: bored
+      text: "「はいはい。あっそ」"
+
+    - text: "茜は枝豆に戻った。"
+    - text: "（……なんか、間違えた気がする）"
+
+- id: prologue_03
+  bg: izakaya_night
+  next: prologue_04
+  body:
+    - who: akane
+      face: normal
+      text: "「じゃあさ」"
+
+    - text: "茜がスマホを取り出して、こちらに突きつけてきた。"
+
+    - who: akane
+      face: smug
+      text: "「マチアプ始めなよ」"
+
+    - who: iroha
+      text: "「……マチアプ」"
+
+    - who: akane
+      face: smug
+      text: "「マッチングアプリ。今どき普通でしょ」"
+
+    - who: iroha
+      text: "「いや、なんか……こわくない？」"
+
+    - who: akane
+      face: bored
+      text: "「出た。やる前に理由探すやつ」"
+
+    - text: "痛いところを的確に刺してくる。二十四年分の蓄積は伊達じゃない。"
+
+    - who: akane
+      face: normal
+      text: "「『カラット』ってやつ。私の同期も使ってる。……あんた、たぶん向いてるよ」"
+
+    - who: iroha
+      text: "「なんで」"
+
+    - who: akane
+      face: away
+      text: "「……さあ。なんとなく」"
+
+    - text: "（それ、さっき俺が言って怒られたやつでは）"
+
+- id: prologue_04
+  bg: room_night
+  bgm: bgm_app
+  body:
+    - text: "その夜、自分の部屋で、俺はアプリをインストールした。"
+
+    - se: se_notification
+    - text: "『カラット』。"
+    - text: "宝石の重さを測る単位。"
+
+    - text: "起動画面に、色とりどりの石が並んでいる。"
+    - text: "青。翠。橙。紫。桃。"
+
+    - text: "（……そういえば）"
+    - text: "（俺の名前、色葉っていうんだよな）"
+    - text: "（色の、葉）"
+
+    - text: "プロフィール写真の欄が、まだ空のままだった。"
+
+    - flag: started_carat
+      value: true

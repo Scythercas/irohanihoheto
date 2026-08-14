@@ -1,0 +1,89 @@
+.screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 3rem;
+  overflow: hidden;
+}
+
+/* 無彩色の主人公が、五色に囲まれている図。作品のコンセプトそのもの。 */
+.aura {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(40vmin 40vmin at 18% 24%, rgba(46, 111, 183, 0.30), transparent 70%),
+    radial-gradient(40vmin 40vmin at 82% 22%, rgba(23, 166, 124, 0.28), transparent 70%),
+    radial-gradient(40vmin 40vmin at 12% 76%, rgba(232, 129, 31, 0.26), transparent 70%),
+    radial-gradient(40vmin 40vmin at 88% 74%, rgba(123, 79, 168, 0.28), transparent 70%),
+    radial-gradient(40vmin 40vmin at 50% 96%, rgba(238, 132, 151, 0.26), transparent 70%),
+    radial-gradient(58vmin 58vmin at 50% 42%, rgba(196, 55, 61, 0.16), transparent 72%);
+  filter: blur(6px);
+}
+
+.brand {
+  position: relative;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2.6rem, 9vmin, 5.5rem);
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  /* タイトルの最後の一文字だけ茜色。散らずに残るのが茜、という含意。 */
+  text-indent: 0.28em;
+}
+
+.title .last {
+  color: var(--accent-akane);
+}
+
+.tagline {
+  margin: 1.4rem 0 0;
+  font-family: var(--font-serif);
+  font-size: clamp(0.8rem, 2.1vmin, 1rem);
+  letter-spacing: 0.16em;
+  color: var(--ink-dim);
+}
+
+.menu {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: min(20rem, 70vw);
+}
+
+.item {
+  padding: 0.85rem 1.5rem;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 2px;
+  letter-spacing: 0.2em;
+  text-align: center;
+  transition: border-color 0.2s, background 0.2s, letter-spacing 0.2s;
+}
+
+.item:hover:not(:disabled) {
+  background: rgba(196, 55, 61, 0.16);
+  border-color: rgba(196, 55, 61, 0.6);
+  letter-spacing: 0.3em;
+}
+
+.item:disabled {
+  color: rgba(168, 168, 176, 0.4);
+  cursor: default;
+}
+
+.version {
+  position: absolute;
+  right: 1.2rem;
+  bottom: 1rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: rgba(168, 168, 176, 0.5);
+}

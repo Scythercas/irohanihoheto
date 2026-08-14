@@ -1,0 +1,40 @@
+:root {
+  --bg-void: #0d0d10;
+  --ink: #f2f2f4;
+  --ink-dim: #a8a8b0;
+  --panel: rgba(12, 12, 16, 0.82);
+  --panel-border: rgba(255, 255, 255, 0.14);
+  --accent-akane: #c4373d;
+
+  --font-ui: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', system-ui, sans-serif;
+  --font-serif: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg-void);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  /* テキスト送りの連打で選択状態にならないように */
+  user-select: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
