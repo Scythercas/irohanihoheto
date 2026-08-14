@@ -117,40 +117,61 @@ ZLUDA を手で組むより格段に楽なので、まずこれを試す。
 - ※「肩にかかるショートヘア・顔が小さい」は**葵**の設定。茜と混同しないこと
 - 性格はツンデレ。口が悪く素直に褒めない → **normal は「やや不機嫌そう」くらいがちょうどいい**
 
-### プロンプト（英語・SDXLアニメ系モデル想定）
+### ポジティブプロンプト（Forge の上の欄にそのまま貼る）
+
+**下から2行目の `annoyed, frown, closed mouth,` が表情の行。** ここだけを差し替えて差分を作る。
 
 ```text
-masterpiece, best quality, very aesthetic, official art,
-1girl, solo, standing, upper body to knees, full front view, looking at viewer,
-24 years old, japanese office worker,
-crimson red hair, madder red hair, low ponytail, medium hair, messy hair tips, wispy bangs,
+masterpiece, best quality, amazing quality, very aesthetic, absurdres,
+1girl, solo, cowboy shot, standing, facing viewer, looking at viewer, arms at sides,
+mature female, 24 years old, office lady,
+crimson hair, dark red hair, low ponytail, medium hair, messy hair, wavy hair tips, hair between eyes, sidelocks,
 dark red eyes, slender,
-white blouse, dark gray cardigan, simple office attire,
-slightly annoyed expression, tsundere, mouth closed,
-soft cel shading, clean lineart, anime style, flat color,
-simple background, transparent background, white background,
+white collared shirt, dark grey cardigan, black pencil skirt,
+annoyed, frown, closed mouth,
+simple background, white background, anime style, clean lineart, cel shading, soft lighting
 ```
 
-### ネガティブプロンプト
+### ネガティブプロンプト（Forge の下の欄にそのまま貼る）
 
 ```text
-lowres, bad anatomy, bad hands, extra digits, fewer digits, cropped head,
-worst quality, low quality, jpeg artifacts, signature, watermark, username,
-blurry, multiple views, multiple girls, nsfw,
-pink hair, orange hair, blonde hair, twintails, high ponytail, long hair,
-school uniform, hat,
+lowres, worst quality, low quality, bad anatomy, bad hands, missing fingers, extra digits, fewer digits, extra arms,
+jpeg artifacts, signature, watermark, username, artist name, text, logo,
+blurry, depth of field, multiple views, multiple girls, 2girls,
+nsfw, nude, cleavage,
+pink hair, orange hair, blonde hair, brown hair, black hair, blue hair, purple hair, green hair,
+twintails, high ponytail, very long hair, short hair, ahoge, hair bun,
+school uniform, hat, glasses,
+cropped, head out of frame, from behind
 ```
 
-**髪色の指定が最重要。** ピンク・オレンジ・金髪に転びやすいので、ネガティブで潰しておく。
+**髪色の指定が最重要。** ピンク・オレンジ・金髪に転びやすいので、ネガティブで他の髪色を全部潰してある。
+**他ヒロインの色（青・翠・橙・紫・桃）も入っている**ので、この5人を作るときは該当色をネガティブから外すこと。
 
-### 推奨パラメータ
+### 推奨パラメータ（Forge の設定欄）
 
 | 項目 | 値 |
 |---|---|
-| 解像度 | 832 × 1216（SDXL標準の縦長）→ 後で1024×1536に拡大 |
-| Steps | 28〜32 |
-| CFG Scale | 5〜7 |
-| Sampler | DPM++ 2M Karras |
+| Sampling method | **DPM++ 2M SDE Karras**（無ければ Euler a） |
+| Sampling steps | **28** |
+| CFG Scale | **5**（アニメ系SDXLは低めが安定） |
+| Width × Height | **832 × 1216** |
+| Hires. fix | 有効 / Upscale **1.25倍** / Denoising **0.4**（VRAM 8GBなので1.5倍以上は重い） |
+| Seed | 最初は **-1**（ランダム）。気に入った1枚が出たら**その seed を固定** |
+
+### 表情差分の差し替え行（7種）
+
+ポジティブの `annoyed, frown, closed mouth,` の行を、下の1行に置き換える。**他は一字も変えない。**
+
+| ファイル名 | 差し替える1行 |
+|---|---|
+| `normal` | `annoyed, frown, closed mouth,` |
+| `smile` | `smile, closed mouth, gentle expression, half-closed eyes,` |
+| `laugh` | `laughing, open mouth, closed eyes, happy, teeth,` |
+| `bored` | `bored, half-closed eyes, expressionless, flat mouth, jitome,` |
+| `smug` | `smug, smirk, one eye closed, raised eyebrow, grin,` |
+| `fluster` | `blush, embarrassed, surprised, wide eyes, small open mouth, flustered,` |
+| `away` | `looking to the side, averted eyes, pout, closed mouth,` |
 
 ---
 
