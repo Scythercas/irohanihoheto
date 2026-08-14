@@ -51,7 +51,7 @@
 |---|---|---|---|---|---|---|
 | **Stability Matrix → Forge/ComfyUI** | ★★（GUIインストーラが面倒を見る） | ◎ | ◎ | ◎ | 0円 | **本命** |
 | A1111 / ComfyUI + ZLUDA（手動） | ★★★ 面倒 | ◎ | ◎ | ◎ | 0円 | 上が失敗したとき |
-| Amuse AI | ★ 最も簡単 | △ 限定的 | △ | × | 0円 | **絵柄の下見用**。本番には力不足 |
+| Amuse AI | ★ 最も簡単 | △ 限定的 | △ | × | 0円 | 本番には力不足。**2026-08-14 時点で公式サイトがダウン中** |
 | SD.Next（DirectML） | ★★ | ○ | ○ | △ | 0円 | 速度が出ない |
 | Web無料枠（Civitai/SeaArt等） | ★ | ○ | ○ | × | 0円枠あり | 保険。**規約要確認・複数アカウント不可** |
 | NovelAI / niji・journey | ★ | ○ | — | × | **有料** | 0円方針に反する |
@@ -79,12 +79,31 @@ ZLUDA を手で組むより格段に楽なので、まずこれを試す。
 > 本作は **完全無料公開（D4①）**なので大半は問題ないが、
 > 使ったモデル名とライセンスを **`docs/06_credits.md` に記録**すること。
 
-### 進め方
+### 進め方（Stability Matrix から直接始める）
 
-1. **Amuse AI で1枚だけ生成してみる**（15分で終わる）。目的は画質判断ではなく「AIで絵が出る」感覚をつかむこと
-2. 続ける気になったら **Stability Matrix → Forge** を入れる
+> **2026-08-14 時点で amuse-ai.com はダウンしている（Cloudflare 522）。**
+> Amuse は下見用にすぎないので、飛ばして問題ない。
+
+1. **Stability Matrix を入れる**
+   - 配布元: <https://lykos.ai/> ／ <https://github.com/LykosAI/StabilityMatrix>
+   - Windows版は `StabilityMatrix-win-x64.zip` を展開して実行するだけ（インストール不要）
+   - 起動後、**Packages から「Stable Diffusion WebUI Forge」を追加**する
+   - **AMD向けのバックエンド（ZLUDA / DirectML）を選ぶ画面が出たら、まず ZLUDA を試す**。
+     動かなければ DirectML に切り替える
+2. **モデルを入れる**
+   - Stability Matrix の Model Browser から Civitai を検索できる
+   - アニメ調の **Illustrious XL 系 / Animagine XL 系** で、サンプルの絵柄が好みのものを選ぶ
+   - **ライセンスを確認し、`docs/06_credits.md` に記録する**
 3. §2 のプロンプトで **`normal` の1枚**を作り込む。**気に入ったら seed を必ずメモ**
 4. §3 の手順で **inpaint で表情6種**を派生させる
+
+### 詰まったときの代替（すべて0円）
+
+| 状況 | 代替 |
+|---|---|
+| ZLUDA も DirectML も動かない | Stability Matrix から **ComfyUI** を入れ直す（バックエンドの選択肢が違う） |
+| ローカルが重すぎる／動かない | **Civitai の生成機能**（無料クレジットが毎日回復）。inpaint も使える。※複数アカウントは規約違反 |
+| SDXLが重い | **SD1.5系のアニメモデル**に落とす。軽く、LoRAが豊富 |
 
 ---
 
