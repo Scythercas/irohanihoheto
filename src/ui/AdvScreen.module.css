@@ -48,14 +48,16 @@
   }
 }
 
-/* 主人公の五色。数値は出さず、5角形の形で示す（C3②） */
+/* 主人公の五色。数値は出さず、5角形の形で示す（C3②）
+   立ち絵(z-index:1)より上、メッセージウィンドウ(z-index:5)より下に置く。 */
 .pentagon {
   position: absolute;
-  right: 1.1rem;
-  top: 1.1rem;
-  width: min(21vmin, 9.5rem);
-  padding: 0.5rem;
-  background: rgba(8, 8, 12, 0.52);
+  right: 1rem;
+  top: 1rem;
+  z-index: 4;
+  width: min(17vmin, 8rem);
+  padding: 0.45rem;
+  background: rgba(8, 8, 12, 0.62);
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 6px;
   backdrop-filter: blur(4px);
@@ -89,8 +91,9 @@
 
 .debugHint {
   position: absolute;
-  right: 1.1rem;
-  top: calc(1.1rem + min(21vmin, 9.5rem) + 3.2rem);
+  right: 1rem;
+  top: calc(1rem + min(17vmin, 8rem) + 3rem);
+  z-index: 4;
   color: rgba(168, 168, 176, 0.4);
   font-size: 0.6rem;
   letter-spacing: 0.08em;
