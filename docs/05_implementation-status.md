@@ -21,7 +21,9 @@
 | **週スケジュール画面**（12週・行動枠） | ✅ | `src/ui/ScheduleScreen.tsx` |
 | **5角形のパラメータ表示＋変動通知** | ✅ | `src/ui/ParamPentagon.tsx` |
 | **立ち絵の配置**（主人公=左固定／相手=右、話し手を大きく） | ✅ | `src/ui/StageLayer.tsx` |
-| **茜の立ち絵（SVG製・表情7種）** | ✅ 仮素材 | `src/ui/sprites/AkaneSprite.tsx` |
+| **茜の立ち絵（PNG・表情7種・背景透過済み）** | ✅ **本素材** | `public/assets/chara/akane/*.png` |
+| 茜の立ち絵（SVG製・予備） | ✅ フォールバック用に温存 | `src/ui/sprites/AkaneSprite.tsx` |
+| 背景透過スクリプト | ✅ | `scripts/remove-bg.py` |
 | **条件分岐（branch）** | ✅ | `engine.ts` の `matchesCase` |
 | **茜のデレ段階のゲート**（2人目＋魅力60） | ✅ | `carat.yaml` の `akane_talk_01` |
 | 5色パラメータの管理・変動 | ✅ | `src/game/engine.ts` |
