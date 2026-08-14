@@ -33,6 +33,7 @@ try {
   const scenes = buildScenes(files);
 
   let sayCount = 0;
+  let chatCount = 0;
   let choiceCount = 0;
   let charCount = 0;
   for (const scene of scenes.values()) {
@@ -41,16 +42,24 @@ try {
         sayCount += 1;
         charCount += node.text.length;
       }
-      if (node.kind === 'choice') choiceCount += 1;
+      if (node.kind === 'chat') {
+        chatCount += 1;
+        charCount += node.text.length;
+      }
+      if (node.kind === 'choice' || node.kind === 'reply') {
+        choiceCount += 1;
+        for (const o of node.options) charCount += o.text.length;
+      }
     }
   }
 
   console.log(`✓ シナリオ検証OK`);
-  console.log(`  ファイル数 : ${paths.length}`);
-  console.log(`  シーン数   : ${scenes.size}`);
-  console.log(`  テキスト行 : ${sayCount}`);
-  console.log(`  選択肢     : ${choiceCount}`);
-  console.log(`  総文字数   : ${charCount.toLocaleString('ja-JP')}`);
+  console.log(`  ファイル数     : ${paths.length}`);
+  console.log(`  シーン数       : ${scenes.size}`);
+  console.log(`  テキスト行     : ${sayCount}`);
+  console.log(`  チャット発言   : ${chatCount}`);
+  console.log(`  選択肢／返信   : ${choiceCount}`);
+  console.log(`  総文字数       : ${charCount.toLocaleString('ja-JP')}`);
 } catch (e) {
   console.error(e instanceof Error ? e.message : e);
   process.exit(1);

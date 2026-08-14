@@ -5,6 +5,9 @@
  *
  * ブラウザを開かずに、シナリオを実際に「最後まで再生」して壊れを検出する。
  * 選択肢は全分岐を総当たりするため、到達不能なシーンや走査の無限ループも見つかる。
+ *
+ * スケジュール画面は「誰と会うか」で12週ぶんの組み合わせが爆発するため、
+ * そこで一旦打ち切り、スケジュールから呼ばれるシーンは別途それぞれを起点に再生する。
  */
 
 import { readdirSync, readFileSync, statSync } from 'node:fs';
@@ -14,12 +17,15 @@ import { PARAM_LABEL, PARAM_ORDER } from '../src/game/constants';
 import {
   applyAffection,
   applyDelta,
+  cloneCursor,
   enterScene,
   newCursor,
+  pushChat,
   step,
   type Cursor,
 } from '../src/game/engine';
 import { buildScenes } from '../src/game/scenario/build';
+import { AKANE_SCENES, DATE_SCENES, FILLER_SCENE, FINALE_SCENE } from '../src/game/schedule';
 import type { Scene } from '../src/game/types';
 
 const ROOT = resolve(import.meta.dirname, '..');
@@ -45,59 +51,77 @@ const lookup = (id: string): Scene => {
   return scene;
 };
 
-const clone = (c: Cursor): Cursor => ({
-  ...c,
-  params: { ...c.params },
-  affection: { ...c.affection },
-  flags: { ...c.flags },
-});
-
 const visited = new Set<string>();
-const endings: { path: string[]; params: Record<string, number> }[] = [];
+const endings: { path: string[]; params: Record<string, number>; stop: string }[] = [];
 let runs = 0;
 
-/** 選択肢を全通り試しながら、物語を終端まで再生する */
+/** 選択肢を全通り試しながら、終端またはスケジュール画面まで再生する */
 function play(cursor: Cursor, trail: string[]): void {
-  if (runs > 500) throw new Error('分岐が多すぎます。走査を打ち切りました。');
+  runs += 1;
+  if (runs > 2000) throw new Error('分岐が多すぎます。走査を打ち切りました。');
 
   for (;;) {
     visited.add(cursor.sceneId);
     const node = step(cursor, lookup);
+    // step() はシーンを跨ぐことがあるので、移動後のシーンも到達済みにする
+    visited.add(cursor.sceneId);
 
     if (node === null) {
-      runs += 1;
-      endings.push({ path: [...trail], params: { ...cursor.params } });
+      endings.push({ path: [...trail], params: { ...cursor.params }, stop: '終端' });
       return;
     }
 
-    if (node.kind === 'choice') {
+    // スケジュールは選択の組み合わせが爆発するのでここで打ち切る
+    if (node.kind === 'schedule') {
+      endings.push({ path: [...trail], params: { ...cursor.params }, stop: 'スケジュール' });
+      return;
+    }
+
+    if (node.kind === 'choice' || node.kind === 'reply') {
+      const sceneAtChoice = cursor.sceneId;
       node.options.forEach((option, i) => {
-        const branch = clone(cursor);
+        const branch = cloneCursor(cursor);
+        if (node.kind === 'reply') pushChat(branch, 'iroha', option.text);
         if (option.params) applyDelta(branch.params, option.params);
         if (option.affection) applyAffection(branch.affection, option.affection);
         if (option.goto) enterScene(branch, lookup(option.goto));
-        play(branch, [...trail, `${cursor.sceneId}#${i}:${option.text.slice(0, 14)}`]);
+        play(branch, [...trail, `${sceneAtChoice}#${i}「${option.text.slice(0, 12)}」`]);
       });
       return;
     }
   }
 }
 
+function playFrom(sceneId: string, trail: string[]): void {
+  const cursor = newCursor(sceneId);
+  enterScene(cursor, lookup(sceneId));
+  play(cursor, trail);
+}
+
 try {
-  const start = newCursor(OPENING_SCENE_ID);
-  enterScene(start, lookup(OPENING_SCENE_ID));
-  play(start, []);
+  playFrom(OPENING_SCENE_ID, []);
+
+  // スケジュールから呼ばれるシーンは、それぞれを起点に再生して到達性を担保する
+  const scheduleRoots = [
+    ...Object.values(DATE_SCENES).flat(),
+    ...AKANE_SCENES,
+    FILLER_SCENE,
+    FINALE_SCENE,
+  ];
+  for (const root of scheduleRoots) playFrom(root, [`(スケジュール経由) ${root}`]);
 
   const unreachable = [...scenes.keys()].filter((id) => !visited.has(id));
 
   console.log('✓ 全分岐の走破OK');
-  console.log(`  到達したエンド : ${endings.length}`);
-  console.log(`  到達シーン     : ${visited.size} / ${scenes.size}`);
+  console.log(`  再生した経路 : ${endings.length}`);
+  console.log(`  到達シーン   : ${visited.size} / ${scenes.size}`);
 
-  for (const [i, ending] of endings.entries()) {
+  const mainRoutes = endings.filter((e) => !e.path[0]?.startsWith('(スケジュール経由)'));
+  console.log(`\n  [本編ルート ${mainRoutes.length}件]`);
+  for (const [i, ending] of mainRoutes.entries()) {
     const summary = PARAM_ORDER.map((k) => `${PARAM_LABEL[k]}:${ending.params[k]}`).join(' ');
-    console.log(`  [${i + 1}] ${summary}`);
-    if (ending.path.length) console.log(`      経路 → ${ending.path.join(' / ')}`);
+    console.log(`  ${i + 1}. ${summary}  → ${ending.stop}`);
+    if (ending.path.length) console.log(`     ${ending.path.join(' / ')}`);
   }
 
   if (unreachable.length) {

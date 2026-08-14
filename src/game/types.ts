@@ -77,6 +77,40 @@ export interface GotoNode {
   goto: string;
 }
 
+// --- チャット（LINE風メッセージ画面。C6①: ゲームの中心） --------------------
+
+/** チャットの1メッセージ。from が 'iroha' なら自分の吹き出し（右側）。 */
+export interface ChatNode {
+  kind: 'chat';
+  from: CharacterId;
+  text: string;
+  /** 表示する時刻（例: '21:04'）。省略時は前のメッセージから自動で刻む。 */
+  at?: string;
+}
+
+/** チャットでの返信を選ぶ。ChoiceNode との違いは見た目と、選んだ文が吹き出しとして残ること。 */
+export interface ReplyNode {
+  kind: 'reply';
+  options: ChoiceOption[];
+}
+
+// --- カラット（マッチングアプリ画面。C5②: 簡易表現に留める） ----------------
+
+export type CaratView = 'match' | 'profile';
+
+export interface CaratNode {
+  kind: 'carat';
+  view: CaratView;
+  target: HeroineId;
+}
+
+// --- 週スケジュール（C2①） --------------------------------------------------
+
+/** この節でスケジュール画面に制御を渡す。誰と会うかはプレイヤーが選ぶ。 */
+export interface ScheduleNode {
+  kind: 'schedule';
+}
+
 export type ScenarioNode =
   | SayNode
   | ChoiceNode
@@ -85,10 +119,21 @@ export type ScenarioNode =
   | SeNode
   | ParamNode
   | FlagNode
-  | GotoNode;
+  | GotoNode
+  | ChatNode
+  | ReplyNode
+  | CaratNode
+  | ScheduleNode;
+
+/** 画面モード。シーン単位で切り替える。 */
+export type ScreenKind = 'adv' | 'chat';
 
 export interface Scene {
   id: string;
+  /** 画面モード。省略時は 'adv'。 */
+  screen?: ScreenKind;
+  /** チャット相手。相手が変わるとチャット履歴はリセットされる（＝別スレッド）。 */
+  with?: CharacterId;
   /** 開始時の背景 */
   bg?: string;
   /** 開始時のBGM */
@@ -96,6 +141,13 @@ export interface Scene {
   /** 本文を読み切ったあとに自動で進むシーンID */
   next?: string;
   body: ScenarioNode[];
+}
+
+/** 画面に残るチャット履歴の1件 */
+export interface ChatEntry {
+  from: CharacterId;
+  text: string;
+  at: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -107,7 +159,7 @@ export interface Scene {
  * 構造を変えたら必ずインクリメントし、save.ts のマイグレーションを足すこと。
  * （03_tech-stack.md §8.4 のリスク対策）
  */
-export const SAVE_SCHEMA_VERSION = 1;
+export const SAVE_SCHEMA_VERSION = 2;
 
 export interface GameSnapshot {
   schemaVersion: number;
@@ -118,9 +170,15 @@ export interface GameSnapshot {
   affection: Record<HeroineId, number>;
   /** 週スケジュール制の現在週（1〜12） */
   week: number;
+  /** その週に残っている行動枠 */
+  slots: number;
+  /** ヒロインごとに何回デートしたか。次に再生するイベントの決定に使う。 */
+  progress: Record<HeroineId, number>;
   flags: Record<string, boolean>;
   bg: string | null;
   bgm: string | null;
+  chatWith: CharacterId | null;
+  chatLog: ChatEntry[];
   /** 保存時刻（ISO文字列） */
   savedAt: string;
   /** セーブ一覧に出す短い説明 */

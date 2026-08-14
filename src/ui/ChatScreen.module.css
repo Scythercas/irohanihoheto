@@ -1,0 +1,194 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #12121a;
+  cursor: pointer;
+}
+
+/* --- ヘッダー（相手の名前。カラット内のトーク画面という体） --- */
+.header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.1rem;
+  background: rgba(20, 20, 28, 0.96);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.avatar {
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.headerName {
+  font-size: 0.98rem;
+  letter-spacing: 0.08em;
+}
+
+.headerApp {
+  margin-left: auto;
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  color: rgba(168, 168, 176, 0.5);
+}
+
+/* --- メッセージ一覧 --- */
+.log {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.2rem 1rem 1.6rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  max-width: min(30rem, 82%);
+}
+
+.rowThem {
+  align-self: flex-start;
+}
+
+.rowMe {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.bubble {
+  padding: 0.62rem 0.9rem;
+  border-radius: 1.1rem;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  white-space: pre-wrap;
+  word-break: break-word;
+  animation: pop 0.22s ease-out;
+}
+
+.bubbleThem {
+  background: #262633;
+  border-bottom-left-radius: 0.28rem;
+}
+
+.bubbleMe {
+  /* 主人公の吹き出しは無彩色。まだ色がついていないという設定に合わせる。 */
+  background: #45454f;
+  border-bottom-right-radius: 0.28rem;
+}
+
+.stamp {
+  flex-shrink: 0;
+  font-size: 0.62rem;
+  color: rgba(168, 168, 176, 0.55);
+  font-variant-numeric: tabular-nums;
+}
+
+.typing {
+  align-self: flex-start;
+  display: flex;
+  gap: 0.22rem;
+  padding: 0.75rem 0.95rem;
+  background: #262633;
+  border-radius: 1.1rem;
+  border-bottom-left-radius: 0.28rem;
+}
+
+.dot {
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 50%;
+  background: var(--ink-dim);
+  animation: bounce 1.2s infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* --- 返信欄 --- */
+.replyBar {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.8rem 1rem 1.1rem;
+  background: rgba(20, 20, 28, 0.96);
+  border-top: 1px solid var(--panel-border);
+}
+
+.replyHint {
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  color: rgba(168, 168, 176, 0.55);
+}
+
+.replyOption {
+  padding: 0.72rem 1rem;
+  background: #1c1c26;
+  border: 1px solid var(--panel-border);
+  border-radius: 1.1rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  text-align: left;
+  transition: background 0.16s, border-color 0.16s;
+}
+
+.replyOption:hover {
+  background: #24242f;
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.prompt {
+  flex-shrink: 0;
+  padding: 0.7rem;
+  text-align: center;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: rgba(168, 168, 176, 0.45);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-0.22rem);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble {
+    animation: none;
+  }
+  .dot {
+    animation: none;
+  }
+}

@@ -1,0 +1,127 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 6, 9, 0.86);
+  backdrop-filter: blur(3px);
+}
+
+.card {
+  position: relative;
+  width: min(23rem, 86%);
+  padding: 2rem 1.7rem 1.8rem;
+  background: #16161f;
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  overflow: hidden;
+  animation: rise 0.32s ease-out;
+}
+
+/* カードの上端をキャラクターカラーで塗る。宝石＝色石のメタファー。 */
+.crown {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 5px;
+}
+
+.gem {
+  width: 3.6rem;
+  height: 3.6rem;
+  margin: 0 auto 1.1rem;
+  border-radius: 50%;
+  animation: glow 2.4s ease-in-out infinite;
+}
+
+.matchLabel {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.34em;
+  text-align: center;
+  color: rgba(168, 168, 176, 0.7);
+}
+
+.name {
+  margin: 0 0 0.15rem;
+  font-family: var(--font-serif);
+  font-size: 1.65rem;
+  letter-spacing: 0.14em;
+  text-align: center;
+}
+
+.meta {
+  margin: 0 0 1.2rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-align: center;
+  color: var(--ink-dim);
+}
+
+.bio {
+  margin: 0 0 1.1rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  color: #d8d8de;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.4rem;
+}
+
+.tag {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+}
+
+.action {
+  width: 100%;
+  padding: 0.72rem;
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  border-radius: 3px;
+  font-size: 0.82rem;
+  letter-spacing: 0.22em;
+  transition: background 0.18s;
+}
+
+.action:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    box-shadow: 0 0 1.5rem 0.2rem currentColor;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .gem {
+    animation: none;
+  }
+}

@@ -1,0 +1,305 @@
+# =============================================================================
+# カラット導入 ― プロフィール作成から、桃果とのマッチング・初トークまで
+#
+# 【追加された書き方】
+#   screen: chat / with: momoka … このシーンをチャット画面で表示する
+#   from: momoka / msg: "..."   … チャットの1メッセージ（from が iroha なら自分）
+#   reply: [...]                … 返信を選ぶ。選んだ文が自分の吹き出しとして残る
+#   carat: match / profile      … カラットのカードを出す（target にヒロインID）
+#   schedule: true              … 週スケジュール画面に制御を渡す
+#
+# 【桃果の攻略軸＝自信】決めてあげること。「どこでもいいよ」は減点（設計書 §2.2）
+# =============================================================================
+
+- id: carat_setup
+  bg: room_night
+  bgm: bgm_app
+  next: carat_swipe
+  body:
+    - text: "プロフィール写真。趣味。自己紹介文。"
+    - text: "空欄を埋めていくうちに、自分という人間がいかに説明しづらいかを思い知った。"
+
+    - text: "『休日は何をしていますか？』"
+    - text: "（……寝てる、とは書けないよな）"
+
+    - text: "十五分かけて、当たり障りのない三行を書いた。"
+    - text: "登録完了。"
+
+- id: carat_swipe
+  next: carat_match_momoka
+  body:
+    - se: se_swipe
+    - text: "画面に、知らない誰かの顔が次々と流れてくる。"
+    - text: "右にスワイプすれば「いいね」。左に流せば、その人とは二度と会わない。"
+
+    - text: "（軽い。軽すぎる）"
+    - text: "（でも、この軽さがなければ、俺は一生誰とも出会わないんだろうな）"
+
+    - text: "三日が過ぎた。"
+    - text: "いいねは、二十件送って、返ってきたのは一件だった。"
+
+- id: carat_match_momoka
+  next: chat_momoka_01
+  body:
+    - se: se_notification
+    - carat: match
+      target: momoka
+
+    - flag: met_momoka
+      value: true
+
+    - text: "桃果、二十一歳。大学三年生。"
+    - text: "（……年下だ）"
+    - text: "（というか、学生だ）"
+
+    - carat: profile
+      target: momoka
+
+    - text: "『いろいろ連れて行ってくれる人だとうれしいなあ』"
+    - text: "（連れて行く。俺が？）"
+
+    - text: "画面の下で、メッセージの入力欄が点滅していた。"
+
+# --- ここからチャット画面 -----------------------------------------------------
+
+- id: chat_momoka_01
+  screen: chat
+  with: momoka
+  next: chat_momoka_02
+  body:
+    - from: momoka
+      msg: "はじめまして〜！マッチありがとうございます！"
+    - from: momoka
+      msg: "いろはさんって、お名前めずらしいですね"
+
+    - reply:
+        - text: "こちらこそ。よろしくお願いします"
+          params: { confidence: 1 }
+        - text: "よく言われる。色の葉っぱで、色葉"
+          params: { confidence: 2 }
+          affection: { momoka: 1 }
+        - text: "え、ほんとに俺なんかでいいの？"
+          params: { confidence: -3 }
+
+    - from: momoka
+      msg: "いろは……いろは。かわいい名前！"
+    - from: momoka
+      msg: "わたし、社会人の方とお話するのはじめてです"
+    - from: momoka
+      msg: "緊張しちゃうなあ"
+
+- id: chat_momoka_02
+  screen: chat
+  with: momoka
+  next: chat_momoka_03
+  body:
+    - from: momoka
+      msg: "あの、もしよかったらなんですけど"
+    - from: momoka
+      msg: "今度どこか、連れて行ってもらえたりしますか？？"
+
+    - text: "（連れて行く、か）"
+
+    - reply:
+        - text: "いいよ。どこ行きたい？"
+          params: { confidence: -3 }
+          goto: chat_momoka_02b_weak
+        - text: "日曜、水族館はどう。夕方から空いてる"
+          params: { confidence: 4 }
+          affection: { momoka: 2 }
+          goto: chat_momoka_02b_lead
+        - text: "考えとく"
+          params: { confidence: -1 }
+          goto: chat_momoka_02b_weak
+
+- id: chat_momoka_02b_weak
+  screen: chat
+  with: momoka
+  next: chat_momoka_03
+  body:
+    - from: momoka
+      msg: "えっと……"
+    - from: momoka
+      msg: "うーん、どこがいいかな〜"
+    - from: momoka
+      msg: "いろはさんの行きたいところで大丈夫です！"
+
+    - text: "（……会話が止まった）"
+    - text: "（この子は、たぶん、決めてほしいんだ）"
+
+- id: chat_momoka_02b_lead
+  screen: chat
+  with: momoka
+  next: chat_momoka_03
+  body:
+    - from: momoka
+      msg: "水族館！！"
+    - from: momoka
+      msg: "行きたいです、行きたい"
+    - from: momoka
+      msg: "夕方って、なんかいいですね。ずるい"
+
+    - text: "（ずるい、とは）"
+    - text: "（でも、悪くない反応だった）"
+
+- id: chat_momoka_03
+  screen: chat
+  with: momoka
+  next: schedule_hub
+  body:
+    - from: momoka
+      msg: "じゃあ、また連絡しますね！"
+    - from: momoka
+      msg: "おやすみなさい〜"
+
+    - text: "スマホを置いて、天井を見た。"
+    - text: "誰かと予定を決めるという行為を、久しぶりにした気がした。"
+
+# --- 週スケジュール ----------------------------------------------------------
+
+- id: schedule_hub
+  bg: room_night
+  body:
+    - schedule: true
+
+- id: momoka_date_01
+  bg: aquarium_evening
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - text: "水族館は、平日の夕方でも人がいた。"
+    - text: "青い光の中を、桃果が小走りで進んでいく。"
+
+    - who: momoka
+      face: smile
+      text: "「いろはさん、こっち！　クラゲ！」"
+
+    - text: "（元気だな）"
+
+    - who: momoka
+      face: smile
+      text: "「わたし、クラゲって意味わかんなくて好きなんです。何も考えてなさそうで」"
+
+    - who: iroha
+      text: "「褒めてるのかそれ」"
+
+    - who: momoka
+      face: laugh
+      text: "「褒めてます！」"
+
+    - text: "順路の終わりに、小さなカフェがあった。"
+
+    - who: momoka
+      face: normal
+      text: "「あ……どうします？」"
+
+    - text: "（また、こっちに預けてきた）"
+
+    - choice:
+        - text: "座ろう。二階の席が空いてる"
+          params: { confidence: 4 }
+          affection: { momoka: 3 }
+          goto: momoka_date_01_lead
+        - text: "桃果はどうしたい？"
+          params: { confidence: -2 }
+          goto: momoka_date_01_weak
+
+- id: momoka_date_01_lead
+  next: schedule_hub
+  body:
+    - who: momoka
+      face: smile
+      text: "「……はい」"
+
+    - text: "桃果は少し驚いた顔をして、それから、嬉しそうに笑った。"
+
+    - who: momoka
+      face: smile
+      text: "「そういうの、いいですね」"
+
+    - who: iroha
+      text: "「そういうのって」"
+
+    - who: momoka
+      face: away
+      text: "「なんでもないでーす」"
+
+    - text: "（……悪くない）"
+
+- id: momoka_date_01_weak
+  next: schedule_hub
+  body:
+    - who: momoka
+      face: normal
+      text: "「わたしは、いろはさんが決めてくれたら……」"
+
+    - text: "言いかけて、桃果は口をつぐんだ。"
+    - text: "少しだけ、笑顔が薄くなった気がした。"
+
+    - who: momoka
+      face: normal
+      text: "「じゃあ、帰りましょっか」"
+
+    - text: "（何か、間違えた）"
+
+# --- 茜への相談（C3: ヒント役） -----------------------------------------------
+
+- id: akane_talk_01
+  bg: family_restaurant
+  bgm: bgm_daily
+  next: schedule_hub
+  body:
+    - text: "深夜のファミレス。茜はドリンクバーだけで三時間粘る女だった。"
+
+    - who: akane
+      face: bored
+      text: "「で？　うまくいってないんでしょ、顔に出てる」"
+
+    - who: iroha
+      text: "「……なんでわかるんだよ」"
+
+    - who: akane
+      face: smug
+      text: "「二十四年」"
+
+    - text: "それだけ言って、茜はストローを咥えた。"
+
+    - who: akane
+      face: normal
+      text: "「その子、年下でしょ。『どこでもいい』とか言ってない？」"
+
+    - who: iroha
+      text: "「……言われた」"
+
+    - who: akane
+      face: bored
+      text: "「あのさあ」"
+
+    - who: akane
+      face: bored
+      text: "「『どこでもいい』は、どこでもいいって意味じゃないの。あんたに決めてほしいの」"
+
+    - text: "（……なるほど）"
+
+    - who: akane
+      face: away
+      text: "「……別に、あんたのために言ってるわけじゃないから」"
+
+    - who: akane
+      face: away
+      text: "「相談されたら答えるでしょ、普通」"
+
+    - text: "（そういうところだよな、と思ったが、言わなかった）"
+
+- id: date_filler
+  bg: street_evening
+  next: schedule_hub
+  body:
+    - text: "その日は、とくに何も起こらなかった。"
+    - text: "予定を埋めるだけの一日というのも、たまにはある。"
+
+- id: finale_judge
+  bg: room_night
+  body:
+    - text: "三ヶ月が過ぎた。"
+    - text: "（……ここから先は、まだ書かれていない）"

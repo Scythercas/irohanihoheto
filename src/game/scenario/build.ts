@@ -11,7 +11,8 @@
 
 import yaml from 'js-yaml';
 import { CHARACTERS } from '../constants';
-import type { CharacterId, ChoiceOption, ParamDelta, Scene, ScenarioNode } from '../types';
+import type { CharacterId, ChoiceOption, HeroineId, ParamDelta, Scene, ScenarioNode } from '../types';
+import { AKANE_SCENES, DATE_SCENES, FILLER_SCENE, FINALE_SCENE } from '../schedule';
 
 class ScenarioError extends Error {
   constructor(file: string, sceneId: string, index: number | null, message: string) {
@@ -123,6 +124,42 @@ function parseNode(raw: unknown, file: string, sceneId: string, index: number): 
     return { kind: 'choice', options: raw.choice.map((o) => parseChoiceOption(o, file, sceneId, index)) };
   }
 
+  // --- チャット -------------------------------------------------------------
+  if (raw.from !== undefined) {
+    if (typeof raw.from !== 'string' || !VALID_CHARACTER_IDS.has(raw.from)) {
+      throw new ScenarioError(file, sceneId, index, `from "${String(raw.from)}" は未定義のキャラクターです`);
+    }
+    if (typeof raw.msg !== 'string') {
+      throw new ScenarioError(file, sceneId, index, 'チャットの本文は msg に文字列で書いてください');
+    }
+    const node: ScenarioNode = { kind: 'chat', from: raw.from as CharacterId, text: raw.msg };
+    if (typeof raw.at === 'string') node.at = raw.at;
+    return node;
+  }
+
+  if (raw.reply !== undefined) {
+    if (!Array.isArray(raw.reply) || raw.reply.length === 0) {
+      throw new ScenarioError(file, sceneId, index, 'reply は1つ以上の項目を持つ配列で書いてください');
+    }
+    return { kind: 'reply', options: raw.reply.map((o) => parseChoiceOption(o, file, sceneId, index)) };
+  }
+
+  // --- カラット -------------------------------------------------------------
+  if (raw.carat !== undefined) {
+    if (raw.carat !== 'match' && raw.carat !== 'profile') {
+      throw new ScenarioError(file, sceneId, index, 'carat は match か profile で書いてください');
+    }
+    if (typeof raw.target !== 'string' || !VALID_HEROINE_IDS.has(raw.target)) {
+      throw new ScenarioError(file, sceneId, index, `carat の target "${String(raw.target)}" は未定義のヒロインです`);
+    }
+    return { kind: 'carat', view: raw.carat, target: raw.target as HeroineId };
+  }
+
+  // --- 週スケジュール -------------------------------------------------------
+  if (raw.schedule !== undefined) {
+    return { kind: 'schedule' };
+  }
+
   // --- 演出 -----------------------------------------------------------------
   if (raw.bg !== undefined) {
     if (typeof raw.bg !== 'string') throw new ScenarioError(file, sceneId, index, 'bg は文字列で書いてください');
@@ -175,6 +212,22 @@ function parseScene(raw: unknown, file: string): Scene {
   if (typeof raw.bg === 'string') scene.bg = raw.bg;
   if (typeof raw.bgm === 'string') scene.bgm = raw.bgm;
   if (typeof raw.next === 'string') scene.next = raw.next;
+
+  if (raw.screen !== undefined) {
+    if (raw.screen !== 'adv' && raw.screen !== 'chat') {
+      throw new ScenarioError(file, raw.id, null, 'screen は adv か chat で書いてください');
+    }
+    scene.screen = raw.screen;
+  }
+  if (raw.with !== undefined) {
+    if (typeof raw.with !== 'string' || !VALID_CHARACTER_IDS.has(raw.with)) {
+      throw new ScenarioError(file, raw.id, null, `with "${String(raw.with)}" は未定義のキャラクターです`);
+    }
+    scene.with = raw.with as CharacterId;
+  }
+  if (scene.screen === 'chat' && !scene.with) {
+    throw new ScenarioError(file, raw.id, null, 'screen: chat のシーンには with（チャット相手）が必要です');
+  }
   return scene;
 }
 
@@ -205,7 +258,7 @@ export function buildScenes(files: Record<string, string>): Map<string, Scene> {
     if (scene.next) targets.push(scene.next);
     for (const node of scene.body) {
       if (node.kind === 'goto') targets.push(node.goto);
-      if (node.kind === 'choice') {
+      if (node.kind === 'choice' || node.kind === 'reply') {
         for (const o of node.options) if (o.goto) targets.push(o.goto);
       }
     }
@@ -215,6 +268,22 @@ export function buildScenes(files: Record<string, string>): Map<string, Scene> {
           `[シナリオ定義エラー] シーン "${scene.id}" が、存在しないシーン "${target}" を参照しています`,
         );
       }
+    }
+  }
+
+  // スケジュール表から参照されるシーンも同様に検査する。
+  // ここが抜けていると「デートを選んだ瞬間に落ちる」という最悪の壊れ方をする。
+  const scheduleTargets = [
+    ...Object.values(DATE_SCENES).flat(),
+    ...AKANE_SCENES,
+    FILLER_SCENE,
+    FINALE_SCENE,
+  ];
+  for (const target of scheduleTargets) {
+    if (!scenes.has(target)) {
+      throw new Error(
+        `[シナリオ定義エラー] schedule.ts が、存在しないシーン "${target}" を参照しています`,
+      );
     }
   }
 

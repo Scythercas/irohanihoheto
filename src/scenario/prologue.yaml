@@ -161,6 +161,7 @@
 - id: prologue_04
   bg: room_night
   bgm: bgm_app
+  next: carat_setup
   body:
     - text: "その夜、自分の部屋で、俺はアプリをインストールした。"
 

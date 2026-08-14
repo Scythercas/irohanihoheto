@@ -20,10 +20,12 @@
 ## 0. セッション開始時の必須手順
 
 1. `CLAUDE.md`（本ファイル）を読む
-2. `docs/00_instruction-log.md` の**末尾**を読み、直近の指示と次アクションを把握する
-3. `docs/01_game-design.md` を読み、確定事項／暫定案／未決を区別する
-4. `docs/02_open-questions.md` を読み、回答済み・未回答を把握する
+2. `docs/05_implementation-status.md` を読み、**何が実装済みで何が未実装か**を把握する
+3. `docs/00_instruction-log.md` の**末尾**を読み、直近の指示と次アクションを把握する
+4. `docs/01_game-design.md` を読み、確定事項／暫定案／未決を区別する
 5. 不明点があれば**推測で進めず、ユーザーに確認する**
+
+**シナリオを書くときは `docs/05_implementation-status.md` §3 の記法早見表を参照すること。**
 
 ## 1. 進行フェーズ（ユーザー指定・厳守）
 
@@ -55,9 +57,10 @@ docs/
   02_open-questions.md        … ヒアリング項目と回答の記録簿【Phase1完了】
   03_tech-stack.md            … 技術選定・開発環境・公開方法【確定済】
   04_asset-guide.md           … 立ち絵・背景・ボイス・BGMの制作/調達ガイドライン【未作成】
+  05_implementation-status.md … ★実装状況＋シナリオYAML記法の早見表
   06_credits.md               … 使用素材のライセンス台帳【未作成・都度追記すること】
 src/
-  main.tsx / App.tsx          … エントリ
+  main.tsx / App.tsx          … エントリと画面の振り分け
   game/
     constants.ts              … 色・キャラ・パラメータ定義【作品の背骨。変更禁止】
     types.ts                  … ドメイン型＋シナリオYAMLの構造定義
@@ -65,14 +68,24 @@ src/
     store.ts                  … Zustandストア。全状態を集約
     save.ts                   … localStorageセーブ。スキーマ版とマイグレーション
     flow.ts                   … 物語の入口シーンID
+    heroines.ts               … カラットに出すプロフィール（設計書§2.2の抜粋）
+    schedule.ts               … 週数・行動枠・デートイベント表
     scenario/build.ts         … YAML→Sceneの変換と検証（ブラウザ/CLI共用）
     scenario/loader.ts        … ブラウザ側の読み込み（Viteのglob）
   scenario/*.yaml             … ★シナリオ本文。日常的に触るのはここだけ
-  ui/                         … 画面コンポーネント
+  ui/
+    TitleScreen               … タイトル
+    AdvScreen                 … 通常のADV画面。カラット/スケジュールもここに重ねる
+    MessageWindow / ChoiceList
+    ChatScreen                … LINE風トーク画面（作品の中心）
+    CaratCard                 … マッチング演出・プロフィール閲覧
+    ScheduleScreen            … 週スケジュール
 scripts/
   check-scenario.ts           … シナリオの書式・リンク切れ検証
   smoke.ts                    … 全分岐を走破する再生テスト
 ```
+
+リポジトリ: <https://github.com/Scythercas/irohanihoheto>（public / Scythercasアカウント）
 
 ## 3. 世界観・スタイルの固定事項（ブレ防止）
 

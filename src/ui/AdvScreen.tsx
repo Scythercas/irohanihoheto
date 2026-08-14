@@ -2,8 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { CHARACTERS, PARAM_LABEL, PARAM_ORDER, PARAM_TO_HEROINE } from '../game/constants';
 import { AUTO_SLOT, save } from '../game/save';
 import { useGame } from '../game/store';
+import CaratCard from './CaratCard';
 import ChoiceList from './ChoiceList';
 import MessageWindow from './MessageWindow';
+import ScheduleScreen from './ScheduleScreen';
 import styles from './AdvScreen.module.css';
 
 /** 1文字あたりの表示間隔(ms)。あとでコンフィグ画面から変えられるようにする。 */
@@ -13,6 +15,7 @@ export default function AdvScreen() {
   const node = useGame((s) => s.node);
   const bg = useGame((s) => s.bg);
   const params = useGame((s) => s.params);
+  const week = useGame((s) => s.week);
   const advance = useGame((s) => s.advance);
   const choose = useGame((s) => s.choose);
   const backToTitle = useGame((s) => s.backToTitle);
@@ -24,6 +27,8 @@ export default function AdvScreen() {
 
   const text = node?.kind === 'say' ? node.text : '';
   const done = revealed >= text.length;
+  /** クリック送りを受け付けない状態（プレイヤーの入力待ち） */
+  const blocked = node?.kind === 'choice' || node?.kind === 'carat' || node?.kind === 'schedule';
 
   // ノードが変わるたびに文字送りを頭から
   useEffect(() => {
@@ -40,17 +45,17 @@ export default function AdvScreen() {
 
   // オートセーブ（H2）。今はノード単位。章の区切りが実装できたらそこへ移す。
   useEffect(() => {
-    if (mode === 'adv' && node) save(AUTO_SLOT, snapshot('オートセーブ'));
-  }, [mode, node, snapshot]);
+    if (mode === 'adv' && node) save(AUTO_SLOT, snapshot(`第${week}週`));
+  }, [mode, node, snapshot, week]);
 
   const onClick = useCallback(() => {
-    if (node?.kind === 'choice') return;
+    if (blocked) return;
     if (!done) {
       setRevealed(text.length); // 途中クリックで全文表示
       return;
     }
     advance();
-  }, [advance, done, node, text.length]);
+  }, [advance, blocked, done, text.length]);
 
   // 開発用: D キーでパラメータ表示を切り替え
   useEffect(() => {
@@ -96,6 +101,10 @@ export default function AdvScreen() {
       )}
 
       {node?.kind === 'choice' && <ChoiceList options={node.options} onChoose={choose} />}
+
+      {node?.kind === 'carat' && <CaratCard node={node} onDismiss={advance} />}
+
+      {node?.kind === 'schedule' && <ScheduleScreen />}
 
       {mode === 'ended' && (
         <div className={styles.endCard} onClick={(e) => e.stopPropagation()}>

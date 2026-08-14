@@ -25,8 +25,10 @@ function migrate(raw: Record<string, unknown>): GameSnapshot | null {
 
   if (version === SAVE_SCHEMA_VERSION) return raw as unknown as GameSnapshot;
 
-  // 例: version === 1 のときの引き上げ処理をここに足していく
-  // if (version === 1) { ...; return migrate({ ...raw, schemaVersion: 2 }); }
+  // v1 は週スケジュール／チャット履歴を持たない開発初期の形式。
+  // 公開前のため引き上げは行わず、読み込み不可として扱う。
+  // 以降のバージョンでは、ここに段階的な引き上げ処理を足していくこと。
+  // if (version === 2) { ...; return migrate({ ...raw, schemaVersion: 3 }); }
 
   return null;
 }
