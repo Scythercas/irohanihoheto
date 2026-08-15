@@ -173,6 +173,74 @@
 > なお Illustrious-XL 本体（<https://civitai.com/models/795765>）も
 > `allowCommercialUse: [RentCivit, Rent]` で同じ扱いだった。
 
+---
+
+## 5. 将来、収益化したくなった場合の手順
+
+### 結論: **ブロッカーは立ち絵だけ。** 他の素材はすべて商用利用可
+
+| 素材 | 商用可否 | 対応 |
+|---|---|---|
+| **立ち絵（AI生成）** | **❌ 販売不可** | **作り直しが必要** |
+| 背景（みんちりえ） | ✅ 商用OK | そのまま使える |
+| 背景（ゲームまてりあるず） | ✅ 商用OK | そのまま使える |
+| BGM（DOVA-SYNDROME／甘茶の音楽工房） | ✅ 商用OK | そのまま使える |
+| 効果音（効果音ラボ） | ✅ 商用OK | そのまま使える |
+| ボイス（VOICEVOX） | ✅ 商用OK | クレジット表記が必要 |
+| コード・シナリオ | ✅ 自作 | 制限なし |
+
+### 手順
+
+**Step 1. 差し替え先のモデルを選ぶ**
+
+条件は **`allowCommercialUse` に `Image` が含まれていること**。
+Civitai API で機械的に確認できる。
+
+```powershell
+Invoke-RestMethod "https://civitai.com/api/v1/models/1188071" |
+  Select-Object name, @{n='商用';e={$_.allowCommercialUse -join ','}}
+```
+
+2026-08-15 時点で条件を満たす主なアニメ系チェックポイント:
+
+| モデル | id | allowCommercialUse | 備考 |
+|---|---|---|---|
+| **Animagine XL 4.0** | 1188071 | **`Image, RentCivit, Rent, Sell`** | **最も緩い。第一候補** |
+| Animagine XL V3.1 | 260267 | `Image, RentCivit, Rent` | 実績豊富 |
+| CAT - Citron Anime Treasure | 131986 | `Image, RentCivit, Rent` | Illustrious/Noob系 |
+| Holy Mix [illustriousXL] | 959490 | `Image, RentCivit, Rent` | 現行モデルに絵柄が近い |
+| Pony Diffusion V6 XL | 257749 | `Image, RentCivit` | 最大手だがタグ体系が独特 |
+
+> **絵柄を今と近づけたいなら Illustrious系（CAT / Holy Mix）**、
+> **確実さを取るなら Animagine XL 4.0**（`Sell` まで許諾されている）。
+
+**Step 2. 立ち絵をすべて作り直す**
+
+`docs/04_asset-guide.md` の手順をそのまま使う。**プロンプトは流用できる**が、
+モデルが変わると seed の意味が変わるため、**`normal` の作り込みからやり直しになる**。
+
+- 対象: **6人 × 7表情 = 42枚**（現時点では茜の7枚のみ）
+- 手順: `normal` を作り込む → seed固定 → inpaint で表情6種 → `remove-bg.py` で一括透過
+
+**Step 3. 差し替えと記録**
+
+1. `public/assets/chara/<ID>/` の中身を入れ替える（**ファイル名は変えない**。コード変更不要）
+2. 本ファイル §4 の表を新しいモデル名・ライセンス・seed で更新する
+3. 旧モデルで作った画像を**リポジトリの履歴からも消したい場合**は、
+   単純な削除コミットでは残るため、履歴の書き換えが必要になる点に注意
+
+**Step 4. 公開設定を変える**
+
+- itch.io のプロジェクト設定を「Name your own price」または有料に変更
+- `docs/01_game-design.md` の D4、`docs/03_tech-stack.md` §9、`CLAUDE.md` §4.6 を更新
+
+### 【最重要】判断は「量産前」に済ませること
+
+**いま作り直すなら7枚。5人ぶん作ってからだと42枚。**
+収益化の可能性が少しでもあるなら、**残り5人の立ち絵を作り始める前に決める**のが圧倒的に安い。
+
+現在の方針（D4① 完全無料）を維持するなら、このまま進めてよい。
+
 **Civitai等のモデルには商用利用や生成物の扱いに条件が付くものがある。**
 使ったモデル名とライセンスを必ずここに記録すること。seed は表情差分を作り直すときに要る。
 

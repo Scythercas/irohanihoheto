@@ -56,9 +56,9 @@ docs/
   01_game-design.md           … ゲーム設計書（世界観・キャラ・システム・エンド構成）
   02_open-questions.md        … ヒアリング項目と回答の記録簿【Phase1完了】
   03_tech-stack.md            … 技術選定・開発環境・公開方法【確定済】
-  04_asset-guide.md           … 立ち絵・背景・ボイス・BGMの制作/調達ガイドライン【未作成】
+  04_asset-guide.md           … ★立ち絵の生成手順・プロンプト・背景透過・ボイス処理
   05_implementation-status.md … ★実装状況＋シナリオYAML記法の早見表
-  06_credits.md               … 使用素材のライセンス台帳【未作成・都度追記すること】
+  06_credits.md               … ★使用素材のライセンス台帳【都度追記すること】
 src/
   main.tsx / App.tsx          … エントリと画面の振り分け
   game/
@@ -70,6 +70,7 @@ src/
     flow.ts                   … 物語の入口シーンID
     heroines.ts               … カラットに出すプロフィール（設計書§2.2の抜粋）
     schedule.ts               … 週数・行動枠・デートイベント表
+    backgrounds.ts            … 背景キー↔ファイル↔出典の対応表
     scenario/build.ts         … YAML→Sceneの変換と検証（ブラウザ/CLI共用）
     scenario/loader.ts        … ブラウザ側の読み込み（Viteのglob）
   scenario/*.yaml             … ★シナリオ本文。日常的に触るのはここだけ
@@ -80,9 +81,18 @@ src/
     ChatScreen                … LINE風トーク画面（作品の中心）
     CaratCard                 … マッチング演出・プロフィール閲覧
     ScheduleScreen            … 週スケジュール
+    StageLayer                … 立ち絵の配置（主人公=左固定／相手=右、話し手を大きく）
+    ParamPentagon             … 5色パラメータの5角形表示と変動通知
+    sprites/                  … 立ち絵の読み込み。PNG→コード描画→色シルエットの順に落ちる
 scripts/
   check-scenario.ts           … シナリオの書式・リンク切れ検証
   smoke.ts                    … 全分岐を走破する再生テスト
+  fetch-assets.ts             … 背景素材のダウンロード
+  remove-bg.py                … 立ち絵の背景透過（reForgeのvenv Pythonで実行）
+public/assets/
+  bg/                         … 背景。**再配布禁止のためGit管理外**。fetch:assets で取得
+  chara/<ID>/<表情>.png       … 立ち絵。置くだけで反映される（Git管理下）
+work-assets/                  … 試作・候補・バックアップ（Git管理外）
 ```
 
 リポジトリ: <https://github.com/Scythercas/irohanihoheto>（public / Scythercasアカウント）
@@ -147,9 +157,17 @@ scripts/
 
 ```powershell
 npm run dev              # 開発サーバー起動（ブラウザで確認）
-npm run check:scenario   # シナリオYAMLの書式・未定義キャラ・リンク切れを検証
-npm run smoke            # 全分岐を自動走破して再生。到達不能シーンも検出
+npm run check:scenario   # シナリオYAMLの書式・未定義キャラ・リンク切れ・未登録背景を検証
+npm run smoke            # 全分岐を自動走破して再生。立ち絵の退場・茜ゲートも検証
 npm run build            # check:scenario → 型チェック → 本番ビルド
+npm run fetch:assets     # 背景素材をダウンロード（Git管理外なのでclone後は必須）
+```
+
+立ち絵の背景透過（reForge の venv Python を使う。PIL/numpy が入っているため）:
+
+```powershell
+& "C:\StabilityMatrix\Data\Packages\Stable Diffusion WebUI reForge\venv\Scripts\python.exe" `
+  scripts\remove-bg.py public\assets\chara\akane
 ```
 
 **シナリオを書き換えたら `npm run smoke` を通すこと。** ブラウザを開かずに壊れを検出できる。
@@ -162,8 +180,24 @@ npm run build            # check:scenario → 型チェック → 本番ビル�
 3. **`engine.ts` に React / Vite を持ち込まない。** 純粋関数のままにすることで `smoke` が成立する
 4. **セーブデータの構造を変えたら `SAVE_SCHEMA_VERSION` を上げ、`save.ts` の `migrate()` に引き上げ処理を足す**
 5. **シナリオはコードに書かない。** すべて `src/scenario/*.yaml` に置く
-6. **プレイヤーにパラメータの数値を見せない**（C3②）。開発用パネルは `import.meta.env.DEV` の下でのみ表示
+6. **プレイヤーにパラメータの数値を見せない**（C3②）。5角形の形と言葉（「自信 が 大きく伸びた」）で伝える。数値の併記は `import.meta.env.DEV` の下でのみ
 7. 無料素材を使ったら、その場で `docs/06_credits.md` に出典とライセンスを記録する
+8. **配布素材（背景）はリポジトリに入れない。** 再配布禁止のため `public/assets/bg/` は `.gitignore` 済み
+9. **メッセージウィンドウは常に立ち絵より手前**（z-index 5 / 1）。テキストの可読性を最優先する
+
+## 4.6 収益化に関する制約【重要】
+
+**本作は完全無料で公開する。投げ銭（Name your own price）も行わない。**
+
+理由: 立ち絵の生成に使ったモデル `illustriousXLPersonalMerge_v30Noob10based` の
+Civitai上の許諾が `allowCommercialUse: [RentCivit, Rent]` で、
+**`Image`（生成画像の販売）が含まれていない**ため。
+
+- 無料配布・パブリックリポジトリでの公開は**問題ない**
+- **有料販売・投げ銭は不可**
+- 収益化したくなった場合は**立ち絵を作り直す必要がある**（手順は `docs/06_credits.md` §4）
+
+**素材を追加するときは、必ず商用可否を確認して `docs/06_credits.md` に記録すること。**
 
 ## 5. コミュニケーション規約
 
@@ -180,3 +214,4 @@ npm run build            # check:scenario → 型チェック → 本番ビル�
 | 2026-08-14 | 第1・第2ラウンドの回答を反映。髪色表に**パラメータ列**を追加し「色＝パラメータ＝ヒロイン」を明文化。主人公名を固定に。**予算を0円に変更**（複数アカウント方式は不採用と明記）。公開先をWEB＋itch.ioに確定。 |
 | 2026-08-14 | **Phase1完了、Phase2開始。** タイトルを**『いろはにほへと』**に確定し、いろは歌「色は匂へど散りぬるを」を作品の背骨として最上位に明記。体験版ルートを葵→**桃果**に変更。`docs/03_tech-stack.md` を新設。 |
 | 2026-08-14 | **Phase2完了、Phase3（開発）開始。** 技術スタックを**Web自作（Vite + React + TypeScript + Zustand）**に確定。プロジェクト基盤を構築し、ファイル構成・開発コマンド・実装上の約束（§4.5）を追加。Gitリポジトリを初期化。 |
+| 2026-08-15 | **茜の立ち絵（7表情）完成。** ファイル構成・開発コマンドを実態に合わせて更新。**§4.6「収益化に関する制約」を新設**（立ち絵の生成モデルが画像販売不可のため、完全無料を確定）。実装上の約束に2項目追加。 |
