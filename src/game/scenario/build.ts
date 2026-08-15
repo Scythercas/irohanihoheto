@@ -69,6 +69,17 @@ function parseChoiceOption(raw: unknown, file: string, sceneId: string, index: n
   }
   const option: ChoiceOption = { text: raw.text };
 
+  if (raw.who !== undefined) {
+    if (typeof raw.who !== 'string' || !VALID_CHARACTER_IDS.has(raw.who)) {
+      throw new ScenarioError(
+        file,
+        sceneId,
+        index,
+        `選択肢の who "${String(raw.who)}" は未定義のキャラクターです（この選択肢が誰についてのものかを示す）`,
+      );
+    }
+    option.who = raw.who as CharacterId;
+  }
   if (raw.params !== undefined) {
     option.params = parseParamDelta(raw.params, file, sceneId, index);
   }

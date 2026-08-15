@@ -65,12 +65,20 @@ export interface ScheduleAction {
   requireFlag?: string;
 }
 
+/**
+ * 【並び順は固定】`HEROINE_IDS` と同じ **青 → 翠 → 橙 → 紫 → 桃** の順に並べ、最後に茜を置く。
+ *
+ * これは「カラット」の起動画面に石が並ぶ順（prologue_04）でもあり、
+ * `constants.ts` のパラメータ定義順でもある。**作品を通して1つの順序に統一する。**
+ * 茜に相談するときの「誰の話か」を選ぶ選択肢（carat.yaml の `akane_hint_select`）も
+ * この順に並べること。並びが場面ごとに違うと、選ぶたびに読み直す羽目になる。
+ */
 export const SCHEDULE_ACTIONS: ScheduleAction[] = [
-  { who: 'momoka', label: '桃果と会う', requireFlag: 'met_momoka' },
   { who: 'aoi', label: '葵と会う', requireFlag: 'met_aoi' },
   { who: 'sui', label: '翠と会う', requireFlag: 'met_sui' },
   { who: 'touka', label: '橙香と会う', requireFlag: 'met_touka' },
   { who: 'shion', label: '紫音と会う', requireFlag: 'met_shion' },
+  { who: 'momoka', label: '桃果と会う', requireFlag: 'met_momoka' },
   { who: 'akane', label: '茜に相談する' },
 ];
 

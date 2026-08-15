@@ -5,16 +5,31 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  background: rgba(6, 6, 8, 0.42);
+  gap: 0.85rem;
+
+  /* 【重要】立ち絵レイヤー（z-index: 1）より必ず手前に置く。
+     ここを指定し忘れると、選択肢が人物の裏に回り、文字の上に体が乗って読めなくなる。 */
+  z-index: 6;
+
+  /* 選択中は背景も立ち絵も奥に引っ込ませる。読ませることを最優先する。 */
+  background: rgba(4, 4, 6, 0.66);
+  backdrop-filter: blur(3px);
 }
 
 .option {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
   width: min(38rem, 88%);
-  padding: 1.05rem 1.6rem;
-  background: rgba(14, 14, 18, 0.92);
-  border: 1px solid var(--panel-border);
+  padding: 1.05rem 1.5rem;
+
+  /* ほぼ不透過にして、背後に何があっても文字が沈まないようにする */
+  background: rgba(12, 12, 16, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-left: 4px solid rgba(255, 255, 255, 0.22);
   border-radius: 3px;
+  box-shadow: 0 0.6rem 1.6rem rgba(0, 0, 0, 0.5);
+
   font-size: 1rem;
   line-height: 1.6;
   letter-spacing: 0.05em;
@@ -22,8 +37,41 @@
   transition: transform 0.18s, border-color 0.18s, background 0.18s;
 }
 
+/* who を持つ選択肢は、そのキャラクターの色で縁取る（色は inline style で入る） */
+.tagged {
+  border-left-width: 5px;
+}
+
+.chip {
+  flex-shrink: 0;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  box-shadow: 0 0 0.5rem currentColor;
+}
+
+.label {
+  flex: 1;
+}
+
 .option:hover {
   transform: translateX(6px);
-  background: rgba(196, 55, 61, 0.18);
-  border-color: rgba(196, 55, 61, 0.55);
+  background: rgba(28, 22, 24, 0.98);
+  border-top-color: rgba(255, 255, 255, 0.4);
+  border-right-color: rgba(255, 255, 255, 0.4);
+  border-bottom-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 色の付いていない選択肢は、従来どおり茜色でハイライトする */
+.option:not(.tagged):hover {
+  border-left-color: rgba(196, 55, 61, 0.75);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option {
+    transition: none;
+  }
+  .option:hover {
+    transform: none;
+  }
 }

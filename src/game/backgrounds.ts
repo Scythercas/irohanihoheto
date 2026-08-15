@@ -51,7 +51,10 @@ export const BACKGROUNDS: BackgroundDef[] = [
     key: 'room_night',
     file: 'room_night.jpg',
     label: '自室・夜',
-    source: { site: 'minchirie', slug: 'single_room2', variant: 3 },
+    // 以前は single_room2 を使っていたが、ピンクの壁・テディベア・鏡台があり
+    // どう見ても女性の部屋だった。24歳男性の一人暮らしとして成立する
+    // 机・ノートPC・本棚だけの1Kに差し替えた（variant 4 が夜）。
+    source: { site: 'minchirie', slug: 'single_room3', variant: 4 },
   },
   {
     key: 'cafe_day',

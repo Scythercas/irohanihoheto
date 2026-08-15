@@ -46,7 +46,7 @@
 | ゲーム内キー | ファイル | みんちりえの素材 | 用途 |
 |---|---|---|---|
 | `izakaya_night` | `izakaya_night.jpg` | 居酒屋のテーブル席（夜） | プロローグの居酒屋 |
-| `room_night` | `room_night.jpg` | 一人部屋２（夜） | 色葉の自室 |
+| `room_night` | `room_night.jpg` | 一人部屋３（夜／variant 4） | 色葉の自室。**当初「一人部屋２」を使っていたが、ピンクの壁・テディベア・鏡台があり女性の部屋だったため差し替えた**（2026-08-15） |
 | `cafe_day` | `cafe_day.jpg` | カフェ（日中） | 未使用（今後のデート用） |
 | `cafe_evening` | `cafe_evening.jpg` | カフェ（夕方） | 桃果デートの終盤 |
 | `family_restaurant` | `family_restaurant.jpg` | 飲食店の店内（夜） | 茜への相談（ファミレス） |

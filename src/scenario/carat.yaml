@@ -307,20 +307,28 @@
       face: normal
       text: "「で、誰の話。名前で言って」"
 
+    # 【並び順は固定】schedule.ts の SCHEDULE_ACTIONS と**同じ順**にすること。
+    # 青 → 翠 → 橙 → 紫 → 桃。who を書くと、その子のイメージカラーで縁取られ、
+    # 「○○と会う」の画面とまったく同じ見た目・同じ並びになる。
     - choice:
         - text: "葵さん。年上の、看護師の人"
+          who: aoi
           requireFlag: met_aoi
           goto: akane_hint_aoi
         - text: "翠さん。花屋で働いてる人"
+          who: sui
           requireFlag: met_sui
           goto: akane_hint_sui
         - text: "橙香さん。とにかくよく喋る子"
+          who: touka
           requireFlag: met_touka
           goto: akane_hint_touka
         - text: "紫音さん。デザイナーの人"
+          who: shion
           requireFlag: met_shion
           goto: akane_hint_shion
         - text: "桃果って子。年下の大学生"
+          who: momoka
           requireFlag: met_momoka
           goto: akane_hint_momoka
         - text: "特にない。近況を話しに来ただけ"
