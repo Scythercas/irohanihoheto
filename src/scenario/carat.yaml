@@ -251,59 +251,59 @@
 
     - text: "（何か、間違えた）"
 
-# --- 茜への相談（C3: ヒント役） -----------------------------------------------
+# --- 茉白への相談（C3: ヒント役） -----------------------------------------------
 
-# 茜への相談は3部構成になっている。
+# 茉白への相談は3部構成になっている。
 #
-#   akane_talk_01     … 導入（誰の話をするかはまだ決まっていない）
-#   akane_hint_select … **誰について相談するかをプレイヤーが選ぶ**
-#   akane_hint_<ID>   … その子に対する具体的な助言（C3: 茜がヒント役）
-#   akane_talk_close  … 締め。ここでデレ段階のゲートを通す
+#   mashiro_talk_01     … 導入（誰の話をするかはまだ決まっていない）
+#   mashiro_hint_select … **誰について相談するかをプレイヤーが選ぶ**
+#   mashiro_hint_<ID>   … その子に対する具体的な助言（C3: 茉白がヒント役）
+#   mashiro_talk_close  … 締め。ここでデレ段階のゲートを通す
 #
 # 【なぜ相手を選ばせるのか】
 # 以前は「その子、年下でしょ」と桃果を決め打ちしていた。
-# 5人と並行して会う設計になった時点で、**誰の話かは茜には分からない**はずであり、
+# 5人と並行して会う設計になった時点で、**誰の話かは茉白には分からない**はずであり、
 # 実際に葵と会った直後でも桃果の話をされるという矛盾が起きていた。
 # プレイヤーに選ばせることで矛盾が消え、C3のヒント機能もようやく実際に働くようになる。
 #
-# 【重要】茜が主人公に揺れる描写は、
-#   ①ヒロインと2人以上出会っている ②総合魅力レベルが AKANE_DERE_STEPS[0] に到達している
-# の両方を満たすまで出さない。序盤の茜はあくまで口の悪い幼馴染。
-- id: akane_talk_01
+# 【重要】茉白が主人公に揺れる描写は、
+#   ①ヒロインと2人以上出会っている ②総合魅力レベルが MASHIRO_DERE_STEPS[0] に到達している
+# の両方を満たすまで出さない。序盤の茉白はあくまで口の悪い幼馴染。
+- id: mashiro_talk_01
   bg: family_restaurant
   bgm: bgm_daily
-  next: akane_hint_select
+  next: mashiro_hint_select
   body:
-    # 茜は「総合」の担当。相談すると5色すべてが少しずつ伸びる。
+    # 茉白は「総合」の担当。相談すると5色すべてが少しずつ伸びる。
     # 行動枠を1つ使う以上、何も起きないと相談する動機がなくなってしまうため。
     - params: { sincerity: 1, tolerance: 1, humor: 1, sensibility: 1, confidence: 1 }
 
-    - text: "深夜のファミレス。茜はドリンクバーだけで三時間粘る女だった。"
+    - text: "深夜のファミレス。茉白はドリンクバーだけで三時間粘る女だった。"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「で？　うまくいってないんでしょ、顔に出てる」"
 
     - who: iroha
       text: "「……なんでわかるんだよ」"
 
-    - who: akane
+    - who: mashiro
       face: smug
       text: "「二十四年」"
 
-    - text: "それだけ言って、茜はストローを咥えた。"
+    - text: "それだけ言って、茉白はストローを咥えた。"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「言っとくけど、私は恋愛の専門家じゃないからね」"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「ただ、女がなに考えてるかは、あんたよりは知ってる」"
 
-- id: akane_hint_select
+- id: mashiro_hint_select
   body:
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「で、誰の話。名前で言って」"
 
@@ -314,197 +314,197 @@
         - text: "葵さん。年上の、看護師の人"
           who: aoi
           requireFlag: met_aoi
-          goto: akane_hint_aoi
+          goto: mashiro_hint_aoi
         - text: "翠さん。花屋で働いてる人"
           who: sui
           requireFlag: met_sui
-          goto: akane_hint_sui
+          goto: mashiro_hint_sui
         - text: "橙香さん。とにかくよく喋る子"
           who: touka
           requireFlag: met_touka
-          goto: akane_hint_touka
+          goto: mashiro_hint_touka
         - text: "紫音さん。デザイナーの人"
           who: shion
           requireFlag: met_shion
-          goto: akane_hint_shion
+          goto: mashiro_hint_shion
         - text: "桃果って子。年下の大学生"
           who: momoka
           requireFlag: met_momoka
-          goto: akane_hint_momoka
+          goto: mashiro_hint_momoka
         - text: "特にない。近況を話しに来ただけ"
-          goto: akane_hint_none
+          goto: mashiro_hint_none
 
-# 各ヒントは heroines.ts の hint と同じ内容を、茜の口調で言わせている。
+# 各ヒントは heroines.ts の hint と同じ内容を、茉白の口調で言わせている。
 # ここがずれるとプロフィール画面の説明と食い違うので、直すときは両方を直すこと。
 
-- id: akane_hint_aoi
-  next: akane_talk_close
+- id: mashiro_hint_aoi
+  next: mashiro_talk_close
   body:
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「その人、取り繕われるのが一番きらいなタイプでしょ」"
 
     - who: iroha
       text: "「会ったこともないのに」"
 
-    - who: akane
+    - who: mashiro
       face: smug
       text: "「そういう人は、だいたい自分が嘘をつけないから」"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「間違ってると思ったら、ちゃんと言ってあげな。合わせるのがいちばん失礼」"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「ただし人前ではやめときな。それは訂正じゃなくて、晒しだから」"
 
     - text: "（……後半のほうが、たぶん重要だ）"
 
-- id: akane_hint_sui
-  next: akane_talk_close
+- id: mashiro_hint_sui
+  next: mashiro_talk_close
   body:
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「落ち込んでるときに励ますのは、逆効果」"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「『頑張って』は、まだ足りないって意味に聞こえるから」"
 
     - who: iroha
       text: "「じゃあ、なんて言えば」"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「なんも言わなくていいの。黙って聞いてあげな」"
 
-    - who: akane
+    - who: mashiro
       face: away
       text: "「……あんた、それ苦手でしょ。すぐ解決しようとするから」"
 
     - text: "（二十四年ぶんの指摘は、いちいち痛い）"
 
-- id: akane_hint_touka
-  next: akane_talk_close
+- id: mashiro_hint_touka
+  next: mashiro_talk_close
   body:
-    - who: akane
+    - who: mashiro
       face: laugh
       text: "「あー、ボケ倒してくるタイプね」"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「真面目に返したら終わり。ちゃんと拾ってあげな」"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「ただし、自分を下げるボケだけは拾っちゃだめ」"
 
     - who: iroha
       text: "「なんで」"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「乗っかった瞬間、冗談じゃなくなるから」"
 
     - text: "（……覚えておこう）"
 
-- id: akane_hint_shion
-  next: akane_talk_close
+- id: mashiro_hint_shion
+  next: mashiro_talk_close
   body:
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「『なんかいいね』は絶対に言うな」"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「あれ、なんにも見てませんって宣言してるのと同じだから」"
 
     - who: iroha
       text: "「わからないときは」"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「わからないって言いな。そっちのほうが、まだマシ」"
 
-    - who: akane
+    - who: mashiro
       face: smug
       text: "「知ったかぶりは、わかる人には一秒でばれる」"
 
-- id: akane_hint_momoka
-  next: akane_talk_close
+- id: mashiro_hint_momoka
+  next: mashiro_talk_close
   body:
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「『どこでもいいよ』は言うな」"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「あの子はあんたに決めてほしいの」"
 
     - who: iroha
       text: "「決めて、外したら」"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「外していいの。外したあとに『次はここ』って言えるかどうかだから」"
 
-    - who: akane
+    - who: mashiro
       face: away
       text: "「……あと、年下相手に説教はすんなよ。それは自信じゃなくて、ただの威圧」"
 
-- id: akane_hint_none
-  next: akane_talk_close
+- id: mashiro_hint_none
+  next: mashiro_talk_close
   body:
     - who: iroha
       text: "「いや、特には」"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「……は？　じゃあなんで呼んだの」"
 
     - who: iroha
       text: "「なんとなく」"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「出た」"
 
-    - text: "文句を言いながら、茜はドリンクバーをもう一杯取りに行った。"
+    - text: "文句を言いながら、茉白はドリンクバーをもう一杯取りに行った。"
     - text: "（……付き合ってくれるんだよな、結局）"
 
 # 締め。ここでデレ段階のゲートを通す。
-- id: akane_talk_close
+- id: mashiro_talk_close
   body:
-    # AKANE_DERE_STEPS = [60, 110, 160, 210]。上から順に評価されるので、
+    # MASHIRO_DERE_STEPS = [60, 110, 160, 210]。上から順に評価されるので、
     # **しきい値の高いものを先に**書く。順序を逆にすると永久に第1段階しか出ない。
     - branch:
-        - goto: akane_dere_04
+        - goto: mashiro_dere_04
           ifMetCount: 2
           ifTotalParam: 210
-        - goto: akane_dere_03
+        - goto: mashiro_dere_03
           ifMetCount: 2
           ifTotalParam: 160
-        - goto: akane_dere_02
+        - goto: mashiro_dere_02
           ifMetCount: 2
           ifTotalParam: 110
-        - goto: akane_dere_01
+        - goto: mashiro_dere_01
           ifMetCount: 2
           ifTotalParam: 60
-        - goto: akane_talk_plain
+        - goto: mashiro_talk_plain
 
-- id: akane_talk_plain
+- id: mashiro_talk_plain
   next: schedule_hub
   body:
     # 「特にない」を選んだ場合にもつながるよう、相談内容に触れない締めにしてある。
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「……ま、せいぜい頑張れば」"
 
     - text: "気づけば、二時間が経っていた。"
-    - text: "伝票を持って、茜は先に立ち上がった。"
+    - text: "伝票を持って、茉白は先に立ち上がった。"
 
-    - who: akane
+    - who: mashiro
       face: smug
       text: "「言っとくけど、割り勘だから」"
 
@@ -512,92 +512,92 @@
 
 # --- ここから先はデレ段階に到達してから解放される（H5） -----------------------
 
-- id: akane_dere_01
+- id: mashiro_dere_01
   bg: family_restaurant
   bgm: bgm_daily
   next: schedule_hub
   body:
-    - text: "話が一段落したところで、茜がこちらを見た。少しだけ、間があった。"
+    - text: "話が一段落したところで、茉白がこちらを見た。少しだけ、間があった。"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「あんた、変わったね」"
 
     - who: iroha
       text: "「そうか？」"
 
-    - who: akane
+    - who: mashiro
       face: fluster
       text: "「……なんでもない。忘れて」"
 
-    - text: "茜はストローを咥えて、窓の外を見た。"
+    - text: "茉白はストローを咥えて、窓の外を見た。"
     - text: "（……耳が赤い）"
     - text: "（気のせいだと思うことにした）"
 
-- id: akane_dere_02
+- id: mashiro_dere_02
   bg: family_restaurant
   bgm: bgm_daily
   next: schedule_hub
   body:
     - text: "こちらが席を立とうとしたら、袖を引かれた。"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「……あのさ」"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「私も最近、ちょっとだけ、焦ることがある」"
 
     - who: iroha
-      text: "「茜が？」"
+      text: "「茉白が？」"
 
-    - who: akane
+    - who: mashiro
       face: fluster
       text: "「なんでもない。座り直さないで。帰って」"
 
     - text: "（何かを言いかけて、やめた）"
     - text: "（二十四年で、初めて見る顔だった）"
 
-- id: akane_dere_03
+- id: mashiro_dere_03
   bg: family_restaurant
   bgm: bgm_daily
   next: schedule_hub
   body:
     - text: "帰り支度をしていて、はじめて気づいた。"
-    - text: "その夜の茜は、髪をほどいていた。"
+    - text: "その夜の茉白は、髪をほどいていた。"
     - text: "低い位置で結んでいるのを、二十四年見てきた。"
 
     - who: iroha
       text: "「……珍しいな」"
 
-    - who: akane
+    - who: mashiro
       face: away
       text: "「ゴム切れただけ」"
 
     - text: "嘘だと思ったが、言わなかった。"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「あんた、最近ちゃんとしてるね。話し方とか」"
 
     - who: iroha
       text: "「そうか？」"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「うん。……誰かのおかげなんだろうけど」"
 
     - text: "グラスの氷が鳴った。"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「言っとくけど、褒めてないから。事実を言っただけ」"
 
     - text: "（それを人は、褒めていると言う）"
     - text: "（でも、指摘はしないでおいた）"
 
-- id: akane_dere_04
+- id: mashiro_dere_04
   bg: family_restaurant
   bgm: bgm_daily
   next: schedule_hub
@@ -608,34 +608,34 @@
 
     - text: "夜の街は、店の看板がひとつずつ落ちていく時間だった。"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「ねえ」"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「あんたさ、最初に私に相談したじゃん。彼女欲しいって」"
 
     - who: iroha
       text: "「……言ったな」"
 
-    - who: akane
+    - who: mashiro
       face: away
       text: "「あのとき、私、笑ったでしょ」"
 
-    - text: "茜が立ち止まった。"
+    - text: "茉白が立ち止まった。"
 
-    - who: akane
+    - who: mashiro
       face: fluster
       text: "「あれ、笑うしかなかったんだよ」"
 
     - text: "（……え）"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「はい、この話終わり。忘れて。忘れなかったら殴る」"
 
-    - text: "茜は先に歩き出した。歩幅が、いつもより大きかった。"
+    - text: "茉白は先に歩き出した。歩幅が、いつもより大きかった。"
     - text: "（――今のは）"
     - text: "（今のは、たぶん、聞いてはいけなかった）"
 

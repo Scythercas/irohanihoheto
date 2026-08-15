@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 作品の背骨となる定数。
  *
  * 「色 ＝ パラメータ ＝ ヒロイン」の対応は本作の中核メカニクスであり、
@@ -56,7 +56,10 @@ export interface CharacterDef {
 
 export const CHARACTERS: Record<CharacterId, CharacterDef> = {
   iroha: { id: 'iroha', name: '色葉', kana: 'いろは', color: '#6B6B72', colorDeep: '#4A4A50' },
-  akane: { id: 'akane', name: '茜', kana: 'あかね', color: '#C4373D', colorDeep: '#8E2126' },
+  // 茉白の白は「色が無い」ではなく「五色すべてが重なった光」。
+  // 色葉の灰（何も持っていない無彩色）と対になるよう、わずかに青みを含んだ白銀にしている。
+  // colorDeep は名前表示の下地に使うため、白文字が乗る前提で暗い色を置く。
+  mashiro: { id: 'mashiro', name: '茉白', kana: 'ましろ', color: '#E6E9F0', colorDeep: '#5B6270' },
   aoi: { id: 'aoi', name: '葵', kana: 'あおい', color: '#2E6FB7', colorDeep: '#1E4E84' },
   sui: { id: 'sui', name: '翠', kana: 'すい', color: '#17A67C', colorDeep: '#0E7757' },
   touka: { id: 'touka', name: '橙香', kana: 'とうか', color: '#E8811F', colorDeep: '#A85B12' },
@@ -64,7 +67,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
   momoka: { id: 'momoka', name: '桃果', kana: 'ももか', color: '#EE8497', colorDeep: '#C05468' },
 };
 
-/** 攻略対象の5人（茜を含まない）。アプリ「カラット」で出会う順ではなく定義順。 */
+/** 攻略対象の5人（茉白を含まない）。アプリ「カラット」で出会う順ではなく定義順。 */
 export const HEROINE_IDS: readonly HeroineId[] = ['aoi', 'sui', 'touka', 'shion', 'momoka'] as const;
 
 /** パラメータの上限。UIのゲージ計算に使う。 */
@@ -73,9 +76,9 @@ export const PARAM_MAX = 100;
 /**
  * ルート突入のしきい値。
  * - 個別ルート: 対応する1色が INDIVIDUAL 以上
- * - 茜ルート  : どの色も INDIVIDUAL に届かず、5色すべてが AKANE_ALL 以上
+ * - 茉白ルート  : どの色も INDIVIDUAL に届かず、5色すべてが MASHIRO_ALL 以上
  *
- * **個別ルート優先**（K11③）のため、茜ルートは [AKANE_ALL, INDIVIDUAL) という
+ * **個別ルート優先**（K11③）のため、茉白ルートは [MASHIRO_ALL, INDIVIDUAL) という
  * "帯" になる。帯が狭すぎると、平均的に遊んだ人が意図せず個別ルートに落ちる。
  * プレイヤーには数値を見せない（C3②）以上、帯は十分広く取る必要がある。
  *
@@ -85,8 +88,8 @@ export const PARAM_MAX = 100;
  */
 export const THRESHOLD = {
   INDIVIDUAL: 80,
-  AKANE_ALL: 45,
+  MASHIRO_ALL: 45,
 } as const;
 
-/** 茜のデレ段階が解放される総合値のしきい値（H5: 到達するたびにイベント解放） */
-export const AKANE_DERE_STEPS: readonly number[] = [60, 110, 160, 210] as const;
+/** 茉白のデレ段階が解放される総合値のしきい値（H5: 到達するたびにイベント解放） */
+export const MASHIRO_DERE_STEPS: readonly number[] = [60, 110, 160, 210] as const;

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * シナリオ走査エンジン（純粋ロジック）。
  *
  * React にも Vite にも依存させない。ここを独立させておくことで、
@@ -157,9 +157,9 @@ export function metCount(flags: Record<string, boolean>): number {
  *   1. 対応する色が `THRESHOLD.INDIVIDUAL` 以上のヒロインがいれば、その個別ルート。
  *      複数該当したら値が最も大きい色を採る。同値なら好感度、それも同値なら
  *      `PARAM_ORDER` の順で決める（判定を再現可能にするため、必ず一意に決まるようにする）。
- *   2. 誰も該当しないとき、5色すべてが `THRESHOLD.AKANE_ALL` 以上なら茜ルート。
+ *   2. 誰も該当しないとき、5色すべてが `THRESHOLD.MASHIRO_ALL` 以上なら茉白ルート。
  *      「どの色にも特化しなかった＝すべてを平均的に上げた」人だけが通れる帯になる。
- *   3. どちらでもなければサッドエンド（茜に見限られる）。
+ *   3. どちらでもなければサッドエンド（茉白に見限られる）。
  *
  * 設計書 §3.5 の「誰とも交際確定していない」は、1 に該当しないこと＝
  * 特化した相手がいないこと、として表現している。
@@ -181,7 +181,7 @@ export function endingRoute(cursor: Cursor): EndingRoute {
     return PARAM_TO_HEROINE[best];
   }
 
-  if (PARAM_ORDER.every((key) => cursor.params[key] >= THRESHOLD.AKANE_ALL)) return 'akane';
+  if (PARAM_ORDER.every((key) => cursor.params[key] >= THRESHOLD.MASHIRO_ALL)) return 'mashiro';
 
   return 'sad';
 }
@@ -204,7 +204,7 @@ export function matchesCase(cursor: Cursor, c: BranchCase): boolean {
  * 背景を切り替える。
  *
  * **場所が変わったら、立っていた相手は退場させる。**
- * これを忘れると「居酒屋で別れたはずの茜が、自室の背景の前に立ち続ける」
+ * これを忘れると「居酒屋で別れたはずの茉白が、自室の背景の前に立ち続ける」
  * といった事故になる。同じ背景を指定し直した場合は続きの場面なので退場させない。
  */
 export function setBackground(cursor: Cursor, bg: string): void {

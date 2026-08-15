@@ -1,11 +1,11 @@
-/** ドメイン型。シナリオYAMLの構造もここで定義する。 */
+﻿/** ドメイン型。シナリオYAMLの構造もここで定義する。 */
 
 export type ParamKey = 'sincerity' | 'tolerance' | 'humor' | 'sensibility' | 'confidence';
 
 export type HeroineId = 'aoi' | 'sui' | 'touka' | 'shion' | 'momoka';
 
 /** 主人公・幼馴染を含む全キャラ */
-export type CharacterId = HeroineId | 'akane' | 'iroha';
+export type CharacterId = HeroineId | 'mashiro' | 'iroha';
 
 export type ParamDelta = Partial<Record<ParamKey, number>>;
 
@@ -15,7 +15,7 @@ export type ParamDelta = Partial<Record<ParamKey, number>>;
  * 判定規則は **個別ルート優先**（設計書 §3.5）。実際の計算は engine.ts の
  * `endingRoute()` にあり、シナリオ側からは branch の `ifEnding:` で参照する。
  */
-export type EndingRoute = HeroineId | 'akane' | 'sad';
+export type EndingRoute = HeroineId | 'mashiro' | 'sad';
 
 export const ENDING_ROUTES: readonly EndingRoute[] = [
   'aoi',
@@ -23,7 +23,7 @@ export const ENDING_ROUTES: readonly EndingRoute[] = [
   'touka',
   'shion',
   'momoka',
-  'akane',
+  'mashiro',
   'sad',
 ] as const;
 
@@ -52,7 +52,7 @@ export interface ChoiceOption {
    *
    * 指定すると、選択肢がそのキャラクターのイメージカラーで縁取られる。
    * 週スケジュールの「○○と会う」と同じ見た目になるので、
-   * **相手を選ぶ場面はどこでも同じ色で同じ順に並ぶ**（茜への相談など）。
+   * **相手を選ぶ場面はどこでも同じ色で同じ順に並ぶ**（茉白への相談など）。
    * 発言者ではないので、say ノードの `who` とは意味が違う。
    */
   who?: CharacterId;
@@ -108,7 +108,7 @@ export interface GotoNode {
  * 条件分岐。上から順に評価し、最初に条件を満たしたものへ飛ぶ。
  * 条件を書かない case は「それ以外」を意味するので、最後に置くこと。
  *
- * 茜のデレ段階（H5）や、終幕のエンディング判定に使う。
+ * 茉白のデレ段階（H5）や、終幕のエンディング判定に使う。
  */
 export interface BranchCase {
   goto: string;
@@ -229,7 +229,7 @@ export interface ChatEntry {
  * 構造を変えたら必ずインクリメントし、save.ts のマイグレーションを足すこと。
  * （03_tech-stack.md §8.4 のリスク対策）
  */
-export const SAVE_SCHEMA_VERSION = 3;
+export const SAVE_SCHEMA_VERSION = 4;
 
 export interface GameSnapshot {
   schemaVersion: number;

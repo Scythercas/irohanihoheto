@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # 終幕 ― エンディング判定と7つの結末
 #
 # 【判定規則】K11③ で「自動判定・個別ルート優先」を選択。
@@ -7,7 +7,7 @@
 #   しきい値や優先順位をシナリオに散らさないため（変えるときに一箇所で済む）。
 #
 #     1. 対応色が THRESHOLD.INDIVIDUAL 以上の色があれば → その個別ルート（最大値の色）
-#     2. どれも届かず、5色すべてが THRESHOLD.AKANE_ALL 以上 → 茜ルート
+#     2. どれも届かず、5色すべてが THRESHOLD.MASHIRO_ALL 以上 → 茉白ルート
 #     3. どちらでもない → サッドエンド
 #
 # 【作品の主題】いろは歌「色は匂へど 散りぬるを」（CLAUDE.md 冒頭）。
@@ -45,8 +45,8 @@
           ifEnding: shion
         - goto: ending_momoka
           ifEnding: momoka
-        - goto: ending_akane
-          ifEnding: akane
+        - goto: ending_mashiro
+          ifEnding: mashiro
         - goto: ending_sad
 
 # --- 個別ルート ---------------------------------------------------------------
@@ -102,15 +102,15 @@
 
     - bg: family_restaurant
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「ふうん。看護師さんね」"
 
-    - who: akane
+    - who: mashiro
       face: smug
       text: "「まあ、あんたには過ぎた人だと思うけど」"
 
-    - text: "茜はそう言って、ドリンクバーのグラスを置いた。"
+    - text: "茉白はそう言って、ドリンクバーのグラスを置いた。"
     - text: "置き方が、少しだけ乱暴だった。"
 
     - text: "『いろはにほへと』"
@@ -159,11 +159,11 @@
 
     - bg: family_restaurant
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「あんた、待てるようになったんだ」"
 
-    - who: akane
+    - who: mashiro
       face: away
       text: "「……昔は、五分も待てなかったのにね」"
 
@@ -222,11 +222,11 @@
 
     - bg: street_evening
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「うるさい子でしょ、その人」"
 
-    - who: akane
+    - who: mashiro
       face: smug
       text: "「あんた、静かなの苦手だもんね。……昔から」"
 
@@ -276,11 +276,11 @@
 
     - bg: family_restaurant
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「あんた、前より物をよく見るようになったね」"
 
-    - who: akane
+    - who: mashiro
       face: away
       text: "「……私のことは、別に見なくていいけど」"
 
@@ -338,27 +338,27 @@
 
     - bg: family_restaurant
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「年下じゃん」"
 
-    - who: akane
+    - who: mashiro
       face: smug
       text: "「……まあ、いいんじゃない。あんたが決めたなら」"
 
-    - text: "茜は、そのあと何も言わなかった。"
+    - text: "茉白は、そのあと何も言わなかった。"
 
     - text: "『いろはにほへと』"
     - text: "― 桃果エンド ―"
 
-# --- 茜ルート（トゥルー）------------------------------------------------------
+# --- 茉白ルート（トゥルー）------------------------------------------------------
 
-- id: ending_akane
+- id: ending_mashiro
   bg: room_night
   bgm: bgm_daily
-  next: ending_akane_02
+  next: ending_mashiro_02
   body:
-    - flag: ending_akane
+    - flag: ending_mashiro
       value: true
 
     - text: "五人のトークが、順番に止まっていった。"
@@ -376,54 +376,54 @@
 
     - text: "色は匂へど、散りぬるを。"
 
-- id: ending_akane_02
+- id: ending_mashiro_02
   bg: izakaya_night
   bgm: bgm_daily
   body:
     - text: "三ヶ月ぶりに、あの居酒屋に呼び出された。"
     - text: "同じ席。同じ枝豆。同じ女。"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「で？　結局、全滅したわけ」"
 
     - who: iroha
       text: "「全滅って言うな」"
 
-    - who: akane
+    - who: mashiro
       face: laugh
       text: "「あははは。ま、そうなると思ってた」"
 
-    - text: "笑って、それから茜はジョッキを置いた。"
+    - text: "笑って、それから茉白はジョッキを置いた。"
     - text: "置いてから、しばらく何も言わなかった。"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「……あんたさ」"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「三ヶ月で、けっこう変わったよ」"
 
     # ここに並ぶ5つは **5色パラメータと1対1で対応させること**（CLAUDE.md §3.2）。
     # 誠実さ＝葵／包容力＝翠／ユーモア＝橙香／感性＝紫音／自信＝桃果。
     # ひとつでも取り違えると「五人ぶん」という次の行が成立しなくなる。
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「嘘をつかなくなったし。待てるようになったし」"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「くだらないことで笑うようになったし。ものを、よく見るようになったし」"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「……自分で決めるように、なった」"
 
     - text: "（――五つ）"
     - text: "（それは、五人ぶんだった）"
 
-    - who: akane
+    - who: mashiro
       face: fluster
       text: "「全部、私が好きなところなんだけど」"
 
@@ -432,17 +432,17 @@
     - who: iroha
       text: "「……は？」"
 
-    - who: akane
+    - who: mashiro
       face: fluster
       text: "「二回言わせないで」"
 
-    - text: "茜の耳は、もう隠しようがないくらい赤かった。"
+    - text: "茉白の耳は、もう隠しようがないくらい赤かった。"
 
-    - who: akane
+    - who: mashiro
       face: away
       text: "「二十四年かかったんだよ。こっちは」"
 
-    - who: akane
+    - who: mashiro
       face: away
       text: "「あんたが、私に釣り合うようになるまで」"
 
@@ -453,7 +453,7 @@
     - text: "最初から、いちばん近くにあった。"
 
     - text: "『いろはにほへと』"
-    - text: "― 茜エンド（トゥルー）―"
+    - text: "― 茉白エンド（トゥルー）―"
 
 # --- サッドエンド -------------------------------------------------------------
 
@@ -480,33 +480,33 @@
 
     - bg: family_restaurant
 
-    - text: "茜には、いつものファミレスで報告した。"
+    - text: "茉白には、いつものファミレスで報告した。"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「ふうん」"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「で、あんた、この三ヶ月で何か変わった？」"
 
     - text: "答えられなかった。"
     - text: "何も変わっていなかったからだ。"
 
-    - who: akane
+    - who: mashiro
       face: away
       text: "「……そっか」"
 
-    - text: "茜は伝票を持って、先に立ち上がった。"
+    - text: "茉白は伝票を持って、先に立ち上がった。"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「今日は、私が払う」"
 
     - who: iroha
       text: "「なんで」"
 
-    - who: akane
+    - who: mashiro
       face: away
       text: "「なんとなく」"
 
@@ -514,7 +514,7 @@
 
     - text: "――"
 
-    - text: "その月から、茜と会う回数が減った。"
+    - text: "その月から、茉白と会う回数が減った。"
     - text: "向こうから誘われることは、なくなった。"
 
     - text: "色は匂へど、散りぬるを。"

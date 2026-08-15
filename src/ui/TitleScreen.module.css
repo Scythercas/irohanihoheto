@@ -1,4 +1,4 @@
-.screen {
+﻿.screen {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -19,7 +19,7 @@
     radial-gradient(40vmin 40vmin at 12% 76%, rgba(232, 129, 31, 0.26), transparent 70%),
     radial-gradient(40vmin 40vmin at 88% 74%, rgba(123, 79, 168, 0.28), transparent 70%),
     radial-gradient(40vmin 40vmin at 50% 96%, rgba(238, 132, 151, 0.26), transparent 70%),
-    radial-gradient(58vmin 58vmin at 50% 42%, rgba(196, 55, 61, 0.16), transparent 72%);
+    radial-gradient(58vmin 58vmin at 50% 42%, rgba(230, 233, 240, 0.16), transparent 72%);
   filter: blur(6px);
 }
 
@@ -34,12 +34,18 @@
   font-size: clamp(2.6rem, 9vmin, 5.5rem);
   font-weight: 600;
   letter-spacing: 0.28em;
-  /* タイトルの最後の一文字だけ茜色。散らずに残るのが茜、という含意。 */
   text-indent: 0.28em;
+
+  /* 【演出の意図】タイトルの文字は、最後の一文字を除いてすべて沈ませる。
+     「色は匂へど散りぬるを」＝ 色は散る。**散らずに残るのは茉白だけ**。
+     幼馴染の色が赤から白になったため、色相での差し分けができなくなった。
+     代わりに **明度と発光** で「これだけが残っている」ことを示す。 */
+  color: var(--ink-dim);
 }
 
 .title .last {
-  color: var(--accent-akane);
+  color: #fff;
+  text-shadow: 0 0 1.4rem rgba(230, 233, 240, 0.7), 0 0 0.4rem rgba(255, 255, 255, 0.5);
 }
 
 .tagline {
@@ -69,8 +75,8 @@
 }
 
 .item:hover:not(:disabled) {
-  background: rgba(196, 55, 61, 0.16);
-  border-color: rgba(196, 55, 61, 0.6);
+  background: rgba(230, 233, 240, 0.16);
+  border-color: rgba(230, 233, 240, 0.6);
   letter-spacing: 0.3em;
 }
 

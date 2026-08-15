@@ -1,4 +1,4 @@
-.overlay {
+﻿.overlay {
   position: absolute;
   inset: 0;
   display: flex;
@@ -37,7 +37,7 @@
 }
 
 .slotFull {
-  background: var(--accent-akane);
+  background: var(--accent-mashiro);
 }
 
 .slotLabel {

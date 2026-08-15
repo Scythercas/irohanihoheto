@@ -20,15 +20,53 @@ const keyOf = (slot: string | number) => `${KEY_PREFIX}${slot}`;
  * 旧バージョンのセーブデータを現行スキーマへ引き上げる。
  * 引き上げられないほど古い場合は null を返し、呼び出し側で「読み込めません」と扱う。
  */
+/**
+ * v3 → v4: 幼馴染のキャラクターIDを `akane` から `mashiro` に改名した（2026-08-15）。
+ *
+ * セーブデータには**シーンID・フラグ名・登場人物ID**が文字列のまま入っているため、
+ * 旧IDが残っているとロード直後に「そんなシーンは無い」で落ちる。
+ * 文字列を機械的に置換して引き上げる。
+ */
+function renameAkaneToMashiro(raw: Record<string, unknown>): Record<string, unknown> {
+  const swap = (v: unknown): unknown =>
+    typeof v === 'string' ? v.replace(/\bakane\b/g, 'mashiro').replace(/akane_/g, 'mashiro_') : v;
+
+  const out: Record<string, unknown> = { ...raw };
+  out.sceneId = swap(raw.sceneId);
+  out.partner = swap(raw.partner);
+  out.chatWith = swap(raw.chatWith);
+
+  if (raw.flags && typeof raw.flags === 'object') {
+    out.flags = Object.fromEntries(
+      Object.entries(raw.flags as Record<string, unknown>).map(([k, v]) => [String(swap(k)), v]),
+    );
+  }
+  if (raw.faces && typeof raw.faces === 'object') {
+    out.faces = Object.fromEntries(
+      Object.entries(raw.faces as Record<string, unknown>).map(([k, v]) => [String(swap(k)), v]),
+    );
+  }
+  if (Array.isArray(raw.chatLog)) {
+    out.chatLog = raw.chatLog.map((entry) =>
+      entry && typeof entry === 'object'
+        ? { ...(entry as Record<string, unknown>), from: swap((entry as Record<string, unknown>).from) }
+        : entry,
+    );
+  }
+
+  out.schemaVersion = 4;
+  return out;
+}
+
 function migrate(raw: Record<string, unknown>): GameSnapshot | null {
   const version = typeof raw.schemaVersion === 'number' ? raw.schemaVersion : 0;
 
   if (version === SAVE_SCHEMA_VERSION) return raw as unknown as GameSnapshot;
 
-  // v1 は週スケジュール／チャット履歴を持たない開発初期の形式。
+  if (version === 3) return migrate(renameAkaneToMashiro(raw));
+
+  // v1・v2 は週スケジュール／チャット履歴を持たない開発初期の形式。
   // 公開前のため引き上げは行わず、読み込み不可として扱う。
-  // 以降のバージョンでは、ここに段階的な引き上げ処理を足していくこと。
-  // if (version === 2) { ...; return migrate({ ...raw, schemaVersion: 3 }); }
 
   return null;
 }

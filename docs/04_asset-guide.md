@@ -1,9 +1,9 @@
-# アセット制作ガイド ―『いろはにほへと』
+﻿# アセット制作ガイド ―『いろはにほへと』
 
 最終更新: 2026-08-15 / 予算: **0円**
 
 > **【2026-08-15 方針】立ち絵は、`allowCommercialUse` に `Image` を含むモデルで作り直す。**
-> 現行の茜（7枚）は暫定。実施は**残り5人の立ち絵に着手するとき**にまとめて行う。
+> 現行の茉白（7枚）は暫定。実施は**残り5人の立ち絵に着手するとき**にまとめて行う。
 > モデルの足切り基準は §1、差し替え手順は `docs/06_credits.md` §5。
 
 ---
@@ -17,10 +17,10 @@
 | 構図 | **膝上〜バストアップ。頭のてっぺんに少し余白**。下端は切れていてよい |
 | 置き場所（採用） | `public/assets/chara/<キャラID>/<表情>.png` |
 | 置き場所（試作・候補） | `work-assets/chara/<キャラID>/`（**Git管理外**。何枚溜めてもよい） |
-| キャラID | `akane` `aoi` `sui` `touka` `shion` `momoka` |
+| キャラID | `mashiro` `aoi` `sui` `touka` `shion` `momoka` |
 | 表情ファイル名 | `normal` `smile` `laugh` `bored` `smug` `fluster` `away` の7種 |
 
-例: `public/assets/chara/akane/normal.png`
+例: `public/assets/chara/mashiro/normal.png`
 
 **PNGを置くだけで自動的に使われる。** コードの変更は不要。
 読み込めない表情は、コードで描いた仮の立ち絵 → 色シルエット の順に自動でフォールバックする。
@@ -94,7 +94,7 @@ Invoke-RestMethod "https://civitai.com/api/v1/models/131986" |
 | `Image` **なし**（`RentCivit, Rent` だけ等） | ❌ **採用しない** |
 
 > **本プロジェクトはこれで一度失敗している。**
-> 茜の7枚を作ったあとで、使ったモデル（id 835655）に `Image` が無いことが判明した。
+> 茉白の7枚を作ったあとで、使ったモデル（id 835655）に `Image` が無いことが判明した。
 > 経緯は `docs/06_credits.md` §4、差し替え手順は同 §5。
 
 #### 確認済みの採用候補（2026-08-15 時点）
@@ -225,15 +225,31 @@ Hires.fix を切ると解像度が足りないが、**気に入った1枚が出�
 
 ---
 
-## 2. 茜の生成プロンプト（まず1枚だけ試す用）
+## 2. 茉白の生成プロンプト（まず1枚だけ試す用）
 
 ### 守るべき設定（設計書 §2.2・変更禁止）
 
-- **髪色: 茜色＝深い緋色／赤**
+- **髪色: 白（白銀）**【2026-08-15 変更。旧「茜／緋色」から改名に伴い変更】
 - **髪型: 低い位置で結んだミディアムのポニーテール。毛先はハネ気味**
 - 24歳・事務職。ブラウス＋カーディガンなど、きちんと感のある服装
-- ※「肩にかかるショートヘア・顔が小さい」は**葵**の設定。茜と混同しないこと
+- ※「肩にかかるショートヘア・顔が小さい」は**葵**の設定。茉白と混同しないこと
 - 性格はツンデレ。口が悪く素直に褒めない → **normal は「やや不機嫌そう」くらいがちょうどいい**
+
+#### 【最重要】白髪は「純白」にしないこと
+
+背景透過（§3.6）は、**画像の白い部分を背景とみなして消す**仕組みで動いている。
+純白（RGB 250以上）の髪を描かせると、**髪が背景ごと消える**。
+
+対策は2つ。どちらも必ず守る。
+
+1. **`silver hair` / `ash grey hair` を主タグにする。** `pure white hair` は使わない。
+   狙いは `#E6E9F0`（RGB 230前後）＝ しきい値 `SOLID_BG` の 250 より確実に暗い銀白
+2. **服を白から外す。** 旧設定は「白いYシャツ」だったが、
+   これは以前**シャツが背景と誤判定されて襟元に穴が空く**事故を起こしている。
+   白髪と組み合わせると再発が確実なので、**ライトグレーのシャツ＋チャコールのカーディガン**にする
+
+> **副次的な利点**: 服が白でなくなることで、`HOLE_CANDIDATE` の調整（§3.6 の落とし穴）が
+> そもそも要らなくなる。白髪への変更は、透過処理の観点ではむしろ有利に働く。
 
 ### v2（2026-08-15 改訂）— 初回生成の結果を受けて修正
 
@@ -257,9 +273,9 @@ Hires.fix を切ると解像度が足りないが、**気に入った1枚が出�
 masterpiece, best quality, amazing quality, very aesthetic, absurdres, newest,
 1girl, solo, cowboy shot, standing, facing viewer, looking at viewer, arms at sides,
 mature female, 24 years old, office lady, slender, small breasts,
-crimson hair, dark red hair, (low ponytail:1.4), hair tied at nape, medium hair, swept bangs, sidelocks,
-dark red eyes,
-white collared shirt, buttoned up, grey cardigan, (opaque black pencil skirt:1.3), knee length skirt, black pantyhose,
+(silver hair:1.35), ash grey hair, (low ponytail:1.4), hair tied at nape, medium hair, swept bangs, sidelocks,
+grey eyes,
+light grey collared shirt, buttoned up, charcoal cardigan, (opaque black pencil skirt:1.3), knee length skirt, black pantyhose,
 (neutral expression:1.2), slight pout, closed mouth, calm,
 simple background, white background, even lighting, anime style, clean lineart, cel shading
 ```
@@ -273,14 +289,25 @@ blurry, depth of field, multiple views, multiple girls, 2girls,
 nsfw, nude, cleavage, see-through, transparent clothes, sheer, wet clothes, panties, underwear, thighs visible through skirt,
 large breasts, huge breasts, gigantic breasts, breast focus, oppai,
 angry, glaring, scowl, furrowed brow, sharp eyes, gloomy, shadow over face,
-pink hair, orange hair, blonde hair, brown hair, black hair, blue hair, purple hair, green hair,
+pink hair, orange hair, blonde hair, brown hair, black hair, blue hair, purple hair, green hair, red hair, crimson hair,
+pure white hair, glowing hair, shiny hair, blown out highlights,
+old woman, elderly, wrinkles,
 hair down, loose hair, twintails, high ponytail, very long hair, short hair, ahoge, hair bun,
+white shirt, white clothes,
 school uniform, hat, glasses, miniskirt,
 cropped, head out of frame, from behind
 ```
 
 **髪色の指定が最重要。** ピンク・オレンジ・金髪に転びやすいので、ネガティブで他の髪色を全部潰してある。
 **他ヒロインの色（青・翠・橙・紫・桃）も入っている**ので、この5人を作るときは該当色をネガティブから外すこと。
+
+**白髪ならではのネガティブが3種類入っている。** 消さないこと。
+
+| タグ | 目的 |
+|---|---|
+| `pure white hair, glowing hair, shiny hair, blown out highlights` | **髪が純白に飛ぶと、背景透過で髪ごと消える** |
+| `old woman, elderly, wrinkles` | 白髪＝老人と解釈されるのを防ぐ（24歳） |
+| `white shirt, white clothes` | 服が白いと、髪・服・背景が一続きに見えて輪郭が消える |
 
 ### 推奨パラメータ
 
@@ -382,7 +409,7 @@ cropped, head out of frame, from behind
 
 ```text
 masterpiece, best quality, amazing quality, very aesthetic,
-1girl, solo, face focus, mature female, dark red eyes, crimson hair, swept bangs,
+1girl, solo, face focus, mature female, grey eyes, (silver hair:1.3), ash grey hair, swept bangs,
 soft smile, closed mouth, gentle expression, half-closed eyes,
 anime style, clean lineart, cel shading
 ```
@@ -392,7 +419,8 @@ anime style, clean lineart, cel shading
 ```text
 lowres, worst quality, low quality, bad anatomy, jpeg artifacts, blurry,
 angry, glaring, scowl, furrowed brow, sharp eyes, gloomy, shadow over face,
-pink hair, orange hair, blonde hair, brown hair, black hair,
+pink hair, orange hair, blonde hair, brown hair, black hair, red hair,
+pure white hair, glowing hair, old woman, elderly,
 realistic, 3d
 ```
 
@@ -425,8 +453,8 @@ realistic, 3d
 
 **7. 保存する**
 
-`work-assets/chara/akane/<表情>.png` に保存する。採用が決まったものだけ
-`public/assets/chara/akane/<表情>.png` へ移す。
+`work-assets/chara/mashiro/<表情>.png` に保存する。採用が決まったものだけ
+`public/assets/chara/mashiro/<表情>.png` へ移す。
 
 ##### 背景の透過は「7枚そろえてから最後にまとめて」
 
@@ -446,7 +474,7 @@ realistic, 3d
 
 ```powershell
 & "C:\StabilityMatrix\Data\Packages\Stable Diffusion WebUI reForge\venv\Scripts\python.exe" `
-  scripts\remove-bg.py public\assets\chara\akane
+  scripts\remove-bg.py public\assets\chara\mashiro
 ```
 
 **フォルダ内のPNGをまとめて透過し、その場で上書きする。** 実行前に元画像を
@@ -454,6 +482,23 @@ realistic, 3d
 
 > reForge の venv の Python を使うのは、PIL と numpy がすでに入っているため。
 > 追加インストールは要らない。
+
+### 【2026-08-15 追加】白髪になったことによる注意
+
+本スクリプトは**「白い部分＝背景」**という前提で動いている。
+茉白の髪が白になったため、**素材の作り方を間違えると髪ごと消える。**
+
+| 守ること | 理由 |
+|---|---|
+| 髪は**銀白（RGB 230前後）**にする。純白（250以上）にしない | `SOLID_BG = 250` を超えた画素は背景として塗りつぶされる |
+| プロンプトに `pure white hair, glowing hair, blown out highlights` を**ネガティブで**入れる | ハイライトが飛ぶと、そこだけ穴が空く |
+| 服を白にしない | 髪・服・背景が地続きになり、外周フラッドフィルが服まで到達する |
+
+**透過した直後に必ず「髪の毛先」と「頭頂部のハイライト」を拡大して確認すること。**
+欠けていたら `SOLID_BG` を上げる（250 → 252）。それでも欠けるなら生成側が明るすぎる。
+
+> 以下の検証値（透明率65%など）は**旧・茜（緋色の髪／白いYシャツ）で測ったもの**である。
+> 白髪＋グレーのシャツで作り直したら、**数値は必ず取り直すこと。**
 
 ### なぜ rembg を使わないのか
 
@@ -478,7 +523,7 @@ rembg は**写真で学習したモデル**なので、アニメ調の**髪の�
 
 囲まれた白領域ごとに、**ほぼ真っ白（RGB最小値 ≥ 253）な画素の割合**を測って区別する。
 
-| 領域 | 純白率（実測・茜） | 理由 |
+| 領域 | 純白率（実測・茉白） | 理由 |
 |---|---|---|
 | **背景の隙間** | **90.1% / 92.2% / 97.3% / 97.4%** | 生成時の平坦な白。陰影がない |
 | **Yシャツ・目のハイライト** | **1.5% / 2.7% / 5.6% / 12.1%** | 陰影と線画があるため白一色にならない |
@@ -519,7 +564,7 @@ rembg は**写真で学習したモデル**なので、アニメ調の**髪の�
 
 **「隙間」の検出数は正常なら1枚あたり3〜5箇所。** 数十件出ていたら設定が誤っている。
 
-### 検証（茜・2026-08-15）
+### 検証（茉白・2026-08-15）
 
 | 項目 | 結果 |
 |---|---|
@@ -616,7 +661,7 @@ Stability Matrix / reForge は**すべて自分のPC上で動いている**。�
 
 枠より重要なのはこちら。**使ったモデルのライセンス**によって、生成物の商用利用に条件が付く。
 
-**本プロジェクトはここで一度つまずいた。** 茜の7枚を作ったあとで、
+**本プロジェクトはここで一度つまずいた。** 茉白の7枚を作ったあとで、
 使ったモデルの `allowCommercialUse` に `Image` が無い＝**生成画像を売れない**ことが判明した。
 そのため **§1 の足切り（`Image` の有無）を、モデルを落とす前に必ず行うこと。**
 **モデル名・ライセンス・seed を `docs/06_credits.md` に記録すること。**

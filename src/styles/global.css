@@ -1,10 +1,10 @@
-:root {
+﻿:root {
   --bg-void: #0d0d10;
   --ink: #f2f2f4;
   --ink-dim: #a8a8b0;
   --panel: rgba(12, 12, 16, 0.82);
   --panel-border: rgba(255, 255, 255, 0.14);
-  --accent-akane: #c4373d;
+  --accent-mashiro: #e6e9f0;
 
   --font-ui: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', system-ui, sans-serif;
   --font-serif: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;

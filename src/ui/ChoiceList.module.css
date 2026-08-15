@@ -1,4 +1,4 @@
-.overlay {
+﻿.overlay {
   position: absolute;
   inset: 0;
   display: flex;
@@ -62,9 +62,9 @@
   border-bottom-color: rgba(255, 255, 255, 0.4);
 }
 
-/* 色の付いていない選択肢は、従来どおり茜色でハイライトする */
+/* 色の付いていない選択肢は、茉白の白銀でハイライトする */
 .option:not(.tagged):hover {
-  border-left-color: rgba(196, 55, 61, 0.75);
+  border-left-color: rgba(230, 233, 240, 0.75);
 }
 
 @media (prefers-reduced-motion: reduce) {

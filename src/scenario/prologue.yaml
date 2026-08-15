@@ -1,9 +1,9 @@
-# =============================================================================
-# プロローグ ― 色葉が茜に相談し、マッチングアプリ「カラット」を始めるまで
+﻿# =============================================================================
+# プロローグ ― 色葉が茉白に相談し、マッチングアプリ「カラット」を始めるまで
 #
 # 【書き方】
 #   text:  … セリフ・地の文。who を書かなければ主人公の心の声になる
-#   who:   … iroha / akane / aoi / sui / touka / shion / momoka
+#   who:   … iroha / mashiro / aoi / sui / touka / shion / momoka
 #   face:  … 表情差分キー（立ち絵が入ったら効く）
 #   voice: … ボイスファイル名（拡張子なし）
 #   bg / bgm / se … 演出の切り替え
@@ -13,7 +13,7 @@
 #   goto   … 別シーンへ飛ぶ
 #
 # 【トーン】リアル寄りのほろ苦さ。コメディは低頻度（設計書 §1.3）
-# 【茜】   ツンデレ。口が悪く、素直に褒めない（設計書 §2.2）
+# 【茉白】   ツンデレ。口が悪く、素直に褒めない（設計書 §2.2）
 # =============================================================================
 
 - id: prologue_01
@@ -24,14 +24,14 @@
     - text: "金曜の夜の居酒屋は、他人の笑い声でできている。"
     - text: "その真ん中で、俺は三杯目のハイボールを持て余していた。"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「で？　結局なんの話だったわけ」"
 
-    - text: "向かいの席で、茜が枝豆をつまんでいる。"
+    - text: "向かいの席で、茉白が枝豆をつまんでいる。"
     - text: "幼馴染。腐れ縁。二十四年、ずっと同じ距離にいる女。"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「言いたいことあるなら言いなよ。あんたが奢るって言い出す時点で、もう変だから」"
 
@@ -50,14 +50,14 @@
     - text: "三秒。"
     - text: "そして、盛大に噴き出した。"
 
-    - who: akane
+    - who: mashiro
       face: laugh
       text: "「ぶっ……あはははは！　なにそれ、真顔で言うことじゃないでしょ」"
 
     - who: iroha
       text: "「笑うなよ」"
 
-    - who: akane
+    - who: mashiro
       face: laugh
       text: "「いや笑うって。あんた大学のときからずーっと『別に今はいいや』って言ってたじゃん」"
 
@@ -65,13 +65,13 @@
     - text: "（でも、同期の結婚式に呼ばれるのが今年で三回目になって）"
     - text: "（式場の椅子に座って拍手しながら、急に、自分の膝が寒くなった）"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「……ふうん」"
 
-    - text: "笑いを引っ込めて、茜がジョッキを置く。"
+    - text: "笑いを引っ込めて、茉白がジョッキを置く。"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「で、なんで私に言うの。私、あんたの世話係じゃないんだけど」"
 
@@ -89,13 +89,13 @@
     - who: iroha
       text: "「他に言えるやつが、いないから」"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「……重いんだよ、二十四にもなって」"
 
-    - text: "茜は表情ひとつ変えずに、枝豆を口に放り込んだ。"
+    - text: "茉白は表情ひとつ変えずに、枝豆を口に放り込んだ。"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「まあ、聞くだけ聞いてやる。奢りだし」"
 
@@ -108,51 +108,51 @@
     - who: iroha
       text: "「なんとなく。深い意味はないよ」"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「はいはい。あっそ」"
 
-    - text: "茜は枝豆に戻った。"
+    - text: "茉白は枝豆に戻った。"
     - text: "（……なんか、間違えた気がする）"
 
 - id: prologue_03
   bg: izakaya_night
   next: prologue_04
   body:
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「じゃあさ」"
 
-    - text: "茜がスマホを取り出して、こちらに突きつけてきた。"
+    - text: "茉白がスマホを取り出して、こちらに突きつけてきた。"
 
-    - who: akane
+    - who: mashiro
       face: smug
       text: "「マチアプ始めなよ」"
 
     - who: iroha
       text: "「……マチアプ」"
 
-    - who: akane
+    - who: mashiro
       face: smug
       text: "「マッチングアプリ。今どき普通でしょ」"
 
     - who: iroha
       text: "「いや、なんか……こわくない？」"
 
-    - who: akane
+    - who: mashiro
       face: bored
       text: "「出た。やる前に理由探すやつ」"
 
     - text: "痛いところを的確に刺してくる。二十四年分の蓄積は伊達じゃない。"
 
-    - who: akane
+    - who: mashiro
       face: normal
       text: "「『カラット』ってやつ。私の同期も使ってる。……あんた、たぶん向いてるよ」"
 
     - who: iroha
       text: "「なんで」"
 
-    - who: akane
+    - who: mashiro
       face: away
       text: "「……さあ。なんとなく」"
 

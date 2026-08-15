@@ -1,9 +1,9 @@
-/**
+﻿/**
  * 立ち絵の登録所。
  *
  * 優先順位:
  *   1. public/assets/chara/<id>/<表情>.png  … 実素材があればこれを使う
- *   2. コードで描いた立ち絵（現状は茜のみ）
+ *   2. コードで描いた立ち絵（現状は茉白のみ）
  *   3. キャラクターカラーの無彩シルエット
  *
  * PNGは「置くだけ」で有効になる。読み込めなければ静かに次の候補へ落ちるので、
@@ -13,13 +13,13 @@
 import { useEffect, useState } from 'react';
 import { CHARACTERS } from '../../game/constants';
 import type { CharacterId } from '../../game/types';
-import AkaneSprite, { type Expression } from './AkaneSprite';
+import MashiroSprite, { type Expression } from './MashiroSprite';
 
 type SpriteComponent = (props: { expression?: Expression }) => JSX.Element;
 
 /** コードで描いた立ち絵。実素材が用意できたキャラから順に消していける。 */
 const DRAWN: Partial<Record<CharacterId, SpriteComponent>> = {
-  akane: AkaneSprite,
+  mashiro: MashiroSprite,
 };
 
 const KNOWN_EXPRESSIONS = new Set<Expression>([

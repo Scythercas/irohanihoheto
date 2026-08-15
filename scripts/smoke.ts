@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 全ルート走破のスモークテスト。
  *
  *   npm run smoke
@@ -26,7 +26,7 @@ import {
 } from '../src/game/engine';
 import { buildScenes } from '../src/game/scenario/build';
 import {
-  AKANE_SCENES,
+  MASHIRO_SCENES,
   DATE_SCENES,
   EXTRA_DATE_SCENES,
   FILLER_SCENE,
@@ -142,7 +142,7 @@ try {
   const scheduleRoots = [
     ...Object.values(DATE_SCENES).flat(),
     ...Object.values(EXTRA_DATE_SCENES),
-    ...AKANE_SCENES,
+    ...MASHIRO_SCENES,
     FILLER_SCENE,
     FINALE_SCENE,
   ];
@@ -160,7 +160,7 @@ try {
   }
 
   // --- 立ち絵の退場検証 -----------------------------------------------------
-  // 「居酒屋で別れたはずの茜が、自室の背景の前に立ち続ける」類の事故を検出する。
+  // 「居酒屋で別れたはずの茉白が、自室の背景の前に立ち続ける」類の事故を検出する。
   // 背景が変わった時点で、前の場所にいた相手は退場していなければならない。
   const stageFailures: string[] = [];
   {
@@ -200,27 +200,27 @@ try {
   }
   if (stageFailures.length === 0) console.log('  ✓ 立ち絵の退場: 場所替わりで相手が残っていない');
 
-  // --- 茜のデレ段階のゲート検証 ---------------------------------------------
-  // 「2人目と知り合い、かつ魅力レベルが一定に達するまで茜は揺れない」を実際に評価して確かめる。
+  // --- 茉白のデレ段階のゲート検証 ---------------------------------------------
+  // 「2人目と知り合い、かつ魅力レベルが一定に達するまで茉白は揺れない」を実際に評価して確かめる。
   const gateChecks: { label: string; flags: Record<string, boolean>; total: number; expect: string }[] = [
-    { label: '1人目のみ・魅力最大', flags: { met_momoka: true }, total: 999, expect: 'akane_talk_plain' },
-    { label: '2人目まで・魅力不足', flags: { met_momoka: true, met_aoi: true }, total: 20, expect: 'akane_talk_plain' },
-    { label: '2人目まで・魅力到達', flags: { met_momoka: true, met_aoi: true }, total: 60, expect: 'akane_dere_01' },
+    { label: '1人目のみ・魅力最大', flags: { met_momoka: true }, total: 999, expect: 'mashiro_talk_plain' },
+    { label: '2人目まで・魅力不足', flags: { met_momoka: true, met_aoi: true }, total: 20, expect: 'mashiro_talk_plain' },
+    { label: '2人目まで・魅力到達', flags: { met_momoka: true, met_aoi: true }, total: 60, expect: 'mashiro_dere_01' },
   ];
 
   const gateFailures: string[] = [];
   for (const check of gateChecks) {
     // ゲートは相談の「締め」に置いてある（誰について相談するかを選んだあと）
-    const cursor = newCursor('akane_talk_close');
+    const cursor = newCursor('mashiro_talk_close');
     cursor.flags = { ...check.flags };
     // 総合値を1色に寄せて与える（条件は合計値で判定される）
     cursor.params.sincerity = check.total;
-    enterScene(cursor, lookup('akane_talk_close'));
+    enterScene(cursor, lookup('mashiro_talk_close'));
     step(cursor, lookup);
     if (cursor.sceneId !== check.expect) {
       gateFailures.push(`  ✗ ${check.label} → ${cursor.sceneId}（期待: ${check.expect}）`);
     } else {
-      console.log(`  ✓ 茜ゲート: ${check.label} → ${cursor.sceneId}`);
+      console.log(`  ✓ 茉白ゲート: ${check.label} → ${cursor.sceneId}`);
     }
   }
 
@@ -229,12 +229,12 @@ try {
   // プレイヤーからは永久に見えない。ここで代表的な組み合わせを固定して確かめる。
   const endingChecks: { label: string; params: Partial<Record<ParamKey, number>>; expect: string }[] = [
     { label: '何も伸びていない', params: {}, expect: 'ending_sad' },
-    { label: '全色が茜のしきい値の直下', params: fill(THRESHOLD.AKANE_ALL - 1), expect: 'ending_sad' },
-    { label: '全色が茜のしきい値ちょうど', params: fill(THRESHOLD.AKANE_ALL), expect: 'ending_akane' },
-    { label: '全色が個別のしきい値の直下', params: fill(THRESHOLD.INDIVIDUAL - 1), expect: 'ending_akane' },
+    { label: '全色が茉白のしきい値の直下', params: fill(THRESHOLD.MASHIRO_ALL - 1), expect: 'ending_sad' },
+    { label: '全色が茉白のしきい値ちょうど', params: fill(THRESHOLD.MASHIRO_ALL), expect: 'ending_mashiro' },
+    { label: '全色が個別のしきい値の直下', params: fill(THRESHOLD.INDIVIDUAL - 1), expect: 'ending_mashiro' },
     {
-      label: '自信だけ突出（他は茜条件を満たす）',
-      params: { ...fill(THRESHOLD.AKANE_ALL), confidence: THRESHOLD.INDIVIDUAL },
+      label: '自信だけ突出（他は茉白条件を満たす）',
+      params: { ...fill(THRESHOLD.MASHIRO_ALL), confidence: THRESHOLD.INDIVIDUAL },
       expect: 'ending_momoka',
     },
     {
@@ -287,7 +287,7 @@ try {
   }
 
   if (gateFailures.length) {
-    console.error('\n✗ 茜のデレ段階のゲートが想定どおりに働いていません');
+    console.error('\n✗ 茉白のデレ段階のゲートが想定どおりに働いていません');
     for (const line of gateFailures) console.error(line);
     process.exit(1);
   }

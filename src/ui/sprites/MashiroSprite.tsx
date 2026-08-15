@@ -1,32 +1,37 @@
-/**
- * 茜の立ち絵（SVG製）。
+﻿/**
+ * 茉白の立ち絵（SVG製）。
  *
  * AI生成の実素材が入るまでの本番相当プレースホルダ。SVGなので0円・軽量で、
  * 表情差分をコードで持てる。実素材に差し替えるときは sprites/index.ts の
  * 登録先を画像コンポーネントに変えるだけでよい。
  *
  * 設計書 §2.2 の確定事項:
- *   髪色 = 茜色（緋色） / 低い位置のミディアムポニーテール・毛先ハネ気味
+ *   髪色 = **白（白銀。わずかに青みを含む）** / 低い位置のミディアムポニーテール・毛先ハネ気味
  *   24歳・事務職 / ツンデレ。口が悪く、素直に褒めない
  *   終盤に「髪をほどいた」差分を1枚だけ用意する想定（デレ段階の視覚表現）
+ *
+ * 白は「色が無い」のではなく「五色すべてが重なった光」という位置づけ（CLAUDE.md §3.1）。
+ * 主人公・色葉の灰（何も持っていない無彩色）と対になるよう、青みを少しだけ含ませる。
+ * ブラウスも白いので、**髪とブラウスの明度を必ず離すこと**（離さないと輪郭が消える）。
  */
 
 export type Expression = 'normal' | 'bored' | 'smug' | 'laugh' | 'fluster' | 'away' | 'smile';
 
 const C = {
-  hair: '#C4373D',
-  hairDark: '#8E2126',
-  hairLight: '#DC5B60',
+  hair: '#DFE5EF',
+  hairDark: '#A7B0C0',
+  hairLight: '#F4F7FC',
   skin: '#F6DACA',
   skinShade: '#E9BFA9',
-  blouse: '#EEF0F5',
-  blouseShade: '#D3D8E2',
-  cardigan: '#5A4A52',
-  line: '#3B2126',
-  iris: '#7E2029',
-  irisLight: '#B4454C',
+  // 髪より一段暗くして、白髪の輪郭が服に溶けないようにする
+  blouse: '#D8DCE4',
+  blouseShade: '#B9C0CC',
+  cardigan: '#4E525E',
+  line: '#3A3C46',
+  iris: '#5C6A7E',
+  irisLight: '#8FA0B4',
   blush: '#EE8497',
-  mouth: '#8E3A44',
+  mouth: '#A8626C',
 };
 
 interface Props {
@@ -35,7 +40,7 @@ interface Props {
   hairDown?: boolean;
 }
 
-export default function AkaneSprite({ expression = 'normal', hairDown = false }: Props) {
+export default function MashiroSprite({ expression = 'normal', hairDown = false }: Props) {
   const closedEyes = expression === 'laugh' || expression === 'smile';
   const narrowEyes = expression === 'bored' || expression === 'smug';
   const wideEyes = expression === 'fluster';
@@ -44,7 +49,7 @@ export default function AkaneSprite({ expression = 'normal', hairDown = false }:
   const showBlush = expression === 'fluster';
 
   return (
-    <svg viewBox="0 0 300 460" width="100%" height="100%" role="img" aria-label={`茜（${expression}）`}>
+    <svg viewBox="0 0 300 460" width="100%" height="100%" role="img" aria-label={`茉白（${expression}）`}>
       {/* ---- 後ろ髪 ---- */}
       <path
         d="M150 26 C86 26 54 76 54 138 C54 186 48 228 38 264 L112 256 C102 216 102 176 108 150 L192 150 C198 176 198 216 188 256 L262 264 C252 228 246 186 246 138 C246 76 214 26 150 26 Z"

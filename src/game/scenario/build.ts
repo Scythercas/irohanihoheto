@@ -1,4 +1,4 @@
-/**
+﻿/**
  * シナリオYAML → Scene への変換と検証（純粋関数）。
  *
  * ブラウザ用の読み込み（loader.ts）とCLI検証（scripts/check-scenario.ts）の
@@ -22,7 +22,7 @@ import type {
   Scene,
   ScenarioNode,
 } from '../types';
-import { AKANE_SCENES, DATE_SCENES, EXTRA_DATE_SCENES, FILLER_SCENE, FINALE_SCENE } from '../schedule';
+import { MASHIRO_SCENES, DATE_SCENES, EXTRA_DATE_SCENES, FILLER_SCENE, FINALE_SCENE } from '../schedule';
 
 class ScenarioError extends Error {
   constructor(file: string, sceneId: string, index: number | null, message: string) {
@@ -379,7 +379,7 @@ export function buildScenes(files: Record<string, string>): Map<string, Scene> {
   const scheduleTargets = [
     ...Object.values(DATE_SCENES).flat(),
     ...Object.values(EXTRA_DATE_SCENES),
-    ...AKANE_SCENES,
+    ...MASHIRO_SCENES,
     FILLER_SCENE,
     FINALE_SCENE,
   ];
