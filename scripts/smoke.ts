@@ -55,13 +55,22 @@ const scenes: Map<string, Scene> = buildScenes(
   Object.fromEntries(paths.map((p) => [relative(ROOT, p).replace(/\\/g, '/'), readFileSync(p, 'utf8')])),
 );
 
+const visited = new Set<string>();
+
+/**
+ * シーンを引く。**引かれた時点で「到達した」と記録する。**
+ *
+ * step() は1回の呼び出しの中で複数のシーンを跨ぐことがある。
+ * たとえば branch だけを持つシーンは、入った次の瞬間に別のシーンへ飛ぶため、
+ * 呼び出し側から cursor.sceneId を見ても**一度も観測できない**。
+ * engine が実際に引いたシーンをここで数えることで、その取りこぼしをなくす。
+ */
 const lookup = (id: string): Scene => {
   const scene = scenes.get(id);
   if (!scene) throw new Error(`シーン "${id}" が見つかりません`);
+  visited.add(id);
   return scene;
 };
-
-const visited = new Set<string>();
 const endings: { path: string[]; params: Record<string, number>; stop: string }[] = [];
 let runs = 0;
 
@@ -201,11 +210,12 @@ try {
 
   const gateFailures: string[] = [];
   for (const check of gateChecks) {
-    const cursor = newCursor('akane_talk_01');
+    // ゲートは相談の「締め」に置いてある（誰について相談するかを選んだあと）
+    const cursor = newCursor('akane_talk_close');
     cursor.flags = { ...check.flags };
     // 総合値を1色に寄せて与える（条件は合計値で判定される）
     cursor.params.sincerity = check.total;
-    enterScene(cursor, lookup('akane_talk_01'));
+    enterScene(cursor, lookup('akane_talk_close'));
     step(cursor, lookup);
     if (cursor.sceneId !== check.expect) {
       gateFailures.push(`  ✗ ${check.label} → ${cursor.sceneId}（期待: ${check.expect}）`);

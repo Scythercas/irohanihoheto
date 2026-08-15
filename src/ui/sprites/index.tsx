@@ -93,24 +93,7 @@ export default function Sprite({ id, expression }: Props) {
   return <Silhouette id={id} />;
 }
 
-/**
- * 主人公・色葉。A5①により顔は描かない。
- * 「まだ色がついていない」という設定そのままに、無彩色のシルエットで置く。
- */
-export function IrohaSilhouette() {
-  return (
-    <svg viewBox="0 0 300 460" width="100%" height="100%" role="img" aria-label="色葉">
-      <defs>
-        <linearGradient id="iroha-body" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#6B6B72" />
-          <stop offset="100%" stopColor="#3E3E45" />
-        </linearGradient>
-      </defs>
-      <circle cx="150" cy="118" r="70" fill="url(#iroha-body)" />
-      <path
-        d="M150 204 C102 204 66 234 54 282 C44 322 40 388 38 460 L262 460 C260 388 256 322 246 282 C234 234 198 204 150 204 Z"
-        fill="url(#iroha-body)"
-      />
-    </svg>
-  );
-}
+// 主人公・色葉の立ち絵は存在しない（設計書 A5①）。
+// 一時期この場所に無彩色のシルエットを置いていたが、
+// 「顔のない人影が画面に常駐する」という画になったため取りやめた。
+// 主人公の存在は、心の声（who を書かない text）と一人称の地の文だけで示す。

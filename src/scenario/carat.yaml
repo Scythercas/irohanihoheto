@@ -36,7 +36,7 @@
     - text: "（でも、この軽さがなければ、俺は一生誰とも出会わないんだろうな）"
 
     - text: "三日が過ぎた。"
-    - text: "いいねは、二十件送って、返ってきたのは一件だった。"
+    - text: "いいねを二十件送って、今のところ返ってきたのは一件だった。"
 
 - id: carat_match_momoka
   next: chat_momoka_01
@@ -171,6 +171,9 @@
     # デート1回につき、対応する色が基礎値ぶん伸びる（点数設計は docs/05 §6）
     - params: { confidence: 6 }
 
+    # 行き先は、トークで水族館を提案していてもいなくても成立する書き方にする。
+    # （提案しなかった分岐では「決めてほしい」と預けられて終わっているため）
+    - text: "結局、行き先はこちらで決めることになった。"
     - text: "水族館は、平日の夕方でも人がいた。"
     - text: "青い光の中を、桃果が小走りで進んでいく。"
 
@@ -250,34 +253,26 @@
 
 # --- 茜への相談（C3: ヒント役） -----------------------------------------------
 
-# 茜に相談したときの入口。デレ段階（H5）に達しているかで行き先を分ける。
+# 茜への相談は3部構成になっている。
+#
+#   akane_talk_01     … 導入（誰の話をするかはまだ決まっていない）
+#   akane_hint_select … **誰について相談するかをプレイヤーが選ぶ**
+#   akane_hint_<ID>   … その子に対する具体的な助言（C3: 茜がヒント役）
+#   akane_talk_close  … 締め。ここでデレ段階のゲートを通す
+#
+# 【なぜ相手を選ばせるのか】
+# 以前は「その子、年下でしょ」と桃果を決め打ちしていた。
+# 5人と並行して会う設計になった時点で、**誰の話かは茜には分からない**はずであり、
+# 実際に葵と会った直後でも桃果の話をされるという矛盾が起きていた。
+# プレイヤーに選ばせることで矛盾が消え、C3のヒント機能もようやく実際に働くようになる。
 #
 # 【重要】茜が主人公に揺れる描写は、
 #   ①ヒロインと2人以上出会っている ②総合魅力レベルが AKANE_DERE_STEPS[0] に到達している
 # の両方を満たすまで出さない。序盤の茜はあくまで口の悪い幼馴染。
 - id: akane_talk_01
-  body:
-    # AKANE_DERE_STEPS = [60, 110, 160, 210]。上から順に評価されるので、
-    # **しきい値の高いものを先に**書く。順序を逆にすると永久に第1段階しか出ない。
-    - branch:
-        - goto: akane_dere_04
-          ifMetCount: 2
-          ifTotalParam: 210
-        - goto: akane_dere_03
-          ifMetCount: 2
-          ifTotalParam: 160
-        - goto: akane_dere_02
-          ifMetCount: 2
-          ifTotalParam: 110
-        - goto: akane_dere_01
-          ifMetCount: 2
-          ifTotalParam: 60
-        - goto: akane_talk_plain
-
-- id: akane_talk_plain
   bg: family_restaurant
   bgm: bgm_daily
-  next: schedule_hub
+  next: akane_hint_select
   body:
     # 茜は「総合」の担当。相談すると5色すべてが少しずつ伸びる。
     # 行動枠を1つ使う以上、何も起きないと相談する動機がなくなってしまうため。
@@ -299,27 +294,212 @@
     - text: "それだけ言って、茜はストローを咥えた。"
 
     - who: akane
+      face: bored
+      text: "「言っとくけど、私は恋愛の専門家じゃないからね」"
+
+    - who: akane
       face: normal
-      text: "「その子、年下でしょ。『どこでもいい』とか言ってない？」"
+      text: "「ただ、女がなに考えてるかは、あんたよりは知ってる」"
+
+- id: akane_hint_select
+  body:
+    - who: akane
+      face: normal
+      text: "「で、誰の話。名前で言って」"
+
+    - choice:
+        - text: "葵さん。年上の、看護師の人"
+          requireFlag: met_aoi
+          goto: akane_hint_aoi
+        - text: "翠さん。花屋で働いてる人"
+          requireFlag: met_sui
+          goto: akane_hint_sui
+        - text: "橙香さん。とにかくよく喋る子"
+          requireFlag: met_touka
+          goto: akane_hint_touka
+        - text: "紫音さん。デザイナーの人"
+          requireFlag: met_shion
+          goto: akane_hint_shion
+        - text: "桃果って子。年下の大学生"
+          requireFlag: met_momoka
+          goto: akane_hint_momoka
+        - text: "特にない。近況を話しに来ただけ"
+          goto: akane_hint_none
+
+# 各ヒントは heroines.ts の hint と同じ内容を、茜の口調で言わせている。
+# ここがずれるとプロフィール画面の説明と食い違うので、直すときは両方を直すこと。
+
+- id: akane_hint_aoi
+  next: akane_talk_close
+  body:
+    - who: akane
+      face: bored
+      text: "「その人、取り繕われるのが一番きらいなタイプでしょ」"
 
     - who: iroha
-      text: "「……言われた」"
+      text: "「会ったこともないのに」"
+
+    - who: akane
+      face: smug
+      text: "「そういう人は、だいたい自分が嘘をつけないから」"
+
+    - who: akane
+      face: normal
+      text: "「間違ってると思ったら、ちゃんと言ってあげな。合わせるのがいちばん失礼」"
 
     - who: akane
       face: bored
-      text: "「あのさあ」"
+      text: "「ただし人前ではやめときな。それは訂正じゃなくて、晒しだから」"
+
+    - text: "（……後半のほうが、たぶん重要だ）"
+
+- id: akane_hint_sui
+  next: akane_talk_close
+  body:
+    - who: akane
+      face: normal
+      text: "「落ち込んでるときに励ますのは、逆効果」"
+
+    - who: akane
+      face: normal
+      text: "「『頑張って』は、まだ足りないって意味に聞こえるから」"
+
+    - who: iroha
+      text: "「じゃあ、なんて言えば」"
 
     - who: akane
       face: bored
-      text: "「『どこでもいい』は、どこでもいいって意味じゃないの。あんたに決めてほしいの」"
+      text: "「なんも言わなくていいの。黙って聞いてあげな」"
 
-    - text: "（……なるほど）"
+    - who: akane
+      face: away
+      text: "「……あんた、それ苦手でしょ。すぐ解決しようとするから」"
+
+    - text: "（二十四年ぶんの指摘は、いちいち痛い）"
+
+- id: akane_hint_touka
+  next: akane_talk_close
+  body:
+    - who: akane
+      face: laugh
+      text: "「あー、ボケ倒してくるタイプね」"
 
     - who: akane
       face: bored
-      text: "「わかったらさっさと実践しなよ。私は帰る」"
+      text: "「真面目に返したら終わり。ちゃんと拾ってあげな」"
 
-    - text: "伝票を置いて、茜は先に立ち上がった。"
+    - who: akane
+      face: normal
+      text: "「ただし、自分を下げるボケだけは拾っちゃだめ」"
+
+    - who: iroha
+      text: "「なんで」"
+
+    - who: akane
+      face: normal
+      text: "「乗っかった瞬間、冗談じゃなくなるから」"
+
+    - text: "（……覚えておこう）"
+
+- id: akane_hint_shion
+  next: akane_talk_close
+  body:
+    - who: akane
+      face: bored
+      text: "「『なんかいいね』は絶対に言うな」"
+
+    - who: akane
+      face: bored
+      text: "「あれ、なんにも見てませんって宣言してるのと同じだから」"
+
+    - who: iroha
+      text: "「わからないときは」"
+
+    - who: akane
+      face: normal
+      text: "「わからないって言いな。そっちのほうが、まだマシ」"
+
+    - who: akane
+      face: smug
+      text: "「知ったかぶりは、わかる人には一秒でばれる」"
+
+- id: akane_hint_momoka
+  next: akane_talk_close
+  body:
+    - who: akane
+      face: bored
+      text: "「『どこでもいいよ』は言うな」"
+
+    - who: akane
+      face: bored
+      text: "「あの子はあんたに決めてほしいの」"
+
+    - who: iroha
+      text: "「決めて、外したら」"
+
+    - who: akane
+      face: normal
+      text: "「外していいの。外したあとに『次はここ』って言えるかどうかだから」"
+
+    - who: akane
+      face: away
+      text: "「……あと、年下相手に説教はすんなよ。それは自信じゃなくて、ただの威圧」"
+
+- id: akane_hint_none
+  next: akane_talk_close
+  body:
+    - who: iroha
+      text: "「いや、特には」"
+
+    - who: akane
+      face: bored
+      text: "「……は？　じゃあなんで呼んだの」"
+
+    - who: iroha
+      text: "「なんとなく」"
+
+    - who: akane
+      face: bored
+      text: "「出た」"
+
+    - text: "文句を言いながら、茜はドリンクバーをもう一杯取りに行った。"
+    - text: "（……付き合ってくれるんだよな、結局）"
+
+# 締め。ここでデレ段階のゲートを通す。
+- id: akane_talk_close
+  body:
+    # AKANE_DERE_STEPS = [60, 110, 160, 210]。上から順に評価されるので、
+    # **しきい値の高いものを先に**書く。順序を逆にすると永久に第1段階しか出ない。
+    - branch:
+        - goto: akane_dere_04
+          ifMetCount: 2
+          ifTotalParam: 210
+        - goto: akane_dere_03
+          ifMetCount: 2
+          ifTotalParam: 160
+        - goto: akane_dere_02
+          ifMetCount: 2
+          ifTotalParam: 110
+        - goto: akane_dere_01
+          ifMetCount: 2
+          ifTotalParam: 60
+        - goto: akane_talk_plain
+
+- id: akane_talk_plain
+  next: schedule_hub
+  body:
+    # 「特にない」を選んだ場合にもつながるよう、相談内容に触れない締めにしてある。
+    - who: akane
+      face: bored
+      text: "「……ま、せいぜい頑張れば」"
+
+    - text: "気づけば、二時間が経っていた。"
+    - text: "伝票を持って、茜は先に立ち上がった。"
+
+    - who: akane
+      face: smug
+      text: "「言っとくけど、割り勘だから」"
+
     - text: "（相変わらず、容赦がない）"
 
 # --- ここから先はデレ段階に到達してから解放される（H5） -----------------------
@@ -329,22 +509,7 @@
   bgm: bgm_daily
   next: schedule_hub
   body:
-    - params: { sincerity: 1, tolerance: 1, humor: 1, sensibility: 1, confidence: 1 }
-
-    - text: "深夜のファミレス。いつもの席。"
-
-    - who: akane
-      face: bored
-      text: "「で？　また相談？」"
-
-    - who: iroha
-      text: "「悪いかよ」"
-
-    - who: akane
-      face: normal
-      text: "「……別に」"
-
-    - text: "茜がこちらを見た。少しだけ、間があった。"
+    - text: "話が一段落したところで、茜がこちらを見た。少しだけ、間があった。"
 
     - who: akane
       face: normal
@@ -366,24 +531,7 @@
   bgm: bgm_daily
   next: schedule_hub
   body:
-    - params: { sincerity: 1, tolerance: 1, humor: 1, sensibility: 1, confidence: 1 }
-
-    - text: "その日、茜は先に来ていた。"
-    - text: "テーブルにはドリンクバーのグラスが二つ並んでいる。"
-
-    - who: akane
-      face: away
-      text: "「……頼んどいた。アイスコーヒーでしょ、どうせ」"
-
-    - who: iroha
-      text: "「よく覚えてるな」"
-
-    - who: akane
-      face: bored
-      text: "「覚えたくて覚えたわけじゃない」"
-
-    - text: "それから茜は、いつもどおり的確な助言を三つ寄越した。"
-    - text: "話が途切れたとき、こちらが席を立とうとしたら、袖を引かれた。"
+    - text: "こちらが席を立とうとしたら、袖を引かれた。"
 
     - who: akane
       face: normal
@@ -408,9 +556,8 @@
   bgm: bgm_daily
   next: schedule_hub
   body:
-    - params: { sincerity: 1, tolerance: 1, humor: 1, sensibility: 1, confidence: 1 }
-
-    - text: "その夜、茜は髪をほどいて来た。"
+    - text: "帰り支度をしていて、はじめて気づいた。"
+    - text: "その夜の茜は、髪をほどいていた。"
     - text: "低い位置で結んでいるのを、二十四年見てきた。"
 
     - who: iroha
@@ -447,8 +594,6 @@
   bgm: bgm_daily
   next: schedule_hub
   body:
-    - params: { sincerity: 1, tolerance: 1, humor: 1, sensibility: 1, confidence: 1 }
-
     - text: "ファミレスを出たのは、二時を回ったころだった。"
 
     - bg: street_evening

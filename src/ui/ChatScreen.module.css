@@ -1,48 +1,189 @@
+/* =============================================================================
+   カラットのトーク画面。
+   ゲーム画面の中に「スマホ」を1台置き、その画面の中だけでやり取りする。
+
+   【文字サイズについて】
+   端末の幅は画面の高さから決まるため、ウィンドウの大きさによって大きく変わる。
+   そこでスマホ内部の文字は **cqw（端末の幅に対する割合）** で指定し、
+   端末が小さくなっても大きくなっても、実機と同じ見た目の比率を保つようにしてある。
+   コンテナクエリ単位が使えない環境では、clamp の最小値（rem）に落ちる。
+   ============================================================================= */
+
 .screen {
+  position: relative;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   height: 100%;
-  background: #12121a;
+  overflow: hidden;
   cursor: pointer;
 }
 
-/* --- ヘッダー（相手の名前。カラット内のトーク画面という体） --- */
-.header {
+/* --- 背景（自室など。ADV画面と同じ絵を敷いて、場面の連続性を保つ） --- */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(170deg, #1a1a22 0%, #101015 60%, #0b0b0e 100%);
+}
+
+.backdropImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* スマホの画面だけが光って見えるよう、背景は強めに落とす */
+  filter: brightness(0.32) saturate(0.75);
+}
+
+/* --- 端末そのもの --- */
+.device {
+  position: relative;
+  z-index: 1;
+  container-type: inline-size;
+
   display: flex;
+  flex-direction: column;
+  height: min(96%, 46rem);
+  aspect-ratio: 10 / 19.5;
+  max-width: 92%;
+
+  padding: 0 0 0.4rem;
+  background: #0e0e14;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 2.1rem;
+  box-shadow:
+    0 0 0 0.35rem rgba(10, 10, 14, 0.92),
+    0 1.6rem 3.2rem rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+/* 受話口。これが1本あるだけで「スマホである」と読み取れる。 */
+.earpiece {
   flex-shrink: 0;
+  width: 18%;
+  height: 0.28rem;
+  margin: 0.55rem auto 0;
+  border-radius: 0.28rem;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* --- ステータスバー --- */
+.statusBar {
+  flex-shrink: 0;
+  display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 1.1rem;
-  background: rgba(20, 20, 28, 0.96);
+  justify-content: space-between;
+  padding: 0.45rem 5cqw 0.35rem;
+  color: rgba(230, 230, 236, 0.72);
+}
+
+.clock {
+  font-size: clamp(0.58rem, 3.4cqw, 0.8rem);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.statusIcons {
+  display: flex;
+  align-items: center;
+  gap: 1.6cqw;
+}
+
+/* 電波。3本の棒を高さ違いで並べる。 */
+.signal {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6cqw;
+}
+
+.signal i {
+  width: 0.9cqw;
+  background: rgba(230, 230, 236, 0.62);
+  border-radius: 0.4cqw;
+}
+
+.signal i:nth-child(1) {
+  height: 1.6cqw;
+}
+
+.signal i:nth-child(2) {
+  height: 2.4cqw;
+}
+
+.signal i:nth-child(3) {
+  height: 3.2cqw;
+}
+
+.battery {
+  position: relative;
+  width: 6cqw;
+  height: 3cqw;
+  border: 1px solid rgba(230, 230, 236, 0.5);
+  border-radius: 0.8cqw;
+  background: linear-gradient(
+    to right,
+    rgba(230, 230, 236, 0.62) 0 62%,
+    transparent 62% 100%
+  );
+}
+
+.battery::after {
+  content: '';
+  position: absolute;
+  right: -1.1cqw;
+  top: 25%;
+  width: 0.7cqw;
+  height: 50%;
+  border-radius: 0 0.4cqw 0.4cqw 0;
+  background: rgba(230, 230, 236, 0.5);
+}
+
+/* --- アプリのヘッダー --- */
+.appBar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 2.4cqw;
+  padding: 2.6cqw 4cqw;
+  background: rgba(22, 22, 30, 0.98);
   border-bottom: 1px solid var(--panel-border);
 }
 
+.back {
+  font-size: clamp(0.8rem, 5.4cqw, 1.2rem);
+  line-height: 1;
+  color: rgba(168, 168, 176, 0.7);
+}
+
 .avatar {
-  width: 2.1rem;
-  height: 2.1rem;
+  width: 8cqw;
+  height: 8cqw;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 .headerName {
-  font-size: 0.98rem;
-  letter-spacing: 0.08em;
+  font-size: clamp(0.68rem, 4.2cqw, 0.98rem);
+  letter-spacing: 0.06em;
 }
 
 .headerApp {
   margin-left: auto;
-  font-size: 0.66rem;
-  letter-spacing: 0.24em;
-  color: rgba(168, 168, 176, 0.5);
+  font-size: clamp(0.5rem, 2.8cqw, 0.66rem);
+  letter-spacing: 0.22em;
+  color: rgba(168, 168, 176, 0.45);
 }
 
 /* --- メッセージ一覧 --- */
 .log {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-  padding: 1.2rem 1rem 1.6rem;
+  gap: 2.2cqw;
+  padding: 4cqw 3.4cqw 5cqw;
+  background: #15151d;
   overflow-y: auto;
   scrollbar-width: thin;
 }
@@ -50,8 +191,8 @@
 .row {
   display: flex;
   align-items: flex-end;
-  gap: 0.4rem;
-  max-width: min(30rem, 82%);
+  gap: 1.4cqw;
+  max-width: 88%;
 }
 
 .rowThem {
@@ -64,10 +205,10 @@
 }
 
 .bubble {
-  padding: 0.62rem 0.9rem;
-  border-radius: 1.1rem;
-  font-size: 0.95rem;
-  line-height: 1.7;
+  padding: 2.4cqw 3.4cqw;
+  border-radius: 4cqw;
+  font-size: clamp(0.66rem, 4.1cqw, 0.95rem);
+  line-height: 1.65;
   letter-spacing: 0.02em;
   white-space: pre-wrap;
   word-break: break-word;
@@ -75,36 +216,36 @@
 }
 
 .bubbleThem {
-  background: #262633;
-  border-bottom-left-radius: 0.28rem;
+  background: #2a2a38;
+  border-bottom-left-radius: 1cqw;
 }
 
 .bubbleMe {
   /* 主人公の吹き出しは無彩色。まだ色がついていないという設定に合わせる。 */
-  background: #45454f;
-  border-bottom-right-radius: 0.28rem;
+  background: #46464f;
+  border-bottom-right-radius: 1cqw;
 }
 
 .stamp {
   flex-shrink: 0;
-  font-size: 0.62rem;
-  color: rgba(168, 168, 176, 0.55);
+  font-size: clamp(0.44rem, 2.6cqw, 0.62rem);
+  color: rgba(168, 168, 176, 0.5);
   font-variant-numeric: tabular-nums;
 }
 
 .typing {
   align-self: flex-start;
   display: flex;
-  gap: 0.22rem;
-  padding: 0.75rem 0.95rem;
-  background: #262633;
-  border-radius: 1.1rem;
-  border-bottom-left-radius: 0.28rem;
+  gap: 1cqw;
+  padding: 3cqw 3.6cqw;
+  background: #2a2a38;
+  border-radius: 4cqw;
+  border-bottom-left-radius: 1cqw;
 }
 
 .dot {
-  width: 0.34rem;
-  height: 0.34rem;
+  width: 1.5cqw;
+  height: 1.5cqw;
   border-radius: 50%;
   background: var(--ink-dim);
   animation: bounce 1.2s infinite;
@@ -118,52 +259,113 @@
   animation-delay: 0.3s;
 }
 
-/* --- 返信欄 --- */
-.replyBar {
+/* --- 入力欄（返信を待っていないとき） --- */
+.inputBar {
   flex-shrink: 0;
   display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  padding: 0.8rem 1rem 1.1rem;
-  background: rgba(20, 20, 28, 0.96);
+  align-items: center;
+  gap: 2.4cqw;
+  padding: 2.8cqw 3.4cqw;
+  background: rgba(22, 22, 30, 0.98);
   border-top: 1px solid var(--panel-border);
 }
 
+.inputField {
+  flex: 1;
+  padding: 2.4cqw 3.4cqw;
+  border-radius: 6cqw;
+  background: #24242f;
+  font-size: clamp(0.6rem, 3.6cqw, 0.85rem);
+  color: rgba(168, 168, 176, 0.42);
+}
+
+.sendButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 8.4cqw;
+  height: 8.4cqw;
+  border-radius: 50%;
+  background: #33333f;
+  color: rgba(168, 168, 176, 0.5);
+  font-size: clamp(0.6rem, 4cqw, 0.9rem);
+  line-height: 1;
+}
+
+/* --- 返信の選択（入力欄の位置からせり上がる） --- */
+.replySheet {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8cqw;
+  max-height: 52%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding: 3cqw 3.4cqw 3.6cqw;
+  background: rgba(22, 22, 30, 0.98);
+  border-top: 1px solid var(--panel-border);
+  animation: sheetUp 0.2s ease-out;
+}
+
 .replyHint {
-  font-size: 0.66rem;
+  font-size: clamp(0.5rem, 2.9cqw, 0.66rem);
   letter-spacing: 0.16em;
-  color: rgba(168, 168, 176, 0.55);
+  color: rgba(168, 168, 176, 0.5);
 }
 
 .replyOption {
-  padding: 0.72rem 1rem;
-  background: #1c1c26;
+  padding: 2.8cqw 3.4cqw;
+  background: #24242f;
   border: 1px solid var(--panel-border);
-  border-radius: 1.1rem;
-  font-size: 0.92rem;
+  border-radius: 4cqw;
+  font-size: clamp(0.62rem, 3.8cqw, 0.9rem);
   line-height: 1.6;
   text-align: left;
   transition: background 0.16s, border-color 0.16s;
 }
 
 .replyOption:hover {
-  background: #24242f;
+  background: #2e2e3b;
   border-color: rgba(255, 255, 255, 0.32);
 }
 
-.prompt {
+/* ホームバー。端末らしさの締め。 */
+.homeBar {
   flex-shrink: 0;
-  padding: 0.7rem;
-  text-align: center;
+  width: 32%;
+  height: 0.22rem;
+  margin: 0.5rem auto 0;
+  border-radius: 0.22rem;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* 端末の外に出す操作案内。スマホ画面の中を汚さないため外に置く。 */
+.prompt {
+  position: absolute;
+  left: 50%;
+  bottom: 1.1rem;
+  transform: translateX(-50%);
+  z-index: 2;
   font-size: 0.72rem;
   letter-spacing: 0.16em;
-  color: rgba(168, 168, 176, 0.45);
+  color: rgba(168, 168, 176, 0.4);
 }
 
 @keyframes pop {
   from {
     opacity: 0;
     transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sheetUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -185,7 +387,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bubble {
+  .bubble,
+  .replySheet {
     animation: none;
   }
   .dot {

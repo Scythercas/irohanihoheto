@@ -1,60 +1,57 @@
 .stage {
   position: absolute;
   inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
   pointer-events: none;
   /* メッセージウィンドウ(z-index:5)より必ず下。テキストの可読性を最優先する。 */
   z-index: 1;
 }
 
 .slot {
-  position: absolute;
-  bottom: 0;
+  /* 会話相手を画面中央に正面から立たせる（主人公の立ち絵は置かない）。
+     中央寄せは flex に任せているので、transform は拡縮だけに使える。 */
+  position: relative;
+
   /* 高さを基準に決める。
      幅基準（vmin）にすると、横長の画面では vmin が画面の高さを指すため
      立ち絵が極端に小さくなる。縦横比は素材（768×1152）に合わせる。 */
-  height: 92%;
+  height: 94%;
   aspect-ratio: 768 / 1152;
-  /* 縦長の画面で左右の立ち絵がぶつからないための保険 */
-  max-width: 40%;
+  /* 縦長の画面で画面幅からはみ出さないための保険 */
+  max-width: 62%;
+
   transform-origin: bottom center;
   transition: transform 0.35s ease-out, filter 0.35s ease-out, opacity 0.35s ease-out;
-  /* 下端をなだらかに消す。メッセージウィンドウに隠れる範囲でだけ効かせるため、
-     フェードの開始を深く（80%）にしてある。ここを浅くすると胴体が透けて見える。 */
-  -webkit-mask-image: linear-gradient(to bottom, #000 80%, rgba(0, 0, 0, 0.5) 92%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 80%, rgba(0, 0, 0, 0.5) 92%, transparent 100%);
+
+  /* 下端をなだらかに消す。
+     **メッセージウィンドウに重なる範囲で立ち絵が消えていること**が、
+     「吹き出しの文字を隠さない」ための保険になっている。
+     ここを浅くすると胴体がウィンドウ越しに透けて、文字が読みにくくなる。 */
+  -webkit-mask-image: linear-gradient(to bottom, #000 74%, rgba(0, 0, 0, 0.45) 88%, transparent 98%);
+  mask-image: linear-gradient(to bottom, #000 74%, rgba(0, 0, 0, 0.45) 88%, transparent 98%);
 }
 
-/* 主人公は常に左、会話相手は常に右。
-   右は、右上のパラメータ表示に顔がかからない位置に置く。 */
-.left {
-  left: 2%;
-}
-
-.right {
-  right: 2%;
-}
-
-/* 話し手は手前に大きく、聞き手は奥に小さく暗く */
+/* 誰の声かを明るさで示す。相手は1人しか立たないので、位置ではなく光量で表す。 */
 .speaking {
   transform: scale(1);
   filter: none;
-  opacity: 0.97;
-  z-index: 2;
+  opacity: 0.98;
 }
 
+/* 主人公がしゃべっているあいだは、相手は聞き手なので少し引く */
 .listening {
-  transform: scale(0.9) translateY(2%);
-  filter: brightness(0.45) saturate(0.65);
-  opacity: 0.72;
-  z-index: 1;
+  transform: scale(0.97) translateY(1.5%);
+  filter: brightness(0.5) saturate(0.7);
+  opacity: 0.78;
 }
 
-/* 地の文のときはどちらも話していない */
+/* 地の文のときは誰も話していない */
 .neutral {
-  transform: scale(0.95) translateY(1%);
-  filter: brightness(0.65) saturate(0.8);
-  opacity: 0.8;
-  z-index: 1;
+  transform: scale(0.98) translateY(0.8%);
+  filter: brightness(0.7) saturate(0.85);
+  opacity: 0.86;
 }
 
 @media (prefers-reduced-motion: reduce) {
