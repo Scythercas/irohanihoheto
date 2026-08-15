@@ -25,11 +25,11 @@ export const SLOTS_PER_WEEK = 3;
  * 用意した回数を超えて選ばれた場合は FILLER_SCENE を再生する。
  */
 export const DATE_SCENES: Record<HeroineId, string[]> = {
-  aoi: ['aoi_date_01'],
-  sui: ['sui_date_01'],
-  touka: ['touka_date_01'],
-  shion: ['shion_date_01'],
-  momoka: ['momoka_date_01'],
+  aoi: ['aoi_date_01', 'aoi_date_02', 'aoi_date_03'],
+  sui: ['sui_date_01', 'sui_date_02', 'sui_date_03'],
+  touka: ['touka_date_01', 'touka_date_02', 'touka_date_03'],
+  shion: ['shion_date_01', 'shion_date_02', 'shion_date_03'],
+  momoka: ['momoka_date_01', 'momoka_date_02', 'momoka_date_03'],
 };
 
 /**

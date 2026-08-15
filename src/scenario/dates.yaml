@@ -122,6 +122,179 @@
     - text: "（……刺された）"
     - text: "（たぶん、刺したつもりもないんだろうな）"
 
+- id: aoi_date_02
+  bg: cafe_day
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { sincerity: 6 }
+
+    - text: "病院の近くの喫茶店で、葵の同僚に鉢合わせした。"
+    - text: "後輩だという二人組は、葵を見つけると露骨に嬉しそうな顔をした。"
+
+    - who: aoi
+      face: normal
+      text: "「……見なかったことにして」"
+
+    - text: "無理だった。二人はそのまま隣の席に座った。"
+
+    - who: aoi
+      face: smile
+      text: "「この人ね、この前わたしが夜勤明けで倒れかけたとき、"
+    - who: aoi
+      face: smile
+      text: "　ちゃんと二時間待っててくれたの」"
+
+    - text: "後輩たちが、こちらを見て笑った。悪意のない笑い方だった。"
+
+    - who: aoi
+      face: normal
+      text: "「あ、そうだ。知ってる？　人間の体って、七割が骨なんだって」"
+
+    - text: "（……七割は水分だ）"
+    - text: "（後輩の前で、この人は今それを言った）"
+
+    - choice:
+        - text: "その場では流し、店を出てから二人きりで伝える"
+          params: { sincerity: 6 }
+          affection: { aoi: 3 }
+          goto: aoi_date_02_later
+        - text: "その場で正しく訂正する"
+          params: { sincerity: -2 }
+          goto: aoi_date_02_now
+
+- id: aoi_date_02_later
+  bg: street_evening
+  next: schedule_hub
+  body:
+    - text: "店を出て、後輩たちと別れてから言った。"
+
+    - who: iroha
+      text: "「さっきの、七割は水分だと思う」"
+
+    - who: aoi
+      face: fluster
+      text: "「……えっ」"
+
+    - who: aoi
+      face: fluster
+      text: "「言ってよ、あの場で！」"
+
+    - who: iroha
+      text: "「あの場では言わないよ」"
+
+    - text: "葵が立ち止まった。"
+
+    - who: aoi
+      face: normal
+      text: "「……ああ」"
+
+    - who: aoi
+      face: smile
+      text: "「間違いは直してほしいけど、恥はかきたくない。"
+    - who: aoi
+      face: smile
+      text: "　わがままですよね、それ」"
+
+    - who: iroha
+      text: "「わがままじゃないと思う」"
+
+    - text: "（正しさと、優しさは、別々に届けられる）"
+    - text: "（それだけのことに、二十四年かかった）"
+
+- id: aoi_date_02_now
+  next: schedule_hub
+  body:
+    - who: iroha
+      text: "「七割は水分ですよ」"
+
+    - text: "後輩の一人が、こらえきれずに噴き出した。"
+
+    - who: aoi
+      face: away
+      text: "「……そうだった。ごめん、わたしの記憶違い」"
+
+    - text: "葵は笑ってみせた。うまい笑い方だった。"
+    - text: "うますぎて、それが仕事用の顔だと分かってしまった。"
+
+    - text: "（間違いは、直した）"
+    - text: "（直す場所を、間違えた）"
+
+- id: aoi_date_03
+  bg: family_restaurant
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { sincerity: 6 }
+
+    - text: "その日は、こちらの仕事が終わらなかった。"
+    - text: "約束は二十時。時計は十九時十分を指している。"
+    - text: "机の上には、どう見ても一時間では終わらない量が残っていた。"
+
+    - text: "（……間に合わない）"
+    - text: "（この人は、いつも遅れる側だ。一度くらい、遅れてもいいはずだ）"
+
+    - choice:
+        - text: "すぐ連絡して「一時間遅れる」と正確に伝える"
+          params: { sincerity: 6 }
+          affection: { aoi: 3 }
+          goto: aoi_date_03_honest
+        - text: "間に合うつもりで黙って向かう"
+          params: { sincerity: -2 }
+          goto: aoi_date_03_silent
+
+- id: aoi_date_03_honest
+  next: schedule_hub
+  body:
+    - text: "十九時十二分に、正確な見込みを送った。"
+    - text: "返事はすぐ来た。『了解です。本読んでます』"
+
+    - text: "二十一時。ファミレスの窓際で、葵は文庫本を開いていた。"
+
+    - who: aoi
+      face: normal
+      text: "「これ、この前あなたが持ってた本と同じやつ」"
+
+    - who: iroha
+      text: "「……買ったのか」"
+
+    - who: aoi
+      face: smile
+      text: "「待つ側の気持ち、初めて知りました」"
+
+    - who: aoi
+      face: normal
+      text: "「わたし、いつも遅れる側だから。"
+    - who: aoi
+      face: normal
+      text: "　早めに正確な時間を言われるのが、こんなに楽だとは思わなかった」"
+
+    - text: "（謝るより、早く正確に言うほうが効く）"
+    - text: "（この人が最初からやっていたことだった）"
+
+- id: aoi_date_03_silent
+  next: schedule_hub
+  body:
+    - text: "結局、着いたのは二十一時十分だった。"
+    - text: "途中で三回、『あと少しで出ます』と送った。三回とも嘘になった。"
+
+    - who: aoi
+      face: normal
+      text: "「おつかれさまです」"
+
+    - text: "葵は怒っていなかった。まったく怒っていなかった。"
+
+    - who: aoi
+      face: normal
+      text: "「一時間かかるって、最初に言ってくれたらよかったのに」"
+
+    - who: aoi
+      face: normal
+      text: "「そしたらわたし、一回家に帰れたので」"
+
+    - text: "（……そうか）"
+    - text: "（遅れたことじゃない。見込みを偽ったことだ）"
+
 - id: aoi_date_extra
   bg: cafe_day
   next: schedule_hub
@@ -232,6 +405,151 @@
     - text: "（気にするな、と言われて気にしなくなる人間はいない）"
     - text: "（知っていたのに、言ってしまった）"
 
+- id: sui_date_02
+  bg: street_evening
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { tolerance: 6 }
+
+    - text: "翠からの返信が、三日途切れた。"
+    - text: "既読はついていた。四日目の夜に、短い一言が来た。"
+    - text: "『あした、店にいます』"
+
+    - text: "花屋の前に着いたのは、閉店の三十分前だった。"
+
+    - who: sui
+      face: normal
+      text: "「……こんばんは」"
+
+    - text: "翠は、三日ぶんの説明をしなかった。"
+    - text: "こちらが何か言うのを待っている顔でもなかった。ただ、そこにいた。"
+
+    - text: "（……どうする）"
+
+    - choice:
+        - text: "何も聞かず、いつもどおり話す"
+          params: { tolerance: 6 }
+          affection: { sui: 3 }
+          goto: sui_date_02_normal
+        - text: "「心配したよ」と伝える"
+          params: { tolerance: -2 }
+          goto: sui_date_02_worry
+
+- id: sui_date_02_normal
+  next: schedule_hub
+  body:
+    - who: iroha
+      text: "「今日、何の花が入ったの」"
+
+    - text: "翠が、少しだけ目を上げた。"
+
+    - who: sui
+      face: normal
+      text: "「……ラナンキュラス。まだ固いです」"
+
+    - who: iroha
+      text: "「固いのは、まだ売れないってこと？」"
+
+    - who: sui
+      face: normal
+      text: "「いえ。固いほうが、長く咲きます」"
+
+    - text: "それから三十分、花の話だけをした。"
+    - text: "三日のことは、最後まで一度も出なかった。"
+
+    - who: sui
+      face: smile
+      text: "「……戻ってきていいんだって、思えました」"
+
+    - text: "（待つというのは、何もしないことじゃないらしい）"
+
+- id: sui_date_02_worry
+  next: schedule_hub
+  body:
+    - who: iroha
+      text: "「心配したよ」"
+
+    - who: sui
+      face: normal
+      text: "「……ごめんなさい」"
+
+    - text: "翠は、そのあと何度も謝った。"
+    - text: "こちらが謝らせるつもりで言ったのでないことは、たぶん伝わっていない。"
+
+    - who: sui
+      face: normal
+      text: "「わたし、また同じことすると思います。そのときも、たぶん謝ります」"
+
+    - text: "（心配した、は）"
+    - text: "（この人には、請求書に聞こえるのか）"
+
+- id: sui_date_03
+  bg: cafe_day
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { tolerance: 6 }
+
+    - text: "翠が、めずらしく自分から話し続けていた。"
+    - text: "その日は「だいじょうぶな日」だったらしい。"
+
+    - who: sui
+      face: smile
+      text: "「これ、アルストロメリアっていうんです。花びらに筋が入ってるでしょう」"
+
+    - who: sui
+      face: smile
+      text: "「この筋、蜜のありかを虫に教えてる道しるべなんですよ」"
+
+    - text: "（……知っている）"
+    - text: "（前に調べた。ハニーガイドという名前まで覚えている）"
+
+    - choice:
+        - text: "「名前だけ知ってた。そんな意味があるんだ」と聞く側に回る"
+          params: { tolerance: 6 }
+          affection: { sui: 3 }
+          goto: sui_date_03_listen
+        - text: "「ハニーガイドっていうんだよね」と知識を足す"
+          params: { tolerance: -2 }
+          goto: sui_date_03_topping
+
+- id: sui_date_03_listen
+  next: schedule_hub
+  body:
+    - who: sui
+      face: smile
+      text: "「そうなんです！　案内板みたいで、かわいくないですか」"
+
+    - text: "翠はそのあと、四種類ぶん同じ話をした。"
+    - text: "一度も止めなかった。止める理由が見つからなかった。"
+
+    - who: sui
+      face: smile
+      text: "「……わたし、こんなに喋ったの久しぶりです」"
+
+    - who: sui
+      face: normal
+      text: "「聞いてくれる人の前だと、こうなるんですね。わたし」"
+
+    - text: "（知っていることを言わないだけで、この人はこんなに喋る）"
+
+- id: sui_date_03_topping
+  next: schedule_hub
+  body:
+    - who: sui
+      face: normal
+      text: "「……あ。はい、そうです」"
+
+    - text: "翠は少し笑って、それから花の話をやめた。"
+
+    - who: sui
+      face: normal
+      text: "「詳しいんですね」"
+
+    - text: "褒められたはずなのに、会話が一段階うしろに下がった。"
+    - text: "（この人の得意なものを、こちらの得意にしてしまった）"
+
 - id: sui_date_extra
   bg: street_evening
   next: schedule_hub
@@ -340,6 +658,163 @@
 
     - text: "橙香はすぐ持ち直した。持ち直せてしまうのが、少し苦しかった。"
     - text: "（今のは、こっちが落とした）"
+
+- id: touka_date_02
+  bg: street_evening
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { humor: 6 }
+
+    - text: "橙香は、その日もよく喋った。"
+    - text: "ただ、途中から少しずつ、ボケの種類が変わった。"
+
+    - who: touka
+      face: laugh
+      text: "「わたしなんて所詮、バイトリーダー止まりですからね〜」"
+
+    - who: touka
+      face: laugh
+      text: "「店長にも『橙香はノリだけだな』って言われましたし」"
+
+    - who: touka
+      face: laugh
+      text: "「ノリだけ！　中身なし！　わはは！」"
+
+    - text: "（……これは、さっきまでのボケと違う）"
+    - text: "（拾ってはいけないやつだ）"
+
+    - choice:
+        - text: "拾わずに、別の話へ移す"
+          params: { humor: 6 }
+          affection: { touka: 3 }
+          goto: touka_date_02_pass
+        - text: "「中身なし！」と大げさに乗っかる"
+          params: { humor: -2 }
+          goto: touka_date_02_ride
+
+- id: touka_date_02_pass
+  next: schedule_hub
+  body:
+    - who: iroha
+      text: "「そこの自販機、当たりが出るらしい」"
+
+    - who: touka
+      face: normal
+      text: "「……えっ、なんの話ですか」"
+
+    - who: iroha
+      text: "「自販機の話」"
+
+    - text: "橙香は三秒黙って、それから吹き出した。"
+
+    - who: touka
+      face: laugh
+      text: "「ずるい！　いま完全に流された！」"
+
+    - who: touka
+      face: smile
+      text: "「……でも、ありがとうございます」"
+
+    - text: "（気づいてる、とは言わなかった）"
+    - text: "（言わないのが、たぶんこの子への礼儀だ）"
+
+- id: touka_date_02_ride
+  next: schedule_hub
+  body:
+    - who: iroha
+      text: "「中身なし！」"
+
+    - who: touka
+      face: laugh
+      text: "「わはは！　ですよね〜！」"
+
+    - text: "橙香は、その日いちばん大きな声で笑った。"
+    - text: "笑いながら、目だけがまったく笑っていなかった。"
+
+    - text: "（自分を落とすボケは、乗っかった瞬間に事実になる）"
+    - text: "（今、俺がそれを事実にした）"
+
+- id: touka_date_03
+  bg: cafe_day
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { humor: 6 }
+
+    - text: "その日の橙香は、店に入っても一度もボケなかった。"
+    - text: "十分ほど当たり障りのない話をして、それから言った。"
+
+    - who: touka
+      face: normal
+      text: "「わたし、来月で店やめるんです」"
+
+    - who: touka
+      face: normal
+      text: "「店長と揉めて。というか、わたしが我慢できなくて」"
+
+    - text: "テーブルの上で、橙香の指が紙ナプキンをちぎっていた。"
+
+    - who: touka
+      face: normal
+      text: "「……こういう話、つまんないですよね」"
+
+    - text: "（ここで笑わせにいくのは、たぶん違う）"
+
+    - choice:
+        - text: "何も足さずに、続きを聞く"
+          params: { humor: 6 }
+          affection: { touka: 3 }
+          goto: touka_date_03_listen
+        - text: "「じゃあ次はうちの会社で雇いますよ」と冗談で和ませる"
+          params: { humor: -2 }
+          goto: touka_date_03_joke
+
+- id: touka_date_03_listen
+  next: schedule_hub
+  body:
+    - who: iroha
+      text: "「つまらなくない。続き」"
+
+    - text: "橙香は、そこから二十分ぶん喋った。"
+    - text: "一度も落ちを付けなかった。付けようとして、やめたのが何度か見えた。"
+
+    - who: touka
+      face: normal
+      text: "「……ふつうに聞いてもらえたの、いつぶりだろ」"
+
+    - who: touka
+      face: smile
+      text: "「わたしがボケると、みんな安心するんですよ。"
+    - who: touka
+      face: smile
+      text: "　あ、この子は重くないんだって」"
+
+    - who: touka
+      face: laugh
+      text: "「はい、しんみりした！　解散！」"
+
+    - text: "（笑わせないという選択肢が、この子にはいちばん効く）"
+
+- id: touka_date_03_joke
+  next: schedule_hub
+  body:
+    - who: iroha
+      text: "「じゃあ次はうちの会社で雇いますよ」"
+
+    - who: touka
+      face: laugh
+      text: "「わ〜！　お願いします〜！」"
+
+    - text: "橙香は即座にいつもの調子に戻った。"
+    - text: "戻る速さが、そのまま距離だった。"
+
+    - who: touka
+      face: laugh
+      text: "「はい、この話おしまい！　次いきましょ次！」"
+
+    - text: "（……閉められた）"
+    - text: "（開きかけていた扉を、こっちが押し戻した）"
 
 - id: touka_date_extra
   bg: cafe_evening
@@ -452,6 +927,159 @@
 
     - text: "（誰かの名前を借りた感想は、感想じゃない）"
 
+- id: shion_date_02
+  bg: izakaya_night
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { sensibility: 6 }
+
+    - text: "紫音に連れて行かれたのは、駅裏の狭い店だった。"
+    - text: "有線ではなく、店主の趣味らしい音楽が小さくかかっている。"
+
+    - who: shion
+      face: normal
+      text: "「この曲、どう思います」"
+
+    - text: "耳を澄ました。"
+    - text: "ギターが一本と、それから何かよく分からない音が鳴っていた。"
+
+    - text: "（……分からない）"
+    - text: "（正直に言えば、何が良いのかまったく分からない）"
+
+    - choice:
+        - text: "「分からない。何を聴けばいいのかも分からない」"
+          params: { sensibility: 6 }
+          affection: { shion: 3 }
+          goto: shion_date_02_honest
+        - text: "「こういうの好きです。○○みたいな感じですよね」"
+          params: { sensibility: -2 }
+          goto: shion_date_02_namedrop
+
+- id: shion_date_02_honest
+  next: schedule_hub
+  body:
+    - who: shion
+      face: normal
+      text: "「そうですか」"
+
+    - text: "紫音はグラスを置いて、しばらく黙って聴いていた。"
+
+    - who: shion
+      face: normal
+      text: "「じゃあ、ギターだけ追ってみてください。他は捨てて」"
+
+    - text: "言われたとおりにした。"
+    - text: "五分ほどで、同じ形が三回繰り返されているのが分かった。"
+
+    - who: iroha
+      text: "「……同じところを、三回まわってる」"
+
+    - who: shion
+      face: smile
+      text: "「はい。それだけ分かれば充分です」"
+
+    - who: shion
+      face: normal
+      text: "「分からないって言える人は、そのあと分かるようになるので」"
+
+    - text: "（教わるという行為を、久しぶりにした）"
+
+- id: shion_date_02_namedrop
+  next: schedule_hub
+  body:
+    - who: shion
+      face: normal
+      text: "「……ああ」"
+
+    - text: "紫音は、そこで話を終わらせた。"
+    - text: "曲が変わっても、二度と感想を聞かれなかった。"
+
+    - who: shion
+      face: normal
+      text: "「似てるものを言うのって、便利ですよね」"
+
+    - who: shion
+      face: normal
+      text: "「自分の言葉を使わなくて済むので」"
+
+    - text: "（……刺すな、この人は）"
+    - text: "（刺したつもりもないんだろうけど）"
+
+- id: shion_date_03
+  bg: cafe_evening
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { sensibility: 6 }
+
+    - text: "紫音がタブレットを差し出してきた。"
+    - text: "画面には、来月から街に貼られるという展覧会のポスターがあった。"
+
+    - who: shion
+      face: normal
+      text: "「わたしが作りました」"
+
+    - text: "紫音が自分の仕事を見せてきたのは、これが初めてだった。"
+
+    - text: "（……これは、たぶん、いちばん難しい）"
+    - text: "（褒めろと言われているのではない。見ろと言われている）"
+
+    - choice:
+        - text: "余白が広すぎることに触れる。「文字より、この空いてる場所が主役に見える」"
+          params: { sensibility: 6 }
+          affection: { shion: 3 }
+          goto: shion_date_03_specific
+        - text: "「すごくいいと思います。プロだ」"
+          params: { sensibility: -2 }
+          goto: shion_date_03_praise
+
+- id: shion_date_03_specific
+  next: schedule_hub
+  body:
+    - text: "紫音は、タブレットを引き寄せて自分でも見た。"
+
+    - who: shion
+      face: normal
+      text: "「……これ、三回突き返されたんです。余白が多すぎるって」"
+
+    - who: shion
+      face: normal
+      text: "「情報を入れろ、日付を大きくしろって」"
+
+    - who: shion
+      face: smile
+      text: "「でも、この空いてるところが主役なんです。ずっとそう言えなかった」"
+
+    - text: "紫音はそこで、はっきりと笑った。"
+
+    - who: shion
+      face: smile
+      text: "「言ってくれてありがとうございます。他人の口から聞くと、通ります」"
+
+    - text: "（この人が欲しかったのは、称賛じゃなかった）"
+    - text: "（同じものが見えている、という証拠だった）"
+
+- id: shion_date_03_praise
+  next: schedule_hub
+  body:
+    - who: shion
+      face: normal
+      text: "「ありがとうございます」"
+
+    - text: "紫音はタブレットをしまった。しまうのが、少し早かった。"
+
+    - who: shion
+      face: normal
+      text: "「『いい』って、便利な言葉ですよね」"
+
+    - who: shion
+      face: normal
+      text: "「どこを見なくても言えるので」"
+
+    - text: "（……見てはいた）"
+    - text: "（見たことを、言葉にする手間を惜しんだ）"
+
 - id: shion_date_extra
   bg: street_evening
   next: schedule_hub
@@ -476,6 +1104,169 @@
     - text: "こちらの目が、少しずつ変わってきている自覚があった。"
 
 # --- 桃果（桃／自信）---------------------------------------------------------
+
+- id: momoka_date_02
+  bg: street_evening
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { confidence: 6 }
+
+    - text: "駅から店までの十分を、桃果はずっと喋りながら歩いた。"
+    - text: "そして信号待ちで、当たり前のように腕を組んできた。"
+
+    - who: momoka
+      face: smile
+      text: "「寒いので」"
+
+    - text: "（十月だ。まだ寒くない）"
+
+    - text: "通行人が二人、こちらを見た気がした。"
+    - text: "腕にかかっている重さが、思っていたより現実的だった。"
+
+    - choice:
+        - text: "動じずに、そのまま歩き出す"
+          params: { confidence: 6 }
+          affection: { momoka: 3 }
+          goto: momoka_date_02_calm
+        - text: "「え、あの、ちょっと」と離れる"
+          params: { confidence: -2 }
+          goto: momoka_date_02_panic
+
+- id: momoka_date_02_calm
+  next: schedule_hub
+  body:
+    - who: iroha
+      text: "「信号、青になった」"
+
+    - who: momoka
+      face: normal
+      text: "「……はい」"
+
+    - text: "桃果は少しだけ、腕の力を強くした。"
+
+    - who: momoka
+      face: away
+      text: "「なんか、つまんない」"
+
+    - who: iroha
+      text: "「なんで」"
+
+    - who: momoka
+      face: smile
+      text: "「もっと慌てると思ったのに」"
+
+    - who: momoka
+      face: smile
+      text: "「……でも、こっちのほうがいいです。ずるいけど」"
+
+    - text: "（試されていたのか、甘えられていたのか）"
+    - text: "（たぶん、両方だ）"
+
+- id: momoka_date_02_panic
+  next: schedule_hub
+  body:
+    - who: iroha
+      text: "「え、あの、ちょっと」"
+
+    - text: "反射的に腕を引いてしまった。"
+    - text: "桃果の手が、行き場をなくして宙に浮いた。"
+
+    - who: momoka
+      face: normal
+      text: "「……あ。すみません」"
+
+    - who: momoka
+      face: normal
+      text: "「距離感、まちがえました」"
+
+    - text: "そこから店までの五分、桃果は一度も腕を伸ばさなかった。"
+    - text: "（間違えたのは、この子じゃない）"
+
+- id: momoka_date_03
+  bg: cafe_day
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { confidence: 6 }
+
+    - text: "その日の桃果は、席に着いてから十分ほど黙っていた。"
+    - text: "就職活動の一次面接で、三社続けて落ちたという。"
+
+    - who: momoka
+      face: normal
+      text: "「わたし、中身ないんですかね」"
+
+    - who: momoka
+      face: normal
+      text: "「志望動機とか、聞かれても、なんにも出てこなくて」"
+
+    - text: "（……年上として、何か言うべき場面だ）"
+    - text: "（言うべき、と思った時点で、たぶん半分間違えている）"
+
+    - choice:
+        - text: "説教はせず、次の一手だけ決めてやる。「今日は帰って寝て。明日の朝、一社ぶんだけ一緒に考える」"
+          params: { confidence: 6 }
+          affection: { momoka: 3 }
+          goto: momoka_date_03_lead
+        - text: "社会人の先輩として、面接で受かるコツを一通り教える"
+          params: { confidence: -2 }
+          goto: momoka_date_03_lecture
+
+- id: momoka_date_03_lead
+  next: schedule_hub
+  body:
+    - who: momoka
+      face: normal
+      text: "「……いいんですか、それで」"
+
+    - who: iroha
+      text: "「今日考えても、ろくなものが出ない。三社落ちた日だから」"
+
+    - who: momoka
+      face: smile
+      text: "「……はい」"
+
+    - text: "桃果は、それから一度も就活の話をしなかった。"
+    - text: "帰り際に、こう言った。"
+
+    - who: momoka
+      face: smile
+      text: "「いろはさんって、決めるとき、ちゃんと理由があるんですね」"
+
+    - who: momoka
+      face: normal
+      text: "「わたし、決めてくれる人が好きなんじゃなくて」"
+
+    - who: momoka
+      face: smile
+      text: "「決めた理由を言える人が、好きなのかも」"
+
+    - text: "（……いま、この子は少し大人になった）"
+
+- id: momoka_date_03_lecture
+  next: schedule_hub
+  body:
+    - text: "面接の受け方を、思いつくかぎり話した。"
+    - text: "結論から言う。数字を入れる。逆質問を用意する。"
+
+    - who: momoka
+      face: normal
+      text: "「……はい」"
+
+    - who: momoka
+      face: normal
+      text: "「はい。ありがとうございます」"
+
+    - text: "桃果はメモを取った。丁寧な字だった。"
+    - text: "丁寧すぎて、聞いているのではなく耐えているのだと分かった。"
+
+    - who: momoka
+      face: normal
+      text: "「わたし、今日は落ちた話をしに来たんですけどね」"
+
+    - text: "笑って言われた。"
+    - text: "（正しいことを、いちばん要らない時に渡した）"
 
 - id: momoka_date_extra
   bg: cafe_evening

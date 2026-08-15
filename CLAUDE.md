@@ -200,15 +200,32 @@ npm run fetch:assets     # 背景素材をダウンロード（Git管理外な�
 
 ## 4.6 収益化に関する制約【重要】
 
-**本作は完全無料で公開する。投げ銭（Name your own price）も行わない。**
+### 現状: **今ある立ち絵のままなら、完全無料でしか出せない**
 
-理由: 立ち絵の生成に使ったモデル `illustriousXLPersonalMerge_v30Noob10based` の
+立ち絵の生成に使ったモデル `illustriousXLPersonalMerge_v30Noob10based` の
 Civitai上の許諾が `allowCommercialUse: [RentCivit, Rent]` で、
-**`Image`（生成画像の販売）が含まれていない**ため。
+**`Image`（生成画像の商用利用）が含まれていない**ため。
 
 - 無料配布・パブリックリポジトリでの公開は**問題ない**
-- **有料販売・投げ銭は不可**
-- 収益化したくなった場合は**立ち絵を作り直す必要がある**（手順は `docs/06_credits.md` §4）
+- **現行素材のままでの有料販売・投げ銭は不可**
+
+### 方針【確定：2026-08-15】: **商用可のモデルで立ち絵を作り直す**
+
+収益化の選択肢を残すため、`allowCommercialUse` に **`Image` を含むモデル**へ移行する。
+
+- **実施時期は「残り5人の立ち絵に着手するとき」。** 今ある茜7枚は暫定のまま使う
+  → 作り直しは新規制作と同じ工程なので、**42枚をまとめて作るのが最も安い**
+  → 逆に、**今のモデルで5人を作ってしまうと42枚が丸ごと無駄になる**
+- 推奨モデルと手順は **`docs/06_credits.md` §5**、足切り基準は **`docs/04_asset-guide.md` §1**
+
+### モデルを選ぶときの鉄則（同じ失敗を繰り返さないために）
+
+**絵柄より先に `allowCommercialUse` を見る。** `Image` が無ければ採用しない。
+
+```powershell
+Invoke-RestMethod "https://civitai.com/api/v1/models/<id>" |
+  Select-Object name, @{n='商用';e={$_.allowCommercialUse -join ','}}
+```
 
 **素材を追加するときは、必ず商用可否を確認して `docs/06_credits.md` に記録すること。**
 
