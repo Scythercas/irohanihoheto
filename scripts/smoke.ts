@@ -13,7 +13,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { OPENING_SCENE_ID } from '../src/game/flow';
-import { PARAM_LABEL, PARAM_ORDER } from '../src/game/constants';
+import { PARAM_LABEL, PARAM_ORDER, THRESHOLD } from '../src/game/constants';
 import {
   applyAffection,
   applyDelta,
@@ -25,8 +25,18 @@ import {
   type Cursor,
 } from '../src/game/engine';
 import { buildScenes } from '../src/game/scenario/build';
-import { AKANE_SCENES, DATE_SCENES, FILLER_SCENE, FINALE_SCENE } from '../src/game/schedule';
-import type { Scene } from '../src/game/types';
+import {
+  AKANE_SCENES,
+  DATE_SCENES,
+  EXTRA_DATE_SCENES,
+  FILLER_SCENE,
+  FINALE_SCENE,
+} from '../src/game/schedule';
+import type { ParamKey, Scene } from '../src/game/types';
+
+/** 5色すべてに同じ値を入れた組を作る（エンディング判定の検証用） */
+const fill = (value: number): Record<ParamKey, number> =>
+  Object.fromEntries(PARAM_ORDER.map((key) => [key, value])) as Record<ParamKey, number>;
 
 const ROOT = resolve(import.meta.dirname, '..');
 
@@ -55,10 +65,23 @@ const visited = new Set<string>();
 const endings: { path: string[]; params: Record<string, number>; stop: string }[] = [];
 let runs = 0;
 
+/**
+ * 総当たりを1回だけ済ませた選択肢の位置。
+ *
+ * 素直に全組み合わせを展開すると、選択肢がn個あるだけで 3^n 通りに爆発する
+ * （出会いが4人ぶん増えた時点で2,000経路を超えて打ち切られた）。
+ * 一方でこのテストの目的は「壊れていないこと」と「全部の枝を一度は通ること」であり、
+ * パラメータの組み合わせを網羅することではない。
+ * そこで **同じ選択肢に2回目以降に来たときは先頭の候補だけを選んで先へ進む**。
+ * 各候補は必ず1回は展開されるので、リンク切れも到達不能も従来どおり見つかる。
+ * （パラメータ次第で行き先が変わる branch は、後段で単独に再生して担保している）
+ */
+const expandedChoices = new Set<string>();
+
 /** 選択肢を全通り試しながら、終端またはスケジュール画面まで再生する */
 function play(cursor: Cursor, trail: string[]): void {
   runs += 1;
-  if (runs > 2000) throw new Error('分岐が多すぎます。走査を打ち切りました。');
+  if (runs > 20_000) throw new Error('分岐が多すぎます。走査を打ち切りました。');
 
   for (;;) {
     visited.add(cursor.sceneId);
@@ -79,7 +102,12 @@ function play(cursor: Cursor, trail: string[]): void {
 
     if (node.kind === 'choice' || node.kind === 'reply') {
       const sceneAtChoice = cursor.sceneId;
-      node.options.forEach((option, i) => {
+      const signature = `${sceneAtChoice}#${cursor.index}`;
+      const first = expandedChoices.has(signature);
+      expandedChoices.add(signature);
+
+      const options = first ? node.options.slice(0, 1) : node.options;
+      options.forEach((option, i) => {
         const branch = cloneCursor(cursor);
         if (node.kind === 'reply') pushChat(branch, 'iroha', option.text);
         if (option.params) applyDelta(branch.params, option.params);
@@ -104,6 +132,7 @@ try {
   // スケジュールから呼ばれるシーンは、それぞれを起点に再生して到達性を担保する
   const scheduleRoots = [
     ...Object.values(DATE_SCENES).flat(),
+    ...Object.values(EXTRA_DATE_SCENES),
     ...AKANE_SCENES,
     FILLER_SCENE,
     FINALE_SCENE,
@@ -185,6 +214,48 @@ try {
     }
   }
 
+  // --- エンディング判定の検証 -----------------------------------------------
+  // K11③「個別ルート優先」。数値を見せないゲームなので、判定の取り違えは
+  // プレイヤーからは永久に見えない。ここで代表的な組み合わせを固定して確かめる。
+  const endingChecks: { label: string; params: Partial<Record<ParamKey, number>>; expect: string }[] = [
+    { label: '何も伸びていない', params: {}, expect: 'ending_sad' },
+    { label: '全色が茜のしきい値の直下', params: fill(THRESHOLD.AKANE_ALL - 1), expect: 'ending_sad' },
+    { label: '全色が茜のしきい値ちょうど', params: fill(THRESHOLD.AKANE_ALL), expect: 'ending_akane' },
+    { label: '全色が個別のしきい値の直下', params: fill(THRESHOLD.INDIVIDUAL - 1), expect: 'ending_akane' },
+    {
+      label: '自信だけ突出（他は茜条件を満たす）',
+      params: { ...fill(THRESHOLD.AKANE_ALL), confidence: THRESHOLD.INDIVIDUAL },
+      expect: 'ending_momoka',
+    },
+    {
+      label: '2色が到達（誠実さのほうが高い）',
+      params: { sincerity: THRESHOLD.INDIVIDUAL + 5, humor: THRESHOLD.INDIVIDUAL },
+      expect: 'ending_aoi',
+    },
+    {
+      label: '全色が個別のしきい値到達（最大値を採る）',
+      params: { ...fill(THRESHOLD.INDIVIDUAL), sensibility: THRESHOLD.INDIVIDUAL + 1 },
+      expect: 'ending_shion',
+    },
+  ];
+
+  const endingFailures: string[] = [];
+  for (const check of endingChecks) {
+    const cursor = newCursor(FINALE_SCENE);
+    enterScene(cursor, lookup(FINALE_SCENE));
+    for (const [key, value] of Object.entries(check.params)) {
+      cursor.params[key as ParamKey] = value;
+    }
+    // branch を越えるまで進める（本文を読み切った先に分岐がある）
+    for (let i = 0; i < 100 && cursor.sceneId === FINALE_SCENE; i++) step(cursor, lookup);
+
+    if (cursor.sceneId !== check.expect) {
+      endingFailures.push(`  ✗ ${check.label} → ${cursor.sceneId}（期待: ${check.expect}）`);
+    } else {
+      console.log(`  ✓ エンディング判定: ${check.label} → ${cursor.sceneId}`);
+    }
+  }
+
   const unreachable = [...scenes.keys()].filter((id) => !visited.has(id));
 
   console.log('✓ 全分岐の走破OK');
@@ -208,6 +279,12 @@ try {
   if (gateFailures.length) {
     console.error('\n✗ 茜のデレ段階のゲートが想定どおりに働いていません');
     for (const line of gateFailures) console.error(line);
+    process.exit(1);
+  }
+
+  if (endingFailures.length) {
+    console.error('\n✗ エンディング判定が想定どおりに働いていません');
+    for (const line of endingFailures) console.error(line);
     process.exit(1);
   }
 

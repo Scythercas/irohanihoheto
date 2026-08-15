@@ -1,0 +1,500 @@
+﻿# =============================================================================
+# デート ― 葵・翠・橙香・紫音（桃果は carat.yaml）
+#
+# 【点数設計】docs/05_implementation-status.md §6 が正。
+#   ・書き下ろしのデート … 冒頭で対応色 +6、選択肢の正解で +6（最良 +12／最悪 +4）
+#   ・重ねの一日（_extra）… 対応色 +8 固定。選択肢なし
+#   ・茜への相談        … 5色すべて +1（carat.yaml）
+#     └ 茜の相談を厚くしすぎると「誰にも会わず茜だけに相談する」で茜ルートに入れてしまい、
+#       「5人と出会って色を得る」という作品の骨格（CLAUDE.md §3.3）が崩れる。
+#   この配分を崩すとエンディングの到達可能性が変わる。`npm run balance` で検証できる。
+#
+# 【選択肢の正解】設計書 §2.2 の「攻略の軸」と「地雷」に必ず対応させること。
+#   ここがぶれると、茜のヒント（heroines.ts の hint）が嘘になる。
+# =============================================================================
+
+# --- 葵（青／誠実さ）---------------------------------------------------------
+# 軸: 約束を守る／天然を正直に訂正する／盛らない
+# 地雷: ドタキャン、話を合わせるだけの相槌、天然を馬鹿にして笑う
+
+- id: aoi_date_01
+  bg: cafe_day
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { sincerity: 6 }
+
+    - text: "待ち合わせは十一時だった。"
+    - text: "葵から「二時間遅れます」と連絡が来たのは、十時五十分だった。"
+
+    - text: "（……緊急入院、と書いてある）"
+    - text: "（怒る理由が、ひとつもない）"
+
+    - text: "喫茶店で二時間待った。文庫本が半分読めた。"
+
+    - who: aoi
+      face: normal
+      text: "「……ほんとに、ごめんなさい」"
+
+    - text: "現れた葵は、髪をひとつに縛ったままだった。"
+    - text: "化粧を直す時間もなかったのだろう。"
+
+    - who: aoi
+      face: normal
+      text: "「たぶん、嫌になりましたよね。初回からこれで」"
+
+    - who: iroha
+      text: "「いや。二時間で済んでよかったなと思ってた」"
+
+    - who: aoi
+      face: smile
+      text: "「……変な人」"
+
+    - text: "コーヒーを二杯飲むころには、葵はよく喋るようになっていた。"
+    - text: "職場の後輩の話。夜勤明けの飯がいちばんうまいという話。"
+
+    - who: aoi
+      face: normal
+      text: "「そういえば、色葉さんって年収どのくらいなんですか」"
+
+    - text: "（……直球だ）"
+    - text: "（この人は、たぶん、探りを入れているんじゃない）"
+
+    - choice:
+        - text: "そんなに多くない。同年代の平均くらいだと思う"
+          params: { sincerity: 6 }
+          affection: { aoi: 3 }
+          goto: aoi_date_01_true
+        - text: "まあ、それなりには"
+          params: { sincerity: -2 }
+          goto: aoi_date_01_bluff
+
+- id: aoi_date_01_true
+  next: schedule_hub
+  body:
+    - who: aoi
+      face: smile
+      text: "「はい。じゃあ今日は割り勘で」"
+
+    - who: iroha
+      text: "「早いな」"
+
+    - who: aoi
+      face: laugh
+      text: "「わたし、見栄を張られるのがいちばん困るんです」"
+
+    - who: aoi
+      face: normal
+      text: "「あとで必ずばれるので。そのとき、嘘をつかれたことのほうが痛い」"
+
+    - text: "（……なるほど）"
+    - text: "（この人の前では、盛るという選択肢が最初から無効なのか）"
+
+    - who: aoi
+      face: smile
+      text: "「また、待たせるかもしれませんけど」"
+
+    - who: iroha
+      text: "「本、持ってくる」"
+
+    - who: aoi
+      face: laugh
+      text: "「用意がいい」"
+
+- id: aoi_date_01_bluff
+  next: schedule_hub
+  body:
+    - who: aoi
+      face: normal
+      text: "「……それなり」"
+
+    - text: "葵はそれ以上聞かなかった。"
+    - text: "聞かなかった、というより、興味を引っ込めた感じだった。"
+
+    - who: aoi
+      face: normal
+      text: "「わたし、患者さんの嘘はすぐわかるんですよ。痛くないって言う人ほど痛い」"
+
+    - who: aoi
+      face: normal
+      text: "「職業病ですね。すみません」"
+
+    - text: "（……刺された）"
+    - text: "（たぶん、刺したつもりもないんだろうな）"
+
+- id: aoi_date_extra
+  bg: cafe_day
+  next: schedule_hub
+  body:
+    - params: { sincerity: 8 }
+
+    - text: "葵とは、だいたい昼に会う。夜は仕事だからだ。"
+
+    - who: aoi
+      face: normal
+      text: "「今日は三十分しかないんですけど、いいですか」"
+
+    - who: iroha
+      text: "「三十分あれば足りる」"
+
+    - who: aoi
+      face: smile
+      text: "「なにが」"
+
+    - text: "答えは持っていなかった。"
+    - text: "ただ、三十分のために電車に乗ることを、面倒だと思わなくなっていた。"
+
+# --- 翠（緑／包容力）---------------------------------------------------------
+# 軸: 落ち込んだ日に受け止めて待つ／催促しない／知識マウントを取らない
+# 地雷: 前向きな説教、「頑張って」、既読催促
+
+- id: sui_date_01
+  bg: cafe_evening
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { tolerance: 6 }
+
+    - text: "翠は、約束の時間の十分前に来ていた。"
+    - text: "そして、来ていたことを言わなかった。"
+
+    - who: sui
+      face: normal
+      text: "「……あ。こんにちは」"
+
+    - text: "声が小さい。店内の音楽に半分持っていかれる。"
+
+    - who: sui
+      face: normal
+      text: "「今日は、だいじょうぶな日です」"
+
+    - who: iroha
+      text: "「だいじょうぶじゃない日もあるんだ」"
+
+    - who: sui
+      face: normal
+      text: "「あります。……たくさん」"
+
+    - text: "翠は紅茶を頼んで、二十分かけて半分飲んだ。"
+    - text: "沈黙が、思っていたより苦しくなかった。"
+
+    - who: sui
+      face: normal
+      text: "「わたし、こういうとき、何か話さなきゃって焦っちゃうんです」"
+
+    - who: sui
+      face: normal
+      text: "「今も、焦ってます」"
+
+    - text: "（……どうする）"
+
+    - choice:
+        - text: "何も言わずに、窓の外を見る"
+          params: { tolerance: 6 }
+          affection: { sui: 3 }
+          goto: sui_date_01_quiet
+        - text: "気にしなくていいですよ、と伝える"
+          params: { tolerance: -2 }
+          goto: sui_date_01_reassure
+
+- id: sui_date_01_quiet
+  next: schedule_hub
+  body:
+    - text: "何も言わなかった。"
+    - text: "外では、店の前の街路樹が風に揺れていた。"
+
+    - text: "五分ほどして、翠がぽつりと言った。"
+
+    - who: sui
+      face: normal
+      text: "「……焦らなくても、よかったんですね」"
+
+    - who: sui
+      face: smile
+      text: "「これ、はじめてです。黙ってても平気な人」"
+
+    - text: "（何もしなかったことが、何かになった）"
+    - text: "（そんなことが、あるのか）"
+
+- id: sui_date_01_reassure
+  next: schedule_hub
+  body:
+    - who: iroha
+      text: "「気にしなくていいですよ」"
+
+    - who: sui
+      face: normal
+      text: "「はい。……ありがとうございます」"
+
+    - text: "翠は笑った。笑って、それきり黙った。"
+    - text: "その沈黙は、さっきまでの沈黙とは種類が違った。"
+
+    - text: "（気にするな、と言われて気にしなくなる人間はいない）"
+    - text: "（知っていたのに、言ってしまった）"
+
+- id: sui_date_extra
+  bg: street_evening
+  next: schedule_hub
+  body:
+    - params: { tolerance: 8 }
+
+    - text: "翠の店の前を、閉店時間に合わせて通る日が増えた。"
+
+    - who: sui
+      face: normal
+      text: "「……来たんですね」"
+
+    - who: iroha
+      text: "「通りかかっただけ」"
+
+    - who: sui
+      face: smile
+      text: "「毎週、通りかかるんですね」"
+
+    - text: "バケツの水を捨てながら、翠が少しだけ笑った。"
+    - text: "その日は、売れ残りの花の話をしなかった。"
+
+# --- 橙香（橙／ユーモア）-----------------------------------------------------
+# 軸: ツッコミの切れ味。正解は直前のボケの種類で変わる
+# 地雷: 真面目に受け答えする、ボケを説明する、笑わない
+
+- id: touka_date_01
+  bg: family_restaurant
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { humor: 6 }
+
+    - text: "橙香は、店に入って三秒で店員に話しかけていた。"
+
+    - who: touka
+      face: laugh
+      text: "「すみません、いちばん失敗の少ないメニューください」"
+
+    - text: "（頼み方がある）"
+
+    - who: touka
+      face: laugh
+      text: "「色葉さん、わたしね、外食で冒険したことがないんですよ」"
+
+    - who: touka
+      face: laugh
+      text: "「人生では毎日冒険してるのに」"
+
+    - who: iroha
+      text: "「どういう冒険」"
+
+    - who: touka
+      face: laugh
+      text: "「昨日、シャンプーとリンス逆に使いました」"
+
+    - text: "（……ここだ）"
+    - text: "（この子は、拾われるのを待っている）"
+
+    - choice:
+        - text: "それは冒険じゃなくて事故"
+          params: { humor: 6 }
+          affection: { touka: 3 }
+          goto: touka_date_01_sharp
+        - text: "順番が逆でも、そんなに変わらないらしいですよ"
+          params: { humor: -2 }
+          goto: touka_date_01_flat
+
+- id: touka_date_01_sharp
+  next: schedule_hub
+  body:
+    - who: touka
+      face: laugh
+      text: "「事故！！ たしかに事故！」"
+
+    - text: "橙香は、テーブルを叩いて笑った。周りの客が二人こちらを見た。"
+
+    - who: touka
+      face: smile
+      text: "「あー、たのしい」"
+
+    - who: touka
+      face: normal
+      text: "「わたし、笑わない人と一緒にいると、自分が変な人みたいに思えてくるんです」"
+
+    - text: "はじめて、テンションが少し下がった声を聞いた。"
+
+    - who: touka
+      face: laugh
+      text: "「って、重い！ 今の忘れて！ はい次のボケ！」"
+
+    - text: "（……忘れないでおこう）"
+
+- id: touka_date_01_flat
+  next: schedule_hub
+  body:
+    - who: touka
+      face: normal
+      text: "「……あ、そうなんですね」"
+
+    - text: "会話が、平らになった。"
+
+    - who: touka
+      face: laugh
+      text: "「じゃあ明日から逆にしよっと！」"
+
+    - text: "橙香はすぐ持ち直した。持ち直せてしまうのが、少し苦しかった。"
+    - text: "（今のは、こっちが落とした）"
+
+- id: touka_date_extra
+  bg: cafe_evening
+  next: schedule_hub
+  body:
+    - params: { humor: 8 }
+
+    - text: "橙香と会う日は、だいたい何も決めずに集まる。"
+
+    - who: touka
+      face: laugh
+      text: "「今日のテーマは『無』です」"
+
+    - who: iroha
+      text: "「テーマがある時点で無じゃない」"
+
+    - who: touka
+      face: laugh
+      text: "「出た〜！ 今日も切れ味がいい！」"
+
+    - text: "二時間しゃべって、内容は何も残らなかった。"
+    - text: "残らないことに価値がある時間、というものが世の中にはあるらしい。"
+
+# --- 紫音（紫／感性）---------------------------------------------------------
+# 軸: 具体的に、自分の言葉で言えるか。わからないなら正直に
+# 地雷: 一般論の称賛、知ったかぶり、権威に頼った褒め方
+
+- id: shion_date_01
+  bg: street_evening
+  bgm: bgm_date
+  next: schedule_hub
+  body:
+    - params: { sensibility: 6 }
+
+    - text: "紫音の指定した待ち合わせ場所は、駅から十五分歩いた高架下だった。"
+    - text: "写真で見たあの場所だった。"
+
+    - who: shion
+      face: normal
+      text: "「来ましたね」"
+
+    - who: shion
+      face: normal
+      text: "「ここ、日が落ちてからのほうがいいんです」"
+
+    - text: "並んで歩いた。紫音は三歩ごとに立ち止まって、"
+    - text: "こちらが気づかなかったものを見ていた。"
+
+    - who: shion
+      face: normal
+      text: "「あの看板、字が一文字だけ新しいの、わかりますか」"
+
+    - text: "（……ほんとだ）"
+    - text: "「ラーメン」の「ー」だけが、妙に白い。"
+
+    - who: shion
+      face: normal
+      text: "「ずっと気になってて。なんでだと思います？」"
+
+    - text: "（正解を求められているわけじゃない）"
+
+    - choice:
+        - text: "そこだけ落ちて、あとから貼り直したんだと思う。字の中でいちばん軽いから"
+          params: { sensibility: 6 }
+          affection: { shion: 3 }
+          goto: shion_date_01_own
+        - text: "有名な写真家がこういうの撮ってましたよね"
+          params: { sensibility: -2 }
+          goto: shion_date_01_name
+
+- id: shion_date_01_own
+  next: schedule_hub
+  body:
+    - text: "紫音は、看板をもう一度見上げた。"
+
+    - who: shion
+      face: normal
+      text: "「……いちばん軽いから」"
+
+    - who: shion
+      face: smile
+      text: "「その考え方、好きです」"
+
+    - text: "紫音が笑うのを、はじめて見た。"
+    - text: "口の端が二ミリ上がっただけだったが、たしかに笑っていた。"
+
+    - who: shion
+      face: normal
+      text: "「合ってるかどうかはどうでもいいんです」"
+
+    - who: shion
+      face: normal
+      text: "「見た人の中で、その人の言葉になってるかどうか」"
+
+- id: shion_date_01_name
+  next: schedule_hub
+  body:
+    - who: shion
+      face: normal
+      text: "「……そうですね」"
+
+    - text: "紫音は看板から目を離して、歩き出した。"
+
+    - who: shion
+      face: normal
+      text: "「わたし、その人の写真、たぶん見たことないです」"
+
+    - text: "嘘だ、と思った。"
+    - text: "知らないふりをされたのだと、少し遅れて気づいた。"
+
+    - text: "（誰かの名前を借りた感想は、感想じゃない）"
+
+- id: shion_date_extra
+  bg: street_evening
+  next: schedule_hub
+  body:
+    - params: { sensibility: 8 }
+
+    - text: "紫音とは、いつも歩いている。"
+    - text: "どこかへ行くためではなく、通り過ぎるために歩く。"
+
+    - who: shion
+      face: normal
+      text: "「今日は、何か見つけましたか」"
+
+    - who: iroha
+      text: "「信号の待ち時間が、この交差点だけ異様に長い」"
+
+    - who: shion
+      face: smile
+      text: "「いいですね、それ」"
+
+    - text: "紫音は、そういうものを「いい」と言う。"
+    - text: "こちらの目が、少しずつ変わってきている自覚があった。"
+
+# --- 桃果（桃／自信）---------------------------------------------------------
+
+- id: momoka_date_extra
+  bg: cafe_evening
+  next: schedule_hub
+  body:
+    - params: { confidence: 8 }
+
+    - text: "桃果とは、行き先をこちらが決めることになっている。"
+
+    - who: momoka
+      face: smile
+      text: "「今日はどこ行くんですか？」"
+
+    - who: iroha
+      text: "「駅の裏に、古い喫茶店がある。コーヒーしか置いてない」"
+
+    - who: momoka
+      face: laugh
+      text: "「渋い！ 行きます！」"
+
+    - text: "決めるというのは、外れる責任を持つということだった。"
+    - text: "その責任を、いつのまにか怖がらなくなっていた。"

@@ -1,0 +1,511 @@
+# =============================================================================
+# 終幕 ― エンディング判定と7つの結末
+#
+# 【判定規則】K11③ で「自動判定・個別ルート優先」を選択。
+#   計算そのものは engine.ts の `endingRoute()` が持ち、
+#   シナリオ側は `ifEnding:` で結果を受け取るだけにしてある。
+#   しきい値や優先順位をシナリオに散らさないため（変えるときに一箇所で済む）。
+#
+#     1. 対応色が THRESHOLD.INDIVIDUAL 以上の色があれば → その個別ルート（最大値の色）
+#     2. どれも届かず、5色すべてが THRESHOLD.AKANE_ALL 以上 → 茜ルート
+#     3. どちらでもない → サッドエンド
+#
+# 【作品の主題】いろは歌「色は匂へど 散りぬるを」（CLAUDE.md 冒頭）。
+#   **5人とは自然消滅（フェードアウト）で終わるのが本作の主題であり、妥協ではない。**
+#   個別ルートでも、選ばれなかった4人は明確な失恋シーンを持たず、静かに途切れる。
+#   緩和策（設計書 §3.5）として次の2つを必ず入れること:
+#     ① 各ヒロインの「最後のメッセージ」だけは残す（前向きな一言で終わらせる）
+#     ② その後の一行に触れる（散ったことを否定的に着地させない）
+#
+# 【フラグ】各エンディングで `ending_*` を立てている。
+#   将来のエンディング一覧・回想（H2c）はこのフラグを読む。
+# =============================================================================
+
+- id: finale_judge
+  bg: room_night
+  bgm: bgm_daily
+  body:
+    # スケジュールから直接飛んでくるので、誰かが立ったままにならないよう退場させる
+    - stage: none
+
+    - text: "三ヶ月が過ぎた。"
+    - text: "季節がひとつ動いて、上着が薄くなった。"
+
+    - text: "アプリを開く回数が、いつのまにか減っていた。"
+    - text: "減った理由は、人によって違うんだろうと思う。"
+
+    - branch:
+        - goto: ending_aoi
+          ifEnding: aoi
+        - goto: ending_sui
+          ifEnding: sui
+        - goto: ending_touka
+          ifEnding: touka
+        - goto: ending_shion
+          ifEnding: shion
+        - goto: ending_momoka
+          ifEnding: momoka
+        - goto: ending_akane
+          ifEnding: akane
+        - goto: ending_sad
+
+# --- 個別ルート ---------------------------------------------------------------
+
+- id: ending_aoi
+  bg: cafe_day
+  bgm: bgm_date
+  body:
+    - flag: ending_aoi
+      value: true
+
+    - text: "葵は、その日も三十分遅れて来た。"
+
+    - who: aoi
+      face: normal
+      text: "「ねえ、色葉さん」"
+
+    - who: aoi
+      face: normal
+      text: "「わたし、たぶんこの先もずっと遅れます」"
+
+    - who: iroha
+      text: "「知ってる」"
+
+    - who: aoi
+      face: smile
+      text: "「知ってて、いいんですか」"
+
+    - text: "嘘をつかない、というだけのことを、三ヶ月続けた。"
+    - text: "それだけで人と付き合えるとは思っていなかった。"
+
+    - who: aoi
+      face: smile
+      text: "「じゃあ、お願いします」"
+
+    - text: "――"
+
+    - text: "他の四人とのトークは、返す間隔が少しずつ延びて、いつのまにか止まった。"
+    - text: "最後に残っていたのは、それぞれ短い一言だった。"
+
+    - text: "翠「お花、また見に来てくださいね」"
+    - text: "橙香「色葉さんのツッコミ、けっこう好きでしたよ〜」"
+    - text: "紫音「あの看板、貼り直されてました」"
+    - text: "桃果「わたし、ちゃんと決められる人になります」"
+
+    - text: "誰も、責めなかった。"
+    - text: "散った、というより、それぞれの色に戻っていっただけなのかもしれない。"
+
+    - text: "――"
+
+    - bg: family_restaurant
+
+    - who: akane
+      face: bored
+      text: "「ふうん。看護師さんね」"
+
+    - who: akane
+      face: smug
+      text: "「まあ、あんたには過ぎた人だと思うけど」"
+
+    - text: "茜はそう言って、ドリンクバーのグラスを置いた。"
+    - text: "置き方が、少しだけ乱暴だった。"
+
+    - text: "『いろはにほへと』"
+    - text: "― 葵エンド ―"
+
+- id: ending_sui
+  bg: street_evening
+  bgm: bgm_date
+  body:
+    - flag: ending_sui
+      value: true
+
+    - text: "翠の店の前で、閉店作業が終わるのを待っていた。"
+    - text: "待つことには、もう慣れていた。"
+
+    - who: sui
+      face: normal
+      text: "「……今日は、だめな日でした」"
+
+    - who: iroha
+      text: "「そっか」"
+
+    - text: "それだけ言って、並んで歩いた。"
+    - text: "三ヶ月のあいだ、この人には結局、何ひとつ助言をしなかった。"
+
+    - who: sui
+      face: normal
+      text: "「わたし、だめな日にいてくれる人を探してたんだと思います」"
+
+    - who: sui
+      face: smile
+      text: "「見つけちゃいました」"
+
+    - text: "――"
+
+    - text: "他の四人とのトークは、季節が変わるみたいに静かに止まった。"
+
+    - text: "葵「ちゃんと寝てくださいね。これは職業上の忠告です」"
+    - text: "橙香「またどっかで笑いましょ〜」"
+    - text: "紫音「夜、たまに歩いてます」"
+    - text: "桃果「わたしも、待てる人になりたいです」"
+
+    - text: "散ったあとに残る匂いのようなものが、たしかにあった。"
+
+    - text: "――"
+
+    - bg: family_restaurant
+
+    - who: akane
+      face: normal
+      text: "「あんた、待てるようになったんだ」"
+
+    - who: akane
+      face: away
+      text: "「……昔は、五分も待てなかったのにね」"
+
+    - text: "『いろはにほへと』"
+    - text: "― 翠エンド ―"
+
+- id: ending_touka
+  bg: family_restaurant
+  bgm: bgm_date
+  body:
+    - flag: ending_touka
+      value: true
+
+    - text: "橙香は、その日も店に入って三秒で笑わせにきた。"
+
+    - who: touka
+      face: laugh
+      text: "「今日のテーマは『告白』です」"
+
+    - who: iroha
+      text: "「テーマにするな」"
+
+    - who: touka
+      face: laugh
+      text: "「出た〜！」"
+
+    - text: "笑って、それから橙香は、少しだけ黙った。"
+
+    - who: touka
+      face: normal
+      text: "「ねえ。わたし、ずっとふざけてるでしょ」"
+
+    - who: touka
+      face: normal
+      text: "「ふざけてても付き合ってくれる人、いなかったんです」"
+
+    - who: iroha
+      text: "「三ヶ月、付き合ったけど」"
+
+    - who: touka
+      face: smile
+      text: "「……じゃあ、あと何十年かお願いします」"
+
+    - text: "――"
+
+    - text: "他の四人とのトークは、笑い声が消えるみたいに途切れた。"
+
+    - text: "葵「元気な子ですね。うらやましい」"
+    - text: "翠「笑ってる色葉さん、見たかったです」"
+    - text: "紫音「あの高架下、取り壊されるそうです」"
+    - text: "桃果「ずるいなあ。でも、おめでとうございます」"
+
+    - text: "四つの色が、それぞれの場所で散っていった。"
+
+    - text: "――"
+
+    - bg: street_evening
+
+    - who: akane
+      face: bored
+      text: "「うるさい子でしょ、その人」"
+
+    - who: akane
+      face: smug
+      text: "「あんた、静かなの苦手だもんね。……昔から」"
+
+    - text: "『いろはにほへと』"
+    - text: "― 橙香エンド ―"
+
+- id: ending_shion
+  bg: street_evening
+  bgm: bgm_date
+  body:
+    - flag: ending_shion
+      value: true
+
+    - text: "高架下は、取り壊しの告知が貼られていた。"
+
+    - who: shion
+      face: normal
+      text: "「なくなるんです、ここ」"
+
+    - who: shion
+      face: normal
+      text: "「なくなる前に、もう一回だけ一緒に見たかった」"
+
+    - text: "蛍光灯が、相変わらず縦に長く伸びていた。"
+    - text: "息が詰まる、と最初に思った光景を、今は少し好きになっていた。"
+
+    - who: shion
+      face: normal
+      text: "「色葉さんの言葉、わたし、けっこう覚えてます」"
+
+    - who: shion
+      face: smile
+      text: "「これからも聞かせてください。ずっと」"
+
+    - text: "――"
+
+    - text: "他の四人とのトークは、灯が落ちるみたいに順に止まった。"
+
+    - text: "葵「たまには昼に外へ出てくださいね」"
+    - text: "翠「今年の最後の一本、きれいに咲きました」"
+    - text: "橙香「わたしのボケ、誰が拾うんですか〜」"
+    - text: "桃果「わたし、自分の言葉で話せる人になります」"
+
+    - text: "散った色は、どれも消えたわけではなかった。"
+
+    - text: "――"
+
+    - bg: family_restaurant
+
+    - who: akane
+      face: normal
+      text: "「あんた、前より物をよく見るようになったね」"
+
+    - who: akane
+      face: away
+      text: "「……私のことは、別に見なくていいけど」"
+
+    - text: "『いろはにほへと』"
+    - text: "― 紫音エンド ―"
+
+- id: ending_momoka
+  bg: aquarium_evening
+  bgm: bgm_date
+  body:
+    - flag: ending_momoka
+      value: true
+
+    - text: "三ヶ月前と同じ水族館に、また来ていた。"
+    - text: "クラゲの水槽の前だけ、人がいない。"
+
+    - who: momoka
+      face: smile
+      text: "「ここ、最初に来たとこですね」"
+
+    - who: momoka
+      face: normal
+      text: "「あのときのいろはさん、ちょっと怖い顔してました」"
+
+    - who: iroha
+      text: "「緊張してた」"
+
+    - who: momoka
+      face: laugh
+      text: "「知ってます」"
+
+    - text: "桃果はクラゲを見上げたまま、言った。"
+
+    - who: momoka
+      face: normal
+      text: "「わたし、決めてくれる人が好きなんじゃなくて」"
+
+    - who: momoka
+      face: smile
+      text: "「決めてくれた責任をちゃんと持つ人が、好きだったみたいです」"
+
+    - text: "――"
+
+    - text: "他の四人とのトークは、水が引くみたいに静かに終わった。"
+
+    - text: "葵「若いですね。がんばってください」"
+    - text: "翠「大事にしてあげてくださいね」"
+    - text: "橙香「まあ、そうなる気がしてました〜」"
+    - text: "紫音「あの看板、貼り直されてました」"
+
+    - text: "五つの色のうち、四つが散った。"
+    - text: "散ることを前提にした出会いだったのだと、今なら少しわかる。"
+
+    - text: "――"
+
+    - bg: family_restaurant
+
+    - who: akane
+      face: bored
+      text: "「年下じゃん」"
+
+    - who: akane
+      face: smug
+      text: "「……まあ、いいんじゃない。あんたが決めたなら」"
+
+    - text: "茜は、そのあと何も言わなかった。"
+
+    - text: "『いろはにほへと』"
+    - text: "― 桃果エンド ―"
+
+# --- 茜ルート（トゥルー）------------------------------------------------------
+
+- id: ending_akane
+  bg: room_night
+  bgm: bgm_daily
+  next: ending_akane_02
+  body:
+    - flag: ending_akane
+      value: true
+
+    - text: "五人のトークが、順番に止まっていった。"
+    - text: "誰かに嫌われたわけではなかった。誰も傷つけなかったとも思わない。"
+    - text: "ただ、続かなかった。"
+
+    - text: "葵「色葉さんは、嘘をつかない人でした。それだけで充分すごいです」"
+    - text: "翠「だめな日に、そっかって言ってくれてありがとうございました」"
+    - text: "橙香「色葉さんのツッコミ、いちばん好きでした。ほんとに」"
+    - text: "紫音「あなたの言葉で見た景色が、いくつか残ってます」"
+    - text: "桃果「わたし、いろはさんみたいに決められる人になります」"
+
+    - text: "五つとも、最後は前を向いた一言だった。"
+    - text: "こんなに丁寧に散っていく別れがあるのかと思った。"
+
+    - text: "色は匂へど、散りぬるを。"
+
+- id: ending_akane_02
+  bg: izakaya_night
+  bgm: bgm_daily
+  body:
+    - text: "三ヶ月ぶりに、あの居酒屋に呼び出された。"
+    - text: "同じ席。同じ枝豆。同じ女。"
+
+    - who: akane
+      face: bored
+      text: "「で？　結局、全滅したわけ」"
+
+    - who: iroha
+      text: "「全滅って言うな」"
+
+    - who: akane
+      face: laugh
+      text: "「あははは。ま、そうなると思ってた」"
+
+    - text: "笑って、それから茜はジョッキを置いた。"
+    - text: "置いてから、しばらく何も言わなかった。"
+
+    - who: akane
+      face: normal
+      text: "「……あんたさ」"
+
+    - who: akane
+      face: normal
+      text: "「三ヶ月で、けっこう変わったよ」"
+
+    - who: akane
+      face: normal
+      text: "「嘘つかなくなったし。人の話、遮らなくなったし。待てるようになったし」"
+
+    - who: akane
+      face: normal
+      text: "「くだらないことで笑うようになったし。……ものを、よく見るようになった」"
+
+    - text: "（――五つ）"
+    - text: "（それは、五人ぶんだった）"
+
+    - who: akane
+      face: fluster
+      text: "「全部、私が好きなところなんだけど」"
+
+    - text: "枝豆の皿が、小さく音を立てた。"
+
+    - who: iroha
+      text: "「……は？」"
+
+    - who: akane
+      face: fluster
+      text: "「二回言わせないで」"
+
+    - text: "茜の耳は、もう隠しようがないくらい赤かった。"
+
+    - who: akane
+      face: away
+      text: "「二十四年かかったんだよ。こっちは」"
+
+    - who: akane
+      face: away
+      text: "「あんたが、私に釣り合うようになるまで」"
+
+    - text: "（……こいつ）"
+    - text: "（ずっと、待ってたのか）"
+
+    - text: "散らない色が、ひとつだけあった。"
+    - text: "最初から、いちばん近くにあった。"
+
+    - text: "『いろはにほへと』"
+    - text: "― 茜エンド（トゥルー）―"
+
+# --- サッドエンド -------------------------------------------------------------
+
+- id: ending_sad
+  bg: room_night
+  bgm: null
+  body:
+    - flag: ending_sad
+      value: true
+
+    - text: "五人のトークが、順番に止まっていった。"
+    - text: "最後のメッセージは、どれも短かった。"
+
+    - text: "葵「お元気で」"
+    - text: "翠「ありがとうございました」"
+    - text: "橙香「またどこかで〜」"
+    - text: "紫音「おやすみなさい」"
+    - text: "桃果「ごめんなさい」"
+
+    - text: "誰も怒っていなかった。それが、いちばんこたえた。"
+
+    - bg: family_restaurant
+
+    - text: "茜には、いつものファミレスで報告した。"
+
+    - who: akane
+      face: bored
+      text: "「ふうん」"
+
+    - who: akane
+      face: bored
+      text: "「で、あんた、この三ヶ月で何か変わった？」"
+
+    - text: "答えられなかった。"
+    - text: "何も変わっていなかったからだ。"
+
+    - who: akane
+      face: away
+      text: "「……そっか」"
+
+    - text: "茜は伝票を持って、先に立ち上がった。"
+
+    - who: akane
+      face: normal
+      text: "「今日は、私が払う」"
+
+    - who: iroha
+      text: "「なんで」"
+
+    - who: akane
+      face: away
+      text: "「なんとなく」"
+
+    - text: "それは、いつか俺が使って、怒られた言葉だった。"
+
+    - text: "――"
+
+    - text: "その月から、茜と会う回数が減った。"
+    - text: "向こうから誘われることは、なくなった。"
+
+    - text: "色は匂へど、散りぬるを。"
+    - text: "散ったのは、五つではなかった。"
+
+    - text: "『いろはにほへと』"
+    - text: "― サッドエンド ―"

@@ -1,0 +1,495 @@
+# =============================================================================
+# 出会い ― 葵・翠・橙香・紫音との顔合わせ（共通パート）
+#
+# 【構成の意図】K11① で「共通パートで一気に出会わせる」を選択。
+#   桃果とのやり取りの直後、同じ週のうちに残り4人とも繋がる。
+#   第2週の頭には5人全員がスケジュールに並び、
+#   「1人に入れ込むと茜に届かない」というトレードオフが最初から効くようになる。
+#
+# 【1人あたりの分量】K11② で「チャット1本＋選択肢1つ」を選択。
+#   マッチ演出 → プロフィール → 短いトーク → 選択肢1回。
+#   その選択肢は必ず **その子の攻略軸と地雷** を体験させるものにする（設計書 §2.2）。
+#     葵  ＝誠実さ  … 天然発言を正直に訂正できるか
+#     翠  ＝包容力  … 落ち込みを受け止めて待てるか
+#     橙香＝ユーモア … ボケに切れのあるツッコミを返せるか
+#     紫音＝感性    … 「なんかいいね」で済ませないか
+#
+# 【立ち絵】各シーン冒頭の `stage: none` は必須。
+#   直前のチャットで相手が立ち絵の枠に入っているため、
+#   同じ背景（自室）のまま次の相手へ移ると前の子が残ってしまう。
+# =============================================================================
+
+- id: carat_more_01
+  bg: room_night
+  bgm: bgm_app
+  next: meet_aoi
+  body:
+    - stage: none
+    - text: "桃果とのやり取りを閉じたあとも、アプリは開いたままだった。"
+    - text: "一度返事が来ると、不思議と怖さが薄れる。"
+
+    - text: "（……もう少しだけ、見てみるか）"
+
+    - se: se_swipe
+    - text: "指を動かすたび、知らない誰かが流れていく。"
+    - text: "その週のうちに、四件、通知が返ってきた。"
+
+# --- 葵（青／誠実さ）---------------------------------------------------------
+
+- id: meet_aoi
+  bg: room_night
+  next: chat_aoi_01
+  body:
+    - stage: none
+    - se: se_notification
+    - carat: match
+      target: aoi
+
+    - flag: met_aoi
+      value: true
+
+    - text: "葵、二十六歳。看護師。"
+    - text: "（年上だ）"
+
+    - carat: profile
+      target: aoi
+
+    - text: "『シフト制なので予定が読めません。ドタキャンしてしまったらごめんなさい』"
+    - text: "（先に謝ってる人、初めて見た）"
+    - text: "続きにはこう書いてあった。『でも、約束は大事にしたい人です』"
+
+- id: chat_aoi_01
+  screen: chat
+  with: aoi
+  next: meet_sui
+  body:
+    - from: aoi
+      msg: "こんばんは。今、夜勤明けで頭が回ってないので変なこと言ったらすみません"
+    - from: aoi
+      msg: "色葉さん、お仕事は？"
+
+    - from: iroha
+      msg: "普通の会社員です。定時で帰れる日と帰れない日が半々くらい"
+
+    - from: aoi
+      msg: "半々、いいですね"
+    - from: aoi
+      msg: "わたし、生活リズムがぐちゃぐちゃで。今日なんて朝日見ながら帰りましたよ"
+
+    - from: aoi
+      msg: "太陽って西から昇るじゃないですか。あれ見ると一日終わったなって"
+
+    - text: "（……ん？）"
+    - text: "（今、なんて言った）"
+
+    - reply:
+        - text: "太陽、東から昇りますよ"
+          params: { sincerity: 3 }
+          affection: { aoi: 2 }
+          goto: chat_aoi_01b_honest
+        - text: "わかります"
+          params: { sincerity: -2 }
+          goto: chat_aoi_01b_agree
+        - text: "（笑）"
+          goto: chat_aoi_01b_dodge
+
+- id: chat_aoi_01b_honest
+  screen: chat
+  with: aoi
+  next: meet_sui
+  body:
+    - from: aoi
+      msg: "え"
+    - from: aoi
+      msg: "え？"
+    - from: aoi
+      msg: "……ほんとだ"
+
+    - from: aoi
+      msg: "はずかし。看護師なのに"
+    - from: aoi
+      msg: "でも、ちゃんと言ってくれる人でよかったです"
+    - from: aoi
+      msg: "みんな笑って流すんですよ。あれ、けっこう傷つくので"
+
+    - text: "（……そういうものか）"
+    - text: "（この人は、取り繕われるほうが嫌なんだ）"
+
+- id: chat_aoi_01b_agree
+  screen: chat
+  with: aoi
+  next: meet_sui
+  body:
+    - from: aoi
+      msg: "ですよね〜"
+
+    - text: "（……いや、違う）"
+    - text: "（違うと知っていて、合わせた）"
+
+    - from: aoi
+      msg: "あ、そろそろ寝ます。おやすみなさい"
+
+    - text: "会話は、そこで途切れた。"
+    - text: "（何か、安く見られた気がする）"
+
+- id: chat_aoi_01b_dodge
+  screen: chat
+  with: aoi
+  next: meet_sui
+  body:
+    - from: aoi
+      msg: "笑うところでした？"
+    - from: aoi
+      msg: "まあいいや。おやすみなさい"
+
+    - text: "（……流された、というか、流した、というか）"
+    - text: "（どっちにも転ばなかった、という感じだ）"
+
+# --- 翠（緑／包容力）---------------------------------------------------------
+
+- id: meet_sui
+  bg: room_night
+  next: chat_sui_01
+  body:
+    - stage: none
+    - se: se_notification
+    - carat: match
+      target: sui
+
+    - flag: met_sui
+      value: true
+
+    - text: "翠、二十四歳。花屋の店員。"
+
+    - carat: profile
+      target: sui
+
+    - text: "『返信が遅くなる日があります。すみません』"
+    - text: "（また謝ってる）"
+    - text: "（このアプリ、謝ってる人が多い）"
+
+- id: chat_sui_01
+  screen: chat
+  with: sui
+  next: meet_touka
+  body:
+    - from: sui
+      msg: "はじめまして。翠です"
+    - from: sui
+      msg: "返信、ゆっくりになるかもしれません。ごめんなさい"
+
+    - from: iroha
+      msg: "急かさないので大丈夫です"
+
+    - from: sui
+      msg: "ありがとうございます"
+
+    - text: "そこから、三十分ほど間が空いた。"
+
+    - from: sui
+      msg: "すみません、今日ちょっと、だめな日で"
+      at: "22:41"
+    - from: sui
+      msg: "店で花を捨てる作業があったんです。売れ残った分"
+    - from: sui
+      msg: "毎週やってることなのに、今日はなんか、だめでした"
+
+    - text: "（……どう返すのが正解なんだ、これ）"
+
+    - reply:
+        - text: "そっか"
+          params: { tolerance: 3 }
+          affection: { sui: 2 }
+          goto: chat_sui_01b_wait
+        - text: "元気出して！　翠さんは頑張ってますよ"
+          params: { tolerance: -2 }
+          goto: chat_sui_01b_cheer
+        - text: "廃棄は仕事だから、割り切るしかないですね"
+          params: { tolerance: -1 }
+          goto: chat_sui_01b_advice
+
+- id: chat_sui_01b_wait
+  screen: chat
+  with: sui
+  next: meet_touka
+  body:
+    - text: "それだけ送って、あとは何も書かなかった。"
+    - text: "既読はすぐについた。返事は、五分こなかった。"
+
+    - from: sui
+      msg: "……ありがとうございます"
+      at: "22:53"
+    - from: sui
+      msg: "なにか言われると思ってました"
+    - from: sui
+      msg: "そっか、って言ってもらえたの、久しぶりです"
+
+    - text: "（何も言わないほうが、届くことがあるのか）"
+
+- id: chat_sui_01b_cheer
+  screen: chat
+  with: sui
+  next: meet_touka
+  body:
+    - from: sui
+      msg: "はい"
+    - from: sui
+      msg: "ありがとうございます。頑張りますね"
+
+    - text: "（……返事が、急に丁寧になった）"
+    - text: "（丁寧さは、たぶん、距離だ）"
+
+- id: chat_sui_01b_advice
+  screen: chat
+  with: sui
+  next: meet_touka
+  body:
+    - from: sui
+      msg: "そうですよね"
+    - from: sui
+      msg: "わかってはいるんですけど"
+
+    - text: "そのあと、返信は来なかった。"
+    - text: "（正しいことを言った、はずなんだけどな）"
+
+# --- 橙香（橙／ユーモア）-----------------------------------------------------
+
+- id: meet_touka
+  bg: room_night
+  next: chat_touka_01
+  body:
+    - stage: none
+    - se: se_notification
+    - carat: match
+      target: touka
+
+    - flag: met_touka
+      value: true
+
+    - text: "橙香、二十三歳。アパレル販売員。"
+
+    - carat: profile
+      target: touka
+
+    - text: "プロフィール写真の三枚目が、まるまる肉まんの写真だった。"
+    - text: "（本人はどこ）"
+
+- id: chat_touka_01
+  screen: chat
+  with: touka
+  next: meet_shion
+  body:
+    - from: touka
+      msg: "どーも！！"
+    - from: touka
+      msg: "マッチしましたね。運命ですね。結婚しますか"
+
+    - from: iroha
+      msg: "早い"
+
+    - from: touka
+      msg: "早いですよね〜、うちの店の閉店作業くらい早い"
+    - from: touka
+      msg: "あ、自己紹介します。橙香です。趣味は人の話を遮ることです"
+
+    - from: touka
+      msg: "ちなみに今、じゃがりこ食べながら打ってます"
+    - from: touka
+      msg: "指がしけった"
+
+    - text: "（……なるほど）"
+    - text: "（これは、まっすぐ受け止めたら負けるやつだ）"
+
+    - reply:
+        - text: "情報が渋滞してる"
+          params: { humor: 3 }
+          affection: { touka: 2 }
+          goto: chat_touka_01b_sharp
+        - text: "ええええ！？　しけった！？　大変だ！！"
+          params: { humor: 1 }
+          goto: chat_touka_01b_loud
+        - text: "手を拭いてから打つといいですよ"
+          params: { humor: -2 }
+          goto: chat_touka_01b_flat
+
+- id: chat_touka_01b_sharp
+  screen: chat
+  with: touka
+  next: meet_shion
+  body:
+    - from: touka
+      msg: "wwwwwwwww"
+    - from: touka
+      msg: "渋滞してる！たしかに！！"
+
+    - from: touka
+      msg: "いいですね〜色葉さん。短いのに刺さるタイプだ"
+    - from: touka
+      msg: "そういう人、好きです"
+
+    - text: "（……好き、が軽い）"
+    - text: "（けど、悪い気はしなかった）"
+
+- id: chat_touka_01b_loud
+  screen: chat
+  with: touka
+  next: meet_shion
+  body:
+    - from: touka
+      msg: "そう！大変！！"
+    - from: touka
+      msg: "……で、どうします？"
+
+    - text: "（どうもしない）"
+    - text: "（勢いで返したら、勢いで返ってきた。当然だ）"
+
+- id: chat_touka_01b_flat
+  screen: chat
+  with: touka
+  next: meet_shion
+  body:
+    - from: touka
+      msg: "はい、拭きます"
+
+    - text: "一分後、追加のメッセージが来た。"
+
+    - from: touka
+      msg: "拭きました！"
+
+    - text: "（会話が、終わってしまった）"
+    - text: "（この子のボケは、正論で殴ると死ぬ）"
+
+# --- 紫音（紫／感性）---------------------------------------------------------
+
+- id: meet_shion
+  bg: room_night
+  next: chat_shion_01
+  body:
+    - stage: none
+    - se: se_notification
+    - carat: match
+      target: shion
+
+    - flag: met_shion
+      value: true
+
+    - text: "紫音、二十五歳。グラフィックデザイナー。"
+
+    - carat: profile
+      target: shion
+
+    - text: "自己紹介文は二行しかなかった。"
+    - text: "『夜のほうが起きています』『好きなものの話ができる人を探しています』"
+
+    - text: "（……好きなもの）"
+    - text: "（俺、なんだろう）"
+
+- id: chat_shion_01
+  screen: chat
+  with: shion
+  next: encounters_done
+  body:
+    - from: shion
+      msg: "こんばんは"
+    - from: shion
+      msg: "起きてますか"
+
+    - from: iroha
+      msg: "起きてます"
+
+    - from: shion
+      msg: "よかった"
+    - from: shion
+      msg: "今、帰り道です。写真送りますね"
+
+    - text: "送られてきたのは、夜のガード下だった。"
+    - text: "コンクリートの壁に、蛍光灯の光が細長く伸びている。"
+    - text: "人は写っていない。"
+
+    - from: shion
+      msg: "これ、どう思いますか"
+
+    - text: "（……試されてる）"
+    - text: "（いや、たぶん、試してはいない。ただ聞いてる）"
+
+    - reply:
+        - text: "光が縦に伸びてるから、通路がやたら長く見える。息が詰まる感じがします"
+          params: { sensibility: 3 }
+          affection: { shion: 2 }
+          goto: chat_shion_01b_specific
+        - text: "なんかいいですね"
+          params: { sensibility: -3 }
+          goto: chat_shion_01b_vague
+        - text: "正直、よくわからないです。でも、目は離せなかった"
+          params: { sensibility: 1 }
+          affection: { shion: 1 }
+          goto: chat_shion_01b_honest
+
+- id: chat_shion_01b_specific
+  screen: chat
+  with: shion
+  next: encounters_done
+  body:
+    - text: "既読がついてから、返事まで、一分あった。"
+
+    - from: shion
+      msg: "息が詰まる"
+      at: "23:47"
+    - from: shion
+      msg: "そう、それです"
+    - from: shion
+      msg: "毎日ここを通るんですけど、通るたびに少し嫌な気持ちになって"
+    - from: shion
+      msg: "なのに写真を撮ってしまう"
+
+    - from: shion
+      msg: "その理由が、今わかりました"
+
+    - text: "（……何かを言い当てた、らしい）"
+
+- id: chat_shion_01b_vague
+  screen: chat
+  with: shion
+  next: encounters_done
+  body:
+    - from: shion
+      msg: "そうですか"
+
+    - text: "それきりだった。"
+    - text: "（言ってから、しまった、と思った）"
+    - text: "（何も見ていないのと同じ返事だった）"
+
+- id: chat_shion_01b_honest
+  screen: chat
+  with: shion
+  next: encounters_done
+  body:
+    - from: shion
+      msg: "それ、いちばん正しい感想だと思います"
+    - from: shion
+      msg: "わたしもわかってないので"
+
+    - from: shion
+      msg: "わからないまま撮ってます"
+
+    - text: "（……嘘をつかなかったのが、正解だったのか）"
+
+# --- 共通パートの締め --------------------------------------------------------
+
+- id: encounters_done
+  bg: room_night
+  next: schedule_hub
+  body:
+    - stage: none
+    - text: "スマホを置いた。時刻は日付をまたいでいた。"
+
+    - text: "五人。"
+    - text: "青。翠。橙。紫。桃。"
+
+    - text: "（……多いな）"
+    - text: "（全員とちゃんと向き合える気が、正直しない）"
+
+    - text: "誰に会うかを選ぶということは、誰に会わないかを選ぶということだ。"
+    - text: "そんな当たり前のことを、二十四歳にして初めて意識した。"
+
+    - text: "三ヶ月後、俺はどうなっているんだろう。"

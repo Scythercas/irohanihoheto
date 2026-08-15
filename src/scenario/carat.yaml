@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # カラット導入 ― プロフィール作成から、桃果とのマッチング・初トークまで
 #
 # 【追加された書き方】
@@ -145,7 +145,8 @@
 - id: chat_momoka_03
   screen: chat
   with: momoka
-  next: schedule_hub
+  # 桃果のあと、同じ週のうちに残り4人とも繋がる（encounters.yaml）
+  next: carat_more_01
   body:
     - from: momoka
       msg: "じゃあ、また連絡しますね！"
@@ -167,6 +168,9 @@
   bgm: bgm_date
   next: schedule_hub
   body:
+    # デート1回につき、対応する色が基礎値ぶん伸びる（点数設計は docs/05 §6）
+    - params: { confidence: 6 }
+
     - text: "水族館は、平日の夕方でも人がいた。"
     - text: "青い光の中を、桃果が小走りで進んでいく。"
 
@@ -199,7 +203,7 @@
 
     - choice:
         - text: "座ろう。二階の席が空いてる"
-          params: { confidence: 4 }
+          params: { confidence: 6 }
           affection: { momoka: 3 }
           goto: momoka_date_01_lead
         - text: "桃果はどうしたい？"
@@ -253,7 +257,18 @@
 # の両方を満たすまで出さない。序盤の茜はあくまで口の悪い幼馴染。
 - id: akane_talk_01
   body:
+    # AKANE_DERE_STEPS = [60, 110, 160, 210]。上から順に評価されるので、
+    # **しきい値の高いものを先に**書く。順序を逆にすると永久に第1段階しか出ない。
     - branch:
+        - goto: akane_dere_04
+          ifMetCount: 2
+          ifTotalParam: 210
+        - goto: akane_dere_03
+          ifMetCount: 2
+          ifTotalParam: 160
+        - goto: akane_dere_02
+          ifMetCount: 2
+          ifTotalParam: 110
         - goto: akane_dere_01
           ifMetCount: 2
           ifTotalParam: 60
@@ -264,6 +279,10 @@
   bgm: bgm_daily
   next: schedule_hub
   body:
+    # 茜は「総合」の担当。相談すると5色すべてが少しずつ伸びる。
+    # 行動枠を1つ使う以上、何も起きないと相談する動機がなくなってしまうため。
+    - params: { sincerity: 1, tolerance: 1, humor: 1, sensibility: 1, confidence: 1 }
+
     - text: "深夜のファミレス。茜はドリンクバーだけで三時間粘る女だった。"
 
     - who: akane
@@ -310,6 +329,8 @@
   bgm: bgm_daily
   next: schedule_hub
   body:
+    - params: { sincerity: 1, tolerance: 1, humor: 1, sensibility: 1, confidence: 1 }
+
     - text: "深夜のファミレス。いつもの席。"
 
     - who: akane
@@ -340,17 +361,134 @@
     - text: "（……耳が赤い）"
     - text: "（気のせいだと思うことにした）"
 
+- id: akane_dere_02
+  bg: family_restaurant
+  bgm: bgm_daily
+  next: schedule_hub
+  body:
+    - params: { sincerity: 1, tolerance: 1, humor: 1, sensibility: 1, confidence: 1 }
+
+    - text: "その日、茜は先に来ていた。"
+    - text: "テーブルにはドリンクバーのグラスが二つ並んでいる。"
+
+    - who: akane
+      face: away
+      text: "「……頼んどいた。アイスコーヒーでしょ、どうせ」"
+
+    - who: iroha
+      text: "「よく覚えてるな」"
+
+    - who: akane
+      face: bored
+      text: "「覚えたくて覚えたわけじゃない」"
+
+    - text: "それから茜は、いつもどおり的確な助言を三つ寄越した。"
+    - text: "話が途切れたとき、こちらが席を立とうとしたら、袖を引かれた。"
+
+    - who: akane
+      face: normal
+      text: "「……あのさ」"
+
+    - who: akane
+      face: normal
+      text: "「私も最近、ちょっとだけ、焦ることがある」"
+
+    - who: iroha
+      text: "「茜が？」"
+
+    - who: akane
+      face: fluster
+      text: "「なんでもない。座り直さないで。帰って」"
+
+    - text: "（何かを言いかけて、やめた）"
+    - text: "（二十四年で、初めて見る顔だった）"
+
+- id: akane_dere_03
+  bg: family_restaurant
+  bgm: bgm_daily
+  next: schedule_hub
+  body:
+    - params: { sincerity: 1, tolerance: 1, humor: 1, sensibility: 1, confidence: 1 }
+
+    - text: "その夜、茜は髪をほどいて来た。"
+    - text: "低い位置で結んでいるのを、二十四年見てきた。"
+
+    - who: iroha
+      text: "「……珍しいな」"
+
+    - who: akane
+      face: away
+      text: "「ゴム切れただけ」"
+
+    - text: "嘘だと思ったが、言わなかった。"
+
+    - who: akane
+      face: normal
+      text: "「あんた、最近ちゃんとしてるね。話し方とか」"
+
+    - who: iroha
+      text: "「そうか？」"
+
+    - who: akane
+      face: normal
+      text: "「うん。……誰かのおかげなんだろうけど」"
+
+    - text: "グラスの氷が鳴った。"
+
+    - who: akane
+      face: bored
+      text: "「言っとくけど、褒めてないから。事実を言っただけ」"
+
+    - text: "（それを人は、褒めていると言う）"
+    - text: "（でも、指摘はしないでおいた）"
+
+- id: akane_dere_04
+  bg: family_restaurant
+  bgm: bgm_daily
+  next: schedule_hub
+  body:
+    - params: { sincerity: 1, tolerance: 1, humor: 1, sensibility: 1, confidence: 1 }
+
+    - text: "ファミレスを出たのは、二時を回ったころだった。"
+
+    - bg: street_evening
+
+    - text: "夜の街は、店の看板がひとつずつ落ちていく時間だった。"
+
+    - who: akane
+      face: normal
+      text: "「ねえ」"
+
+    - who: akane
+      face: normal
+      text: "「あんたさ、最初に私に相談したじゃん。彼女欲しいって」"
+
+    - who: iroha
+      text: "「……言ったな」"
+
+    - who: akane
+      face: away
+      text: "「あのとき、私、笑ったでしょ」"
+
+    - text: "茜が立ち止まった。"
+
+    - who: akane
+      face: fluster
+      text: "「あれ、笑うしかなかったんだよ」"
+
+    - text: "（……え）"
+
+    - who: akane
+      face: bored
+      text: "「はい、この話終わり。忘れて。忘れなかったら殴る」"
+
+    - text: "茜は先に歩き出した。歩幅が、いつもより大きかった。"
+    - text: "（――今のは）"
+    - text: "（今のは、たぶん、聞いてはいけなかった）"
+
 - id: date_filler
   bg: street_evening
   next: schedule_hub
   body:
     - text: "その日は、とくに何も起こらなかった。"
     - text: "予定を埋めるだけの一日というのも、たまにはある。"
-
-- id: finale_judge
-  bg: room_night
-  body:
-    # スケジュールから直接飛んでくるため、誰かが立ったままにならないよう明示的に退場させる
-    - stage: none
-    - text: "三ヶ月が過ぎた。"
-    - text: "（……ここから先は、まだ書かれていない）"

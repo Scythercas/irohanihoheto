@@ -11,16 +11,18 @@
 
 import yaml from 'js-yaml';
 import { CHARACTERS } from '../constants';
+import { ENDING_ROUTES } from '../types';
 import type {
   BranchCase,
   CharacterId,
   ChoiceOption,
+  EndingRoute,
   HeroineId,
   ParamDelta,
   Scene,
   ScenarioNode,
 } from '../types';
-import { AKANE_SCENES, DATE_SCENES, FILLER_SCENE, FINALE_SCENE } from '../schedule';
+import { AKANE_SCENES, DATE_SCENES, EXTRA_DATE_SCENES, FILLER_SCENE, FINALE_SCENE } from '../schedule';
 
 class ScenarioError extends Error {
   constructor(file: string, sceneId: string, index: number | null, message: string) {
@@ -37,6 +39,7 @@ const isRecord = (v: unknown): v is Record<string, unknown> =>
 const VALID_CHARACTER_IDS = new Set(Object.keys(CHARACTERS));
 const VALID_PARAM_KEYS = new Set<string>(['sincerity', 'tolerance', 'humor', 'sensibility', 'confidence']);
 const VALID_HEROINE_IDS = new Set<string>(['aoi', 'sui', 'touka', 'shion', 'momoka']);
+const VALID_ENDING_ROUTES = new Set<string>(ENDING_ROUTES);
 
 function parseParamDelta(raw: unknown, file: string, sceneId: string, index: number): ParamDelta {
   if (!isRecord(raw)) {
@@ -242,11 +245,29 @@ function parseNode(raw: unknown, file: string, sceneId: string, index: number): 
       if (rawCase.ifParam !== undefined) {
         c.ifParam = parseParamDelta(rawCase.ifParam, file, sceneId, index);
       }
+      if (rawCase.ifEnding !== undefined) {
+        if (typeof rawCase.ifEnding !== 'string' || !VALID_ENDING_ROUTES.has(rawCase.ifEnding)) {
+          throw new ScenarioError(
+            file,
+            sceneId,
+            index,
+            `ifEnding "${String(rawCase.ifEnding)}" は未定義です（有効: ${ENDING_ROUTES.join(', ')}）`,
+          );
+        }
+        c.ifEnding = rawCase.ifEnding as EndingRoute;
+      }
       return c;
     });
 
     const last = cases[cases.length - 1];
-    if (last && (last.ifFlag || last.ifMetCount !== undefined || last.ifTotalParam !== undefined || last.ifParam)) {
+    if (
+      last &&
+      (last.ifFlag ||
+        last.ifMetCount !== undefined ||
+        last.ifTotalParam !== undefined ||
+        last.ifParam ||
+        last.ifEnding !== undefined)
+    ) {
       throw new ScenarioError(
         file,
         sceneId,
@@ -346,6 +367,7 @@ export function buildScenes(files: Record<string, string>): Map<string, Scene> {
   // ここが抜けていると「デートを選んだ瞬間に落ちる」という最悪の壊れ方をする。
   const scheduleTargets = [
     ...Object.values(DATE_SCENES).flat(),
+    ...Object.values(EXTRA_DATE_SCENES),
     ...AKANE_SCENES,
     FILLER_SCENE,
     FINALE_SCENE,

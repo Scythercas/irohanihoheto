@@ -6,7 +6,7 @@
  * （scripts/smoke.ts）。分岐が増えるほどこの担保が効いてくる。
  */
 
-import { PARAM_ORDER } from './constants';
+import { PARAM_ORDER, PARAM_TO_HEROINE, THRESHOLD } from './constants';
 import { SLOTS_PER_WEEK } from './schedule';
 import type {
   BranchCase,
@@ -15,6 +15,7 @@ import type {
   ChatNode,
   ChoiceNode,
   CharacterId,
+  EndingRoute,
   HeroineId,
   ParamDelta,
   ParamKey,
@@ -148,6 +149,43 @@ export function metCount(flags: Record<string, boolean>): number {
   return Object.entries(flags).filter(([key, on]) => on && key.startsWith('met_')).length;
 }
 
+/**
+ * 終幕でどのエンディングに入るかを判定する。
+ *
+ * **個別ルート優先**（K11③ でユーザーが選択）。
+ *
+ *   1. 対応する色が `THRESHOLD.INDIVIDUAL` 以上のヒロインがいれば、その個別ルート。
+ *      複数該当したら値が最も大きい色を採る。同値なら好感度、それも同値なら
+ *      `PARAM_ORDER` の順で決める（判定を再現可能にするため、必ず一意に決まるようにする）。
+ *   2. 誰も該当しないとき、5色すべてが `THRESHOLD.AKANE_ALL` 以上なら茜ルート。
+ *      「どの色にも特化しなかった＝すべてを平均的に上げた」人だけが通れる帯になる。
+ *   3. どちらでもなければサッドエンド（茜に見限られる）。
+ *
+ * 設計書 §3.5 の「誰とも交際確定していない」は、1 に該当しないこと＝
+ * 特化した相手がいないこと、として表現している。
+ */
+export function endingRoute(cursor: Cursor): EndingRoute {
+  const reached = PARAM_ORDER.filter((key) => cursor.params[key] >= THRESHOLD.INDIVIDUAL);
+
+  if (reached.length > 0) {
+    let best = reached[0] as ParamKey;
+    for (const key of reached.slice(1)) {
+      if (cursor.params[key] > cursor.params[best]) {
+        best = key;
+      } else if (cursor.params[key] === cursor.params[best]) {
+        const a = cursor.affection[PARAM_TO_HEROINE[key]];
+        const b = cursor.affection[PARAM_TO_HEROINE[best]];
+        if (a > b) best = key;
+      }
+    }
+    return PARAM_TO_HEROINE[best];
+  }
+
+  if (PARAM_ORDER.every((key) => cursor.params[key] >= THRESHOLD.AKANE_ALL)) return 'akane';
+
+  return 'sad';
+}
+
 /** branch の1ケースが成立するか */
 export function matchesCase(cursor: Cursor, c: BranchCase): boolean {
   if (c.ifFlag && !cursor.flags[c.ifFlag]) return false;
@@ -158,6 +196,7 @@ export function matchesCase(cursor: Cursor, c: BranchCase): boolean {
       if (typeof min === 'number' && cursor.params[key as ParamKey] < min) return false;
     }
   }
+  if (c.ifEnding !== undefined && endingRoute(cursor) !== c.ifEnding) return false;
   return true;
 }
 

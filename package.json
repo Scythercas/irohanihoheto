@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "check:scenario": "tsx scripts/check-scenario.ts",
     "smoke": "tsx scripts/smoke.ts",
+    "balance": "tsx scripts/balance.ts",
     "fetch:assets": "tsx scripts/fetch-assets.ts"
   },
   "dependencies": {

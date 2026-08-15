@@ -71,12 +71,20 @@ export const HEROINE_IDS: readonly HeroineId[] = ['aoi', 'sui', 'touka', 'shion'
 export const PARAM_MAX = 100;
 
 /**
- * ルート突入のしきい値（暫定値。バランス調整で変える）。
+ * ルート突入のしきい値。
  * - 個別ルート: 対応する1色が INDIVIDUAL 以上
- * - 茜ルート  : 5色すべてが AKANE_ALL 以上
+ * - 茜ルート  : どの色も INDIVIDUAL に届かず、5色すべてが AKANE_ALL 以上
+ *
+ * **個別ルート優先**（K11③）のため、茜ルートは [AKANE_ALL, INDIVIDUAL) という
+ * "帯" になる。帯が狭すぎると、平均的に遊んだ人が意図せず個別ルートに落ちる。
+ * プレイヤーには数値を見せない（C3②）以上、帯は十分広く取る必要がある。
+ *
+ * **この値を変えたら必ず `npm run balance` を通すこと。**
+ * 行動枠の総数（12週 × SLOTS_PER_WEEK）と1回あたりの獲得点から、
+ * 7つのエンディングすべてに到達できるかを機械的に検証している。
  */
 export const THRESHOLD = {
-  INDIVIDUAL: 60,
+  INDIVIDUAL: 80,
   AKANE_ALL: 45,
 } as const;
 

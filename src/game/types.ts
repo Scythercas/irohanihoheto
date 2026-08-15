@@ -9,6 +9,24 @@ export type CharacterId = HeroineId | 'akane' | 'iroha';
 
 export type ParamDelta = Partial<Record<ParamKey, number>>;
 
+/**
+ * 終幕で入るエンディングの種別。
+ *
+ * 判定規則は **個別ルート優先**（設計書 §3.5）。実際の計算は engine.ts の
+ * `endingRoute()` にあり、シナリオ側からは branch の `ifEnding:` で参照する。
+ */
+export type EndingRoute = HeroineId | 'akane' | 'sad';
+
+export const ENDING_ROUTES: readonly EndingRoute[] = [
+  'aoi',
+  'sui',
+  'touka',
+  'shion',
+  'momoka',
+  'akane',
+  'sad',
+] as const;
+
 // ---------------------------------------------------------------------------
 // シナリオノード
 //
@@ -93,6 +111,12 @@ export interface BranchCase {
   ifTotalParam?: number;
   /** 個別パラメータの下限 */
   ifParam?: Partial<Record<ParamKey, number>>;
+  /**
+   * 終幕のエンディング判定の結果と一致すること。
+   * しきい値の比較や「複数条件を満たしたときどれを優先するか」は
+   * engine.ts の `endingRoute()` が一手に引き受ける（シナリオ側に散らさない）。
+   */
+  ifEnding?: EndingRoute;
 }
 
 export interface BranchNode {
