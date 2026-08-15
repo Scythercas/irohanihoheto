@@ -21,7 +21,7 @@
 | **週スケジュール画面**（12週・行動枠） | ✅ | `src/ui/ScheduleScreen.tsx` |
 | **5角形のパラメータ表示＋変動通知** | ✅ | `src/ui/ParamPentagon.tsx` |
 | **立ち絵の配置**（相手を中央に正面。主人公の立ち絵は無い） | ✅ | `src/ui/StageLayer.tsx` |
-| **茉白の立ち絵（PNG・表情7種・背景透過済み）** | ⚠ **要・作り直し**（旧「茜」時代の緋色の髪。改名で白になった） | `public/assets/chara/mashiro/*.png` |
+| **茉白の立ち絵（PNG・表情7種・背景透過済み）** | ✅ **本素材**（白髪・商用可モデルで作り直し済み） | `public/assets/chara/mashiro/*.png` |
 | 茉白の立ち絵（SVG製・予備） | ✅ フォールバック用に温存 | `src/ui/sprites/MashiroSprite.tsx` |
 | 背景透過スクリプト | ✅ | `scripts/remove-bg.py` |
 | **条件分岐（branch）** | ✅ | `engine.ts` の `matchesCase` |
