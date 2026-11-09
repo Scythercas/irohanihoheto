@@ -12,7 +12,10 @@
     "check:scenario": "tsx scripts/check-scenario.ts",
     "smoke": "tsx scripts/smoke.ts",
     "balance": "tsx scripts/balance.ts",
-    "fetch:assets": "tsx scripts/fetch-assets.ts"
+    "fetch:assets": "tsx scripts/fetch-assets.ts",
+    "voice:dict": "tsx scripts/voice-dict.ts",
+    "voice:audition": "tsx scripts/voice-audition.ts",
+    "voice:tune": "tsx scripts/voice-tune.ts"
   },
   "dependencies": {
     "howler": "^2.2.4",
